@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --color-abyss: #020308;
+}
+
+html {
+  background: #020308;
+}
+
+body {
+  background: #020308;
+  color: #e8ecf4;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 500;
+}
+
+::selection {
+  background: rgba(255, 200, 120, 0.35);
+}
+
+/* Lenis recommended base styles (virtual scroll). */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* Hide the scrollbar — the journey has its own progress affordances. */
+body::-webkit-scrollbar {
+  width: 0;
+}
+body {
+  scrollbar-width: none;
+}
