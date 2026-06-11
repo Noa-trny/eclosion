@@ -103,11 +103,25 @@ function defaults(): UniformProxies {
 
 export const uniformProxies: UniformProxies = defaults();
 
-export function snapshotProxies(): UniformProxies {
-  return structuredClone(uniformProxies);
+type NumericTree = { [key: string]: number | NumericTree };
+
+/** Manual numeric deep-clone: GSAP attaches non-cloneable caches (`_gsap`,
+ *  functions) to every tween target, so structuredClone would throw. Only
+ *  numbers and nested plain objects are part of a snapshot. */
+function cloneTree(source: NumericTree): NumericTree {
+  const out: NumericTree = {};
+  for (const key of Object.keys(source)) {
+    if (key.startsWith("_")) continue;
+    const value = source[key];
+    if (typeof value === "number") out[key] = value;
+    else if (value && typeof value === "object") out[key] = cloneTree(value);
+  }
+  return out;
 }
 
-type NumericTree = { [key: string]: number | NumericTree };
+export function snapshotProxies(): UniformProxies {
+  return cloneTree(uniformProxies as unknown as NumericTree) as unknown as UniformProxies;
+}
 
 function walkAssign(target: NumericTree, source: NumericTree): void {
   for (const key of Object.keys(source)) {
