@@ -75,6 +75,38 @@ export function playCrackle(ctx: AudioContext, out: AudioNode): void {
   };
 }
 
+/** A soft bell tone (sine + detuned partial, long decay) for the finale. */
+export function playBell(ctx: AudioContext, out: AudioNode, frequency: number, at: number): void {
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0, at);
+  gain.gain.linearRampToValueAtTime(0.05, at + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, at + 3.2);
+  gain.connect(out);
+  const oscillators: OscillatorNode[] = [];
+  for (const [ratio, level] of [
+    [1, 1],
+    [2.76, 0.28],
+    [5.4, 0.08],
+  ] as const) {
+    const osc = ctx.createOscillator();
+    osc.type = "sine";
+    osc.frequency.value = frequency * ratio;
+    const g = ctx.createGain();
+    g.gain.value = level;
+    osc.connect(g).connect(gain);
+    osc.start(at);
+    osc.stop(at + 3.4);
+    oscillators.push(osc);
+  }
+  const first = oscillators[0];
+  if (first) {
+    first.onended = () => {
+      for (const osc of oscillators) osc.disconnect();
+      gain.disconnect();
+    };
+  }
+}
+
 /** Thunder: delayed (distance) brown-ish burst with a long lowpassed tail. */
 export function playThunder(ctx: AudioContext, out: AudioNode): void {
   const delay = 0.3 + Math.random() * 1.2;

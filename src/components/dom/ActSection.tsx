@@ -16,14 +16,15 @@ export function ActSection({ act, progress }: ActSectionProps) {
   const { start, end } = act.range;
   const first = act.index === 0;
   const last = act.index === 7;
+  // The last act hands the screen to the EndCard before progress reaches 1.
   const keys = [
     first ? 0 : start + 0.008,
     first ? 0.002 : start + 0.032,
-    last ? 0.982 : end - 0.034,
-    last ? 1 : end - 0.01,
+    last ? 0.938 : end - 0.034,
+    last ? 0.966 : end - 0.01,
   ];
-  const opacity = useTransform(progress, keys, [first ? 1 : 0, 1, 1, last ? 1 : 0]);
-  const y = useTransform(progress, keys, [first ? 0 : 36, 0, 0, last ? 0 : -36]);
+  const opacity = useTransform(progress, keys, [first ? 1 : 0, 1, 1, 0]);
+  const y = useTransform(progress, keys, [first ? 0 : 36, 0, 0, -36]);
 
   const alignClass =
     act.align === "center"

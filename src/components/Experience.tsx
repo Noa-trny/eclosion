@@ -11,6 +11,7 @@ import { useAudioBridge } from "@/hooks/useAudioEngine";
 import { useAppStore } from "@/stores/appStore";
 import { DomRoot } from "./dom/DomRoot";
 import { Overlay } from "./dom/Overlay";
+import { EndCard } from "./dom/EndCard";
 import { Hud } from "./dom/Hud";
 import { ScrollHint } from "./dom/ScrollHint";
 import { FreeRoamHint } from "./dom/FreeRoamHint";
@@ -54,6 +55,7 @@ export function Experience() {
       {supported === true && <CanvasRoot />}
       <DomRoot />
       <Overlay />
+      <EndCard />
       <Hud />
       <ScrollHint />
       <FreeRoamHint />
