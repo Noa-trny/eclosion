@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion, useTransform } from "motion/react";
 import { useScrollProgressMV } from "@/hooks/useScrollProgressMV";
 import { useAppStore } from "@/stores/appStore";
@@ -14,6 +15,15 @@ export function EndCard() {
   const pointerEvents = useTransform(progress, (p) => (p > 0.985 ? "auto" : "none"));
   const mode = useAppStore((s) => s.mode);
   const requestModeToggle = useAppStore((s) => s.requestModeToggle);
+  const [copied, setCopied] = useState(false);
+
+  const share = (): void => {
+    const text = `« Du néant à l'aube, j'ai vu naître un monde. » — Éclosion\n${window.location.origin}`;
+    void navigator.clipboard?.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    });
+  };
 
   return (
     <motion.div
@@ -48,6 +58,13 @@ export function EndCard() {
             Explorer ce monde (F)
           </button>
         </div>
+        <button
+          type="button"
+          onClick={share}
+          className="mt-5 text-[11px] uppercase tracking-[0.3em] text-white/50 underline-offset-4 transition hover:text-white hover:underline"
+        >
+          {copied ? "Lien copié ✓" : "Partager l'aube"}
+        </button>
       </motion.div>
     </motion.div>
   );

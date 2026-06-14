@@ -13,9 +13,9 @@ export function DawnScene() {
   return (
     <group>
       <Sun />
-      {/* Silhouettes across the sun's sightline — kept at distance so they
-          read as calligraphy against the disc, never as close-up polygons. */}
-      <BirdFlock center={[472, 38, 66]} size={[64, 20, 46]} baseCount={70} seed={77} />
+      {/* Silhouettes across the sun's sightline — distant and slow, so they
+          read as calligraphy against the disc, never as vertigo. */}
+      <BirdFlock center={[472, 38, 66]} size={[64, 20, 46]} baseCount={70} seed={77} speed={4.5} />
       {/* Le Souffle — the closing vortex of light petals. */}
       <GPUParticles
         preset={PARTICLE_PRESETS.pollen}
