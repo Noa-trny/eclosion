@@ -1,0 +1,95 @@
+"use client";
+
+import { AnimatePresence, motion } from "motion/react";
+import { useAppStore } from "@/stores/appStore";
+import { initAudioEngine } from "@/audio/engine";
+
+/** The gate: unlocks audio inside the click gesture, then hands the visitor
+ *  to the scroll. Until dismissed, Lenis stays frozen. */
+export function StartScreen() {
+  const phase = useAppStore((s) => s.phase);
+  const started = useAppStore((s) => s.started);
+  const start = useAppStore((s) => s.start);
+  const reducedMotion = useAppStore((s) => s.reducedMotion);
+
+  const enter = (withAudio: boolean): void => {
+    if (withAudio) initAudioEngine();
+    start(withAudio);
+  };
+
+  return (
+    <AnimatePresence>
+      {!started && (
+        <motion.div
+          exit={{ opacity: 0, transition: { duration: 1.2, ease: "easeInOut" } }}
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#020308] px-6 text-center"
+        >
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 1.2 }}
+            className="mb-5 text-[11px] uppercase tracking-[0.6em] text-white/40"
+          >
+            Une expérience où le défilement est le temps
+          </motion.p>
+          <motion.h1
+            initial={{ opacity: 0, letterSpacing: "0.4em" }}
+            animate={{ opacity: 1, letterSpacing: "0.18em" }}
+            transition={{ delay: 0.5, duration: 1.6, ease: "easeOut" }}
+            className="font-display text-6xl text-white sm:text-8xl"
+          >
+            ÉCLOSION
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.1, duration: 1.2 }}
+            className="mt-4 max-w-sm text-sm leading-relaxed text-white/55"
+          >
+            La naissance d&apos;un monde — du néant à l&apos;aube, huit actes portés par la
+            lumière, la matière et le son.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.5, duration: 0.9 }}
+            className="mt-10 flex flex-col items-center gap-3 sm:flex-row"
+          >
+            {phase === "boot" ? (
+              <p className="text-xs uppercase tracking-[0.3em] text-white/40">
+                préparation du monde…
+              </p>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => enter(!reducedMotion)}
+                  className="rounded-full border border-white/60 bg-white/95 px-8 py-3 text-xs font-medium uppercase tracking-[0.25em] text-black transition hover:bg-white"
+                >
+                  Entrer {reducedMotion ? "" : "avec le son"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => enter(false)}
+                  className="rounded-full border border-white/25 px-8 py-3 text-xs uppercase tracking-[0.25em] text-white/70 transition hover:border-white/60 hover:text-white"
+                >
+                  Entrer en silence
+                </button>
+              </>
+            )}
+          </motion.div>
+
+          {reducedMotion && (
+            <p className="mt-6 text-[11px] text-white/35">
+              Animations réduites détectées — l&apos;expérience s&apos;adapte à vos préférences.
+            </p>
+          )}
+          <p className="absolute bottom-6 text-[10px] uppercase tracking-[0.3em] text-white/25">
+            Casque recommandé · 100% procédural · WebGL 2
+          </p>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
