@@ -80,6 +80,9 @@ export function GlobalEnvironment() {
       (window as unknown as { __eclosionDebug?: object }).__eclosionDebug = {
         camera: state.camera.position.toArray().map((v) => Math.round(v * 10) / 10),
         fov: (state.camera as THREE.PerspectiveCamera).fov,
+        calls: gl.info.render.calls,
+        triangles: gl.info.render.triangles,
+        dpr: gl.getPixelRatio(),
       };
     }
   });
