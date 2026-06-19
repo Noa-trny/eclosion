@@ -77,9 +77,13 @@ export function StartScreen() {
             className="mt-10 flex flex-col items-center gap-3 sm:flex-row"
           >
             {phase === "boot" ? (
-              <p className="text-xs uppercase tracking-[0.3em] text-white/40">
-                préparation du monde…
-              </p>
+              <motion.p
+                animate={{ opacity: [0.35, 0.75, 0.35] }}
+                transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+                className="text-xs uppercase tracking-[0.3em] text-white/50"
+              >
+                le monde germe…
+              </motion.p>
             ) : (
               <>
                 <button

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --font-display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-display: var(--font-display-src), Georgia, "Times New Roman", serif;
   --color-abyss: #020308;
 }
 
@@ -26,7 +26,22 @@ body {
 
 .font-display {
   font-family: var(--font-display);
-  font-weight: 500;
+  font-weight: 480;
+  font-variation-settings: "opsz" 130, "SOFT" 30;
+}
+
+/* Keyboard a11y: juries tab through the page — make focus unmistakable. */
+:focus-visible {
+  outline: 1.5px solid rgba(255, 200, 120, 0.9);
+  outline-offset: 3px;
+  border-radius: 9999px;
+}
+
+/* Custom cursor (fine pointers only — toggled by the Cursor component). */
+html.custom-cursor,
+html.custom-cursor button,
+html.custom-cursor a {
+  cursor: none;
 }
 
 ::selection {

@@ -46,8 +46,15 @@ varying vec3 vNormal;
 varying vec3 vWorldPos;
 
 void main() {
-  float light = halfLambert(vNormal, uSunDir) * uSunIntensity;
-  vec3 col = vColor * (uAmbientColor * uAmbientIntensity * 3.2 + uSunColor * light * 2.0);
+  float shade = halfLambert(vNormal, uSunDir);
+  float light = shade * uSunIntensity;
+  // Shadowed foliage picks up the cool sky, lit foliage the moon — contrast.
+  vec3 ambient = mix(uAmbientColor * 0.55, uAmbientColor, shade);
+  vec3 col = vColor * (ambient * uAmbientIntensity * 2.4 + uSunColor * light * 2.2);
+  // Moon rim: silhouettes against the moonlit fog.
+  vec3 viewDir = normalize(cameraPosition - vWorldPos);
+  float rim = fresnel(viewDir, normalize(vNormal), 2.5);
+  col += uSunColor * rim * uSunIntensity * 0.35;
   float dist = length(cameraPosition - vWorldPos);
   col = applyFogExp2(col, dist, uFogColor, uFogDensity);
   gl_FragColor = vec4(col, 1.0);

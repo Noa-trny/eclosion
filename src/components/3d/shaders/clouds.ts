@@ -43,8 +43,8 @@ void main() {
   }
   float a = clamp(acc, 0.0, 1.0) * uDensity;
   if (a < 0.01) discard;
-  vec3 col = mix(uFogColor * 1.6, vec3(0.55, 0.58, 0.68), glow);
-  col += vec3(0.9, 0.92, 1.0) * uFlash * (0.4 + glow);
+  vec3 col = mix(uFogColor * 0.9, vec3(0.62, 0.64, 0.72), glow * 1.4);
+  col += vec3(0.9, 0.92, 1.0) * uFlash * (0.6 + glow * 1.2);
   gl_FragColor = vec4(col, a * 0.85);
 }
 `;

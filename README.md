@@ -7,6 +7,8 @@ place à la floraison puis au premier lever de soleil.
 
 **100 % procédural** : aucun modèle, aucune texture, aucun fichier audio. Géométrie, matériaux
 (bruit/FBM en GLSL), particules et musique (synthèse WebAudio) sont générés par le code.
+Seule exception assumée : la typographie display **Fraunces** (licence OFL, committée dans le
+repo, servie en local — aucune requête externe au runtime).
 
 ## Démarrer
 

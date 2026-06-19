@@ -28,7 +28,7 @@ export interface UniformProxies {
   sun: { intensity: number; color: Rgb };
   ambient: { intensity: number; color: Rgb };
   grade: { temperature: number; saturation: number; lift: number; underwater: number };
-  camera: { fovOffset: number; shake: number };
+  camera: { fovOffset: number; shake: number; focus: number };
   wind: Vec3Like;
   transition: { ripple: number };
   acts: {
@@ -72,7 +72,7 @@ function defaults(): UniformProxies {
     sun: { intensity: 0.05, color: { r: 0.4, g: 0.5, b: 0.8 } },
     ambient: { intensity: 0.06, color: { r: 0.25, g: 0.3, b: 0.5 } },
     grade: { temperature: -0.15, saturation: 0.85, lift: 0, underwater: 0 },
-    camera: { fovOffset: 0, shake: 0 },
+    camera: { fovOffset: 0, shake: 0, focus: 0.02 },
     wind: { x: 0.4, y: 0, z: 0.15 },
     transition: { ripple: 0 },
     acts: {

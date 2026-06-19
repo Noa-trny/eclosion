@@ -29,9 +29,22 @@ class AudioEngine {
 
   constructor() {
     this.ctx = new AudioContext();
+    // Gentle glue compressor (musical) → hard safety limiter (never clips,
+    // never pumps on thunder).
+    const limiter = this.ctx.createDynamicsCompressor();
+    limiter.threshold.value = -6;
+    limiter.knee.value = 0;
+    limiter.ratio.value = 20;
+    limiter.attack.value = 0.002;
+    limiter.release.value = 0.1;
+    limiter.connect(this.ctx.destination);
     const compressor = this.ctx.createDynamicsCompressor();
     compressor.threshold.value = -18;
-    compressor.connect(this.ctx.destination);
+    compressor.knee.value = 24;
+    compressor.ratio.value = 4;
+    compressor.attack.value = 0.005;
+    compressor.release.value = 0.25;
+    compressor.connect(limiter);
     this.master = this.ctx.createGain();
     this.master.gain.value = MASTER_GAIN;
     this.master.connect(compressor);

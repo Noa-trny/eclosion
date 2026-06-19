@@ -15,7 +15,8 @@ import { mulberry32 } from "@/utils/random";
 /** The camera glides between these path anchors — keep a clearing around them. */
 const PATH_CLEARANCE: Array<[number, number]> = [
   [-4, -6],
-  [-9, -22],
+  [-8, -20],
+  [-6, -32],
   [-2, -42],
   [0, 0],
 ];

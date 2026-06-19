@@ -9,9 +9,11 @@ export interface BloomSettings {
   luminanceSmoothing: number;
 }
 
+/** Higher threshold keeps bloom off the midtones (washed-out look); higher
+ *  intensity makes true emitters (seed, lava, fireflies, plankton) pop. */
 export const BLOOM_SETTINGS: BloomSettings = {
-  intensity: 0.85,
-  luminanceThreshold: 0.5,
+  intensity: 0.95,
+  luminanceThreshold: 0.62,
   luminanceSmoothing: 0.18,
 };
 

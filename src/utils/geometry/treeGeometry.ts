@@ -26,6 +26,9 @@ export function createTreeGeometry(rng: () => number): THREE.BufferGeometry {
   paint(trunk, [0.16, 0.1, 0.06], 0.3, rng);
   parts.push(trunk);
 
+  // Per-tree hue roll: some trees drift olive, others teal — a forest is
+  // never one green.
+  const hueShift = rng() - 0.5;
   const layers = 3;
   for (let l = 0; l < layers; l++) {
     const t = l / (layers - 1);
@@ -37,7 +40,16 @@ export function createTreeGeometry(rng: () => number): THREE.BufferGeometry {
       trunkH * 0.8 + t * (height - trunkH) + coneH * 0.4,
       (rng() - 0.5) * 0.25,
     );
-    paint(cone, [0.06 + t * 0.03, 0.2 + t * 0.06, 0.1 + t * 0.03], 0.45, rng);
+    paint(
+      cone,
+      [
+        0.05 + t * 0.03 + Math.max(0, hueShift) * 0.05,
+        0.16 + t * 0.07,
+        0.09 + t * 0.03 + Math.max(0, -hueShift) * 0.06,
+      ],
+      0.6,
+      rng,
+    );
     parts.push(cone);
   }
 

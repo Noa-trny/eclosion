@@ -65,6 +65,9 @@ export function EndCard() {
         >
           {copied ? "Lien copié ✓" : "Partager l'aube"}
         </button>
+        <p className="mt-8 text-[10px] uppercase tracking-[0.25em] text-white/30">
+          Conçu et développé par Noa · 100 % procédural — WebGL 2 · Typographie Fraunces (OFL)
+        </p>
       </motion.div>
     </motion.div>
   );

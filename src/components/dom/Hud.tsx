@@ -30,6 +30,7 @@ export function Hud() {
             <button
               key={act.id}
               type="button"
+              title={act.title}
               aria-label={`${act.title} — aller à l'acte ${act.index + 1}`}
               aria-current={act.index === actIndex}
               onClick={() => scrollToProgress(act.range.start + 0.012)}
