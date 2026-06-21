@@ -48,7 +48,7 @@ export const ACTS: readonly ActDef[] = [
     range: { start: 0.47, end: 0.62 },
     title: "L'Océan",
     subtitle: "Respirer sous la surface",
-    body: "Le monde bascule. Dans le bleu profond, la vie invente sa propre lumière.",
+    body: "Chaque pluie finit ici. Dans le bleu profond, la vie invente sa propre lumière.",
     align: "right",
   },
   {
