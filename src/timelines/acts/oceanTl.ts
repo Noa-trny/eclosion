@@ -21,6 +21,10 @@ export function buildOceanTl(tl: gsap.core.Timeline): void {
   tl.to(uniformProxies.fog, { density: 0.055 }, 0.5);
   tl.to(uniformProxies.fog.color, { r: 0.005, g: 0.045, b: 0.075, duration: 0.02 }, 0.5);
 
+  // The plunge tears a curtain of bubbles that thins into sparse strays.
+  tl.to(a, { bubbleBurst: 1, duration: 0.012, ease: "power2.in" }, 0.494);
+  tl.to(a, { bubbleBurst: 0.18, duration: 0.03 }, 0.53);
+  tl.to(a, { bubbleBurst: 0, duration: 0.02 }, 0.6);
   tl.to(a, { planktonGlow: 1, duration: 0.05, ease: "power2.in" }, 0.52);
   tl.to(a, { fishActivity: 1, duration: 0.04 }, 0.52);
   tl.to(a, { waveHeight: 0.7, duration: 0.06 }, 0.54);

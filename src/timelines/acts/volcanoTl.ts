@@ -9,6 +9,9 @@ export function buildVolcanoTl(tl: gsap.core.Timeline): void {
   tl.to(uniformProxies.transition, { ripple: 0.8, duration: 0.01, ease: "power2.in" }, 0.618);
   tl.to(uniformProxies.transition, { ripple: 0, duration: 0.016, ease: "power2.out" }, 0.63);
   tl.to(uniformProxies.grade, { underwater: 0, duration: 0.018 }, 0.62);
+  // A last gasp of bubbles as the camera breaks the surface.
+  tl.to(uniformProxies.acts, { bubbleBurst: 0.6, duration: 0.008 }, 0.615);
+  tl.to(uniformProxies.acts, { bubbleBurst: 0, duration: 0.015 }, 0.628);
   tweenToPalette(tl, "volcano", 0.625);
   tl.to(a, { underwaterLight: 0, planktonGlow: 0, fishActivity: 0, duration: 0.03 }, 0.62);
 

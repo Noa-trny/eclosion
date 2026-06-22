@@ -6,6 +6,7 @@ import { useFrame } from "@react-three/fiber";
 import { createWhaleGeometry } from "@/utils/geometry/whaleGeometry";
 import { createCreatureMaterial } from "@/components/3d/materials/CreatureMaterial";
 import { useProgressStore } from "@/stores/progressStore";
+import { getAudioEngine } from "@/audio/engine";
 import { remap } from "@/utils/math";
 
 const START = new THREE.Vector3(208, -18, 58);
@@ -38,6 +39,7 @@ export function Whale() {
   }, [geometry, material, mesh]);
 
   const done = useRef(false);
+  const called = useRef(false);
   const dummy = useMemo(
     () => ({
       pos: new THREE.Vector3(),
@@ -60,6 +62,11 @@ export function Whale() {
     if (t > 0.985) done.current = true;
     mesh.visible = true;
     dummy.pos.lerpVectors(START, END, t);
+    // She calls once, early in her crossing — spatialized where she swims.
+    if (!called.current && t > 0.06) {
+      called.current = true;
+      getAudioEngine()?.whaleCall(dummy.pos.x, dummy.pos.y, dummy.pos.z);
+    }
     dummy.pos.y += Math.sin(t * Math.PI * 2) * 1.6;
     dummy.m.compose(dummy.pos, dummy.quat, dummy.scale);
     mesh.setMatrixAt(0, dummy.m);
