@@ -2,6 +2,7 @@
 
 import { motion, useTransform, type MotionValue } from "motion/react";
 import type { ActDef } from "@/types/acts";
+import { useActCopy, useT } from "@/hooks/useLang";
 
 const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
 
@@ -13,6 +14,8 @@ interface ActSectionProps {
 /** One act's text block: opacity/translate keyed to its progress window via a
  *  single shared MotionValue — styles update outside React entirely. */
 export function ActSection({ act, progress }: ActSectionProps) {
+  const copy = useActCopy(act.id);
+  const t = useT();
   const { start, end } = act.range;
   const first = act.index === 0;
   const last = act.index === 7;
@@ -40,13 +43,13 @@ export function ActSection({ act, progress }: ActSectionProps) {
       aria-hidden={act.index !== 0 ? undefined : false}
     >
       <p className="mb-3 text-[11px] uppercase tracking-[0.5em] text-white/45 sm:text-xs">
-        Acte {ROMAN[act.index]} — {act.subtitle}
+        {t.act} {ROMAN[act.index]} — {copy.subtitle}
       </p>
       <h2 className="font-display text-5xl leading-none tracking-tight text-white/95 sm:text-7xl md:text-8xl">
-        {act.title}
+        {copy.title}
       </h2>
       <p className="mt-5 max-w-md text-sm leading-relaxed text-white/60 sm:text-base">
-        {act.body}
+        {copy.body}
       </p>
     </motion.section>
   );

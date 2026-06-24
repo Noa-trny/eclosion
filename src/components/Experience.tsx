@@ -15,6 +15,8 @@ import { EndCard } from "./dom/EndCard";
 import { Hud } from "./dom/Hud";
 import { ProgressLine } from "./dom/ProgressLine";
 import { Cursor } from "./dom/Cursor";
+import { LangToggle } from "./dom/LangToggle";
+import { initLang } from "@/stores/langStore";
 import { ScrollHint } from "./dom/ScrollHint";
 import { FreeRoamHint } from "./dom/FreeRoamHint";
 import { StartScreen } from "./dom/StartScreen";
@@ -46,6 +48,10 @@ export function Experience() {
     useAppStore.setState({ reducedMotion: reduced });
   }, [reduced]);
 
+  useEffect(() => {
+    initLang();
+  }, []);
+
   useLenisScroll(!reduced);
   useKeyBindings();
   useAudioBridge();
@@ -61,6 +67,7 @@ export function Experience() {
       <Hud />
       <ProgressLine />
       <Cursor />
+      <LangToggle />
       <ScrollHint />
       <FreeRoamHint />
       <StartScreen />
