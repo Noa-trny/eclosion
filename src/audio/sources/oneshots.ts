@@ -113,7 +113,8 @@ export function playWhale(ctx: AudioContext, out: AudioNode): void {
   const t = ctx.currentTime;
   const gain = ctx.createGain();
   gain.gain.setValueAtTime(0, t);
-  gain.gain.linearRampToValueAtTime(0.15, t + 1.2);
+  // Loud at the source — HRTF distance attenuation does the taming.
+  gain.gain.linearRampToValueAtTime(0.42, t + 1.2);
   gain.gain.setTargetAtTime(0, t + 2.8, 0.9);
 
   const delay = ctx.createDelay(1.5);
