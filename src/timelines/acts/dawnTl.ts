@@ -11,6 +11,10 @@ export function buildDawnTl(tl: gsap.core.Timeline): void {
   tl.to(uniformProxies.sky, { sunElevation: 0.16, sunAzimuth: 0.06, duration: 0.12, ease: "power1.inOut" }, 0.88);
   tl.to(uniformProxies.grade, { lift: 0.04, duration: 0.08 }, 0.9);
   tl.to(uniformProxies.fog, { density: 0.008, duration: 0.08 }, 0.92);
+  // The finale: petals of light spiral toward the sun while the focal length
+  // slowly tightens — the world takes one last breath in.
+  tl.to(a, { finaleSwirl: 1, duration: 0.05, ease: "power2.in" }, 0.93);
+  tl.to(uniformProxies.camera, { fovOffset: -6, duration: 0.07, ease: "power1.inOut" }, 0.93);
   // Pins the timeline's duration to exactly 1 progress unit.
   tl.set({}, {}, 1);
 }

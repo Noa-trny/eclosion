@@ -6,7 +6,7 @@ import { useProgressStore } from "@/stores/progressStore";
 import { actGain } from "./buses";
 import { makeOcean, makeRain, makeRumble, makeWind } from "./sources/noiseSources";
 import { makePad } from "./sources/padSynth";
-import { playBird, playCrackle, playDroplet, playThunder } from "./sources/oneshots";
+import { playBell, playBird, playCrackle, playDroplet, playThunder } from "./sources/oneshots";
 import { PannerPool, syncListener } from "./spatial";
 import { OneShotScheduler } from "./scheduler";
 
@@ -25,6 +25,7 @@ class AudioEngine {
   private simRacks: SourceRack[] = [];
   private lastProgress = -1;
   private listenerPos = { x: 0, y: 0, z: 0 };
+  private finalePlayed = false;
 
   constructor() {
     this.ctx = new AudioContext();
@@ -106,6 +107,14 @@ class AudioEngine {
 
   private updateGains(progress: number): void {
     const t = this.ctx.currentTime;
+    // The finale chime: the dawn chord rings out once as an arpeggio of bells.
+    if (progress > 0.95 && !this.finalePlayed) {
+      this.finalePlayed = true;
+      const chord = ACT_AUDIO.dawn.chord;
+      chord.forEach((freq, i) => playBell(this.ctx, this.master, freq * 2, t + i * 0.42));
+    } else if (progress < 0.88) {
+      this.finalePlayed = false;
+    }
     for (const act of ACTS) {
       const bus = this.buses.get(act.id);
       if (!bus) continue;

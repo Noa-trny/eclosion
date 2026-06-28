@@ -54,6 +54,7 @@ export interface UniformProxies {
     birdActivity: number;
     snowIntensity: number;
     sunriseProgress: number;
+    finaleSwirl: number;
   };
 }
 
@@ -97,6 +98,7 @@ function defaults(): UniformProxies {
       birdActivity: 0,
       snowIntensity: 0,
       sunriseProgress: 0,
+      finaleSwirl: 0,
     },
   };
 }

@@ -1,7 +1,7 @@
 import type { Tier } from "./quality";
 
 /** Closed-form behaviors evaluated in the vertex shader from (seed, uTime). */
-export type BehaviorKind = "fall" | "curl" | "rise" | "drift" | "twinkle";
+export type BehaviorKind = "fall" | "curl" | "rise" | "drift" | "twinkle" | "vortex";
 
 export type SpawnKind = "box" | "sphere";
 

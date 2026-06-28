@@ -14,16 +14,30 @@ import { mulberry32 } from "@/utils/random";
 
 const X_AXIS = new THREE.Vector3(1, 0, 0);
 
-/** Birds writing the wind over the meadow — same boids core as the fish. */
-export function BirdFlock() {
+interface BirdFlockProps {
+  center?: readonly [number, number, number];
+  size?: readonly [number, number, number];
+  baseCount?: number;
+  seed?: number;
+}
+
+/** Birds writing the wind — same boids core as the fish. The bloom act uses
+ *  the meadow defaults; the dawn finale spawns a second flock crossing the
+ *  sun's sightline in silhouette. */
+export function BirdFlock({
+  center = [MEADOW_CENTER[0], 30, MEADOW_CENTER[1]],
+  size = [120, 26, 120],
+  baseCount = 140,
+  seed = 29,
+}: BirdFlockProps) {
   const tier = useQualityStore((s) => s.tier);
-  const count = Math.round(140 * QUALITY_PRESETS[tier].boidScale);
+  const count = Math.round(baseCount * QUALITY_PRESETS[tier].boidScale);
   const flock = useMemo(
     () =>
       new Flock({
         count,
-        center: [MEADOW_CENTER[0], 30, MEADOW_CENTER[1]],
-        size: [120, 26, 120],
+        center,
+        size,
         speed: 9,
         maxForce: 16,
         perception: 6,
@@ -31,18 +45,18 @@ export function BirdFlock() {
         alignmentWeight: 0.9,
         cohesionWeight: 0.5,
         boundsWeight: 7,
-        seed: 29,
+        seed,
       }),
-    [count],
+    [count, center, size, seed],
   );
   const geometry = useMemo(() => {
     const geo = createBirdGeometry();
-    const rng = mulberry32(17);
+    const rng = mulberry32(17 + seed);
     const phases = new Float32Array(count);
     for (let i = 0; i < count; i++) phases[i] = rng() * Math.PI * 2;
     geo.setAttribute("aPhase", new THREE.InstancedBufferAttribute(phases, 1));
     return geo;
-  }, [count]);
+  }, [count, seed]);
   const material = useMemo(() => createCreatureMaterial("bird", 0x2b2530), []);
   const meshRef = useRef<THREE.InstancedMesh>(null);
   const dummy = useMemo(

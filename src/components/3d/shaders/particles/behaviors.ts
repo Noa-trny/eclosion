@@ -34,6 +34,16 @@ const BEHAVIORS: Record<BehaviorKind, string> = {
   float tw = 0.5 + 0.5 * sin(uTime * (0.5 + aSeed.w * 1.8) + aSeed.z * 6.2832);
   alpha *= 0.3 + 0.7 * tw * tw * tw;
 `,
+  // The finale: petals of light spiralling up a narrowing helix toward the
+  // sun — radius closes and speed rises as each particle climbs.
+  vortex: /* glsl */ `
+  float life = fract(uTime * uSpeed * 0.045 * (0.55 + aSeed.w * 0.9) + aSeed.z);
+  float angle = aSeed.x * 6.2832 + uTime * (0.35 + aSeed.w * 0.55) + life * 4.5;
+  float radius = mix(uSpawnSize.x * 0.55, uSpawnSize.x * 0.05, life * life) * (0.45 + aSeed.y * 0.55);
+  pos = vec3(cos(angle) * radius, -uSpawnSize.y * 0.5 + life * uSpawnSize.y, sin(angle) * radius);
+  pos.xz += curlNoise(vec3(aSeed.xy * 8.0, life * 3.0)).xz * 1.5;
+  alpha *= smoothstep(0.0, 0.12, life) * smoothstep(1.0, 0.8, life) * (0.6 + 0.4 * sin(uTime * 3.0 + aSeed.z * 6.2832));
+`,
 };
 
 export function behaviorChunk(kind: BehaviorKind): string {
