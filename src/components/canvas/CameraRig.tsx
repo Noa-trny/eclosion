@@ -11,8 +11,9 @@ import { useAppStore } from "@/stores/appStore";
 import { damp } from "@/utils/math";
 
 /** Scroll-mode camera: samples the CatmullRom rig at the current progress and
- *  layers damped mouse parallax + act-driven shake on top. Lenis already
- *  smoothed the scroll — no extra positional damping here (see plan §scroll). */
+ *  layers damped mouse parallax + act-driven shake on top. Lenis smooths the
+ *  scroll VALUE; the light spatial damping below (λ=9, ~0.1s of lag) rounds
+ *  the velocity seams where one act's curve segment hands over to the next. */
 export function CameraRig() {
   const pose = useRef<CameraPose>({
     position: new THREE.Vector3(),
@@ -21,12 +22,28 @@ export function CameraRig() {
   }).current;
   const parallax = useRef({ x: 0, y: 0 }).current;
   const look = useMemo(() => new THREE.Vector3(), []);
+  const smoothPos = useMemo(() => new THREE.Vector3(), []);
+  const smoothLook = useMemo(() => new THREE.Vector3(), []);
+  const wasScroll = useRef(false);
 
   useFrame((state, delta) => {
-    if (useAppStore.getState().mode !== "scroll") return;
+    if (useAppStore.getState().mode !== "scroll") {
+      wasScroll.current = false;
+      return;
+    }
     const dt = Math.min(delta, 0.05);
     const progress = useProgressStore.getState().progress;
     sampleCameraPath(progress, pose);
+
+    // Snap the smoothing on (re)entry so free-roam handoffs never drift-fight.
+    if (!wasScroll.current) {
+      wasScroll.current = true;
+      smoothPos.copy(pose.position);
+      smoothLook.copy(pose.lookAt);
+    }
+    const blend = 1 - Math.exp(-9 * dt);
+    smoothPos.lerp(pose.position, blend);
+    smoothLook.lerp(pose.lookAt, blend);
 
     parallax.x = damp(parallax.x, state.pointer.x, 3, dt);
     parallax.y = damp(parallax.y, state.pointer.y, 3, dt);
@@ -37,11 +54,11 @@ export function CameraRig() {
     const shakeY = (Math.cos(t * 11.3) + Math.sin(t * 17.2) * 0.5) * 0.045 * shake;
 
     const camera = state.camera as THREE.PerspectiveCamera;
-    camera.position.copy(pose.position);
+    camera.position.copy(smoothPos);
     camera.position.x += shakeX;
     camera.position.y += shakeY;
 
-    look.copy(pose.lookAt);
+    look.copy(smoothLook);
     look.x += parallax.x * 1.7 + shakeX * 2;
     look.y += parallax.y * 1.0 + shakeY * 2;
     camera.lookAt(look);
