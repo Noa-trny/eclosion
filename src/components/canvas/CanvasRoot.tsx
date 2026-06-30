@@ -14,6 +14,7 @@ import { WorldGround } from "./WorldGround";
 import { WeatherSystem } from "./WeatherSystem";
 import { QualityManager } from "./QualityManager";
 import { AudioListenerSync } from "./AudioListenerSync";
+import { CursorWake } from "./CursorWake";
 import { PostProcessing } from "@/effects/PostProcessing";
 
 function ContextLossBridge() {
@@ -50,6 +51,7 @@ export function CanvasRoot() {
         <SceneManager />
         <CameraRig />
         <FreeRoamController />
+        <CursorWake />
         <AudioListenerSync />
         <PostProcessing />
       </Canvas>

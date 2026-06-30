@@ -19,6 +19,8 @@ interface BirdFlockProps {
   size?: readonly [number, number, number];
   baseCount?: number;
   seed?: number;
+  /** Cruise speed — the dawn silhouettes glide slower than the meadow flock. */
+  speed?: number;
 }
 
 /** Birds writing the wind — same boids core as the fish. The bloom act uses
@@ -29,6 +31,7 @@ export function BirdFlock({
   size = [120, 26, 120],
   baseCount = 140,
   seed = 29,
+  speed = 9,
 }: BirdFlockProps) {
   const tier = useQualityStore((s) => s.tier);
   const count = Math.round(baseCount * QUALITY_PRESETS[tier].boidScale);
@@ -38,7 +41,7 @@ export function BirdFlock({
         count,
         center,
         size,
-        speed: 9,
+        speed,
         maxForce: 16,
         perception: 6,
         separationWeight: 1.1,
@@ -47,7 +50,7 @@ export function BirdFlock({
         boundsWeight: 7,
         seed,
       }),
-    [count, center, size, seed],
+    [count, center, size, seed, speed],
   );
   const geometry = useMemo(() => {
     const geo = createBirdGeometry();

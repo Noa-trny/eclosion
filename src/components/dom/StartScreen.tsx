@@ -32,14 +32,34 @@ export function StartScreen() {
           >
             Une expérience où le défilement est le temps
           </motion.p>
-          <motion.h1
-            initial={{ opacity: 0, letterSpacing: "0.4em" }}
-            animate={{ opacity: 1, letterSpacing: "0.18em" }}
-            transition={{ delay: 0.5, duration: 1.6, ease: "easeOut" }}
-            className="font-display text-6xl text-white sm:text-8xl"
-          >
-            ÉCLOSION
-          </motion.h1>
+          {/* The seed's heartbeat, before a single pixel of 3D: a double-thump
+              pulse of scale + warm glow behind the title. */}
+          <div className="relative">
+            {!reducedMotion && (
+              <motion.div
+                aria-hidden
+                animate={{ opacity: [0.12, 0.4, 0.16, 0.32, 0.12] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", times: [0, 0.12, 0.24, 0.34, 1] }}
+                className="absolute inset-[-40%] rounded-full bg-[radial-gradient(circle,rgba(255,184,92,0.35)_0%,transparent_65%)] blur-xl"
+              />
+            )}
+            <motion.h1
+              initial={{ opacity: 0, letterSpacing: "0.4em" }}
+              animate={
+                reducedMotion
+                  ? { opacity: 1, letterSpacing: "0.18em" }
+                  : { opacity: 1, letterSpacing: "0.18em", scale: [1, 1.014, 1, 1.008, 1] }
+              }
+              transition={{
+                opacity: { delay: 0.5, duration: 1.6, ease: "easeOut" },
+                letterSpacing: { delay: 0.5, duration: 1.6, ease: "easeOut" },
+                scale: { duration: 1.5, repeat: Infinity, ease: "easeInOut", times: [0, 0.12, 0.24, 0.34, 1] },
+              }}
+              className="font-display relative text-6xl text-white sm:text-8xl"
+            >
+              ÉCLOSION
+            </motion.h1>
+          </div>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
