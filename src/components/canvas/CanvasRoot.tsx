@@ -36,6 +36,8 @@ export function CanvasRoot() {
           alpha: false,
           stencil: false,
           powerPreference: "high-performance",
+          // Photo mode (P) reads the canvas back after the frame renders.
+          preserveDrawingBuffer: true,
         }}
         camera={{ fov: 55, near: 0.1, far: 1500, position: [0, 9, 66] }}
         onCreated={({ gl }) => {
