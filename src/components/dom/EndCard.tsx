@@ -18,8 +18,8 @@ export function EndCard() {
   const [copied, setCopied] = useState(false);
 
   const share = (): void => {
-    const text = `« Du néant à l'aube, j'ai vu naître un monde. » — Éclosion\n${window.location.origin}`;
-    void navigator.clipboard?.writeText(text).then(() => {
+    // URL only — anything prepended would break pasting into an address bar.
+    void navigator.clipboard?.writeText(window.location.origin).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     });
