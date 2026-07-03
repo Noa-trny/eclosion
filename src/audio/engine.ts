@@ -4,7 +4,7 @@ import type { ActId, ActRange } from "@/types/acts";
 import type { OneShotKind, SourceRack } from "@/types/audio";
 import { useProgressStore } from "@/stores/progressStore";
 import { actGain } from "./buses";
-import { makeOcean, makeRain, makeRumble, makeWind } from "./sources/noiseSources";
+import { makeGust, makeOcean, makeRain, makeRumble, makeWind } from "./sources/noiseSources";
 import { makePad } from "./sources/padSynth";
 import { playBell, playBird, playCrackle, playDroplet, playThunder, playWhale } from "./sources/oneshots";
 import { PannerPool, syncListener } from "./spatial";
@@ -23,6 +23,7 @@ class AudioEngine {
   private readonly scheduler: OneShotScheduler;
   private readonly unsubscribe: () => void;
   private readonly underwaterFilter: BiquadFilterNode;
+  private readonly gust: { set: (g: number) => void };
   private simRacks: SourceRack[] = [];
   private lastProgress = -1;
   private listenerPos = { x: 0, y: 0, z: 0 };
@@ -61,6 +62,7 @@ class AudioEngine {
       this.buses.set(act.id, bus);
       this.gains.set(act.id, 0);
     }
+    this.gust = makeGust(this.ctx, this.master);
     this.pool = new PannerPool(this.ctx, this.master);
     this.scheduler = new OneShotScheduler(
       (i) => {
@@ -109,6 +111,13 @@ class AudioEngine {
   /** The whale's single pass calls home — spatialized at its position. */
   whaleCall(x: number, y: number, z: number): void {
     playWhale(this.ctx, this.pool.at(x, y, z));
+  }
+
+  /** Scroll velocity (px/s) → rushing-air gust; closes the sensory loop with
+   *  the visual speed blur. */
+  setScrollVelocity(velocity: number): void {
+    const g = Math.pow(Math.min(1, Math.abs(velocity) / 5200), 1.4);
+    this.gust.set(g);
   }
 
   /** 0 = air, 1 = fully submerged: hearing sinks with the camera.

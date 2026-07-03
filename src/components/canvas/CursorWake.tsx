@@ -40,10 +40,16 @@ void main() {
 const GOLD = new THREE.Color(1, 0.82, 0.4);
 const CYAN = new THREE.Color(0.25, 0.9, 1);
 
-/** The world answers the visitor: moving the pointer sows a wake of fireflies
- *  (forest) or plankton (ocean) that drifts and fades. Ring buffer of MAX
- *  CPU particles; emission gated by the act's own light intensity. */
+/** The world answers the visitor: moving the pointer — or a finger dragging
+ *  through the scroll — sows a wake of fireflies (forest) or plankton
+ *  (ocean) that drifts and fades. Ring buffer of MAX CPU particles; emission
+ *  gated by the act's own light intensity. Touch gets a denser, wider sow
+ *  since the finger hides part of its own trail. */
 export function CursorWake() {
+  const coarse = useMemo(
+    () => typeof window !== "undefined" && window.matchMedia("(pointer: coarse)").matches,
+    [],
+  );
   const geometry = useMemo(() => {
     const geo = new THREE.BufferGeometry();
     geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(MAX * 3), 3));
@@ -93,16 +99,17 @@ export function CursorWake() {
     if (intensity > 0.05 && moved > 0.004) {
       state.world.set(pointer.x, pointer.y, 0.5).unproject(camera).sub(camera.position).normalize();
       state.world.multiplyScalar(13).add(camera.position);
-      const emit = Math.min(3, Math.ceil(moved * 40));
+      const emit = Math.min(coarse ? 5 : 3, Math.ceil(moved * 40));
+      const spread = coarse ? 0.9 : 0.5;
       const positions = geometry.attributes.position;
       for (let e = 0; e < emit && positions; e++) {
         const i = state.head;
         state.head = (state.head + 1) % MAX;
         positions.setXYZ(
           i,
-          state.world.x + (Math.random() - 0.5) * 0.5,
-          state.world.y + (Math.random() - 0.5) * 0.5,
-          state.world.z + (Math.random() - 0.5) * 0.5,
+          state.world.x + (Math.random() - 0.5) * spread,
+          state.world.y + (Math.random() - 0.5) * spread,
+          state.world.z + (Math.random() - 0.5) * spread,
         );
         state.velocities[i * 3] = (Math.random() - 0.5) * 0.8;
         state.velocities[i * 3 + 1] = 0.3 + Math.random() * 0.7;

@@ -92,6 +92,26 @@ function makeFilteredNoise(ctx: AudioContext, out: AudioNode, options: FilteredN
   };
 }
 
+/** Velocity gust: an always-ready noise bed whose gain/brightness follow the
+ *  scroll speed — fast scrolling is HEARD as rushing air. */
+export function makeGust(ctx: AudioContext, out: AudioNode): { set: (g: number) => void } {
+  const src = loopBuffer(ctx, getWhiteBuffer(ctx));
+  const filter = ctx.createBiquadFilter();
+  filter.type = "bandpass";
+  filter.frequency.value = 420;
+  filter.Q.value = 0.7;
+  const gain = ctx.createGain();
+  gain.gain.value = 0;
+  src.connect(filter).connect(gain).connect(out);
+  return {
+    set: (g) => {
+      const t = ctx.currentTime;
+      gain.gain.setTargetAtTime(g * 0.22, t, 0.18);
+      filter.frequency.setTargetAtTime(420 + g * 750, t, 0.18);
+    },
+  };
+}
+
 export function makeWind(ctx: AudioContext, out: AudioNode, level: number): SourceRack {
   return makeFilteredNoise(ctx, out, {
     type: "bandpass",
