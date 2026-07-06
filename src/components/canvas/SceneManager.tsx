@@ -3,6 +3,7 @@
 import { Suspense, lazy, useEffect, useState, type ComponentType, type LazyExoticComponent } from "react";
 import { ACTS, isActInWindow } from "@/config/acts";
 import { useProgressStore } from "@/stores/progressStore";
+import { useAppStore } from "@/stores/appStore";
 
 /** Acts are code-split: each scene chunk loads just before its progress
  *  window and unmounts (disposing GPU resources) once fully passed. */
@@ -18,7 +19,14 @@ const SCENES: Array<LazyExoticComponent<ComponentType>> = [
 ];
 
 function computeMounted(prev: readonly boolean[], progress: number): boolean[] {
-  return ACTS.map((_, i) => isActInWindow(i, progress, prev[i] ?? false));
+  const mounted = ACTS.map((_, i) => isActInWindow(i, progress, prev[i] ?? false));
+  // Pre-start: force acts 0-1 so WarmupGate can compile their shaders while
+  // the StartScreen still covers the canvas.
+  if (!useAppStore.getState().started) {
+    mounted[0] = true;
+    mounted[1] = true;
+  }
+  return mounted;
 }
 
 export function SceneManager() {
@@ -35,7 +43,12 @@ export function SceneManager() {
       });
     };
     update();
-    return useProgressStore.subscribe(update);
+    const unsubProgress = useProgressStore.subscribe(update);
+    const unsubApp = useAppStore.subscribe(update);
+    return () => {
+      unsubProgress();
+      unsubApp();
+    };
   }, []);
 
   return (

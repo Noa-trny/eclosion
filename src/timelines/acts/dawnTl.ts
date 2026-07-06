@@ -15,6 +15,8 @@ export function buildDawnTl(tl: gsap.core.Timeline): void {
   // slowly tightens — the world takes one last breath in.
   tl.to(a, { finaleSwirl: 1, duration: 0.05, ease: "power2.in" }, 0.93);
   tl.to(uniformProxies.camera, { fovOffset: -6, duration: 0.07, ease: "power1.inOut" }, 0.93);
+  // Deep focus for the vista — everything sharp for the last image.
+  tl.to(uniformProxies.camera, { focus: 0.06, duration: 0.06 }, 0.89);
   // Pins the timeline's duration to exactly 1 progress unit.
   tl.set({}, {}, 1);
 }

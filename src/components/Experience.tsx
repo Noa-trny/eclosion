@@ -13,6 +13,8 @@ import { DomRoot } from "./dom/DomRoot";
 import { Overlay } from "./dom/Overlay";
 import { EndCard } from "./dom/EndCard";
 import { Hud } from "./dom/Hud";
+import { ProgressLine } from "./dom/ProgressLine";
+import { Cursor } from "./dom/Cursor";
 import { ScrollHint } from "./dom/ScrollHint";
 import { FreeRoamHint } from "./dom/FreeRoamHint";
 import { StartScreen } from "./dom/StartScreen";
@@ -57,6 +59,8 @@ export function Experience() {
       <Overlay />
       <EndCard />
       <Hud />
+      <ProgressLine />
+      <Cursor />
       <ScrollHint />
       <FreeRoamHint />
       <StartScreen />

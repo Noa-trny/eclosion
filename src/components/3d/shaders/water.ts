@@ -59,10 +59,16 @@ void main() {
   vec3 skyCol = mix(uSkyBottom, uSkyTop, clamp(reflDir.y * 0.5 + 0.5, 0.0, 1.0)) * 1.6;
   vec3 depthCol = mix(uDeepColor, uShallowColor, clamp(vCrest * 0.8 + 0.4, 0.0, 1.0));
   vec3 col = mix(depthCol, skyCol, f * 0.85);
-  float spec = pow(max(dot(reflDir, normalize(uSunDir)), 0.0), 200.0) * uSunIntensity * 4.0;
+  // Tight sun spec + broad glitter band.
+  float sunDot = max(dot(reflDir, normalize(uSunDir)), 0.0);
+  float spec = pow(sunDot, 200.0) * uSunIntensity * 4.0 + pow(sunDot, 40.0) * uSunIntensity * 0.6;
   col += uSunColor * spec;
-  float foam = smoothstep(0.5, 0.8, vCrest + snoise2(vWorldPos.xz * 3.0 + uTime * 0.5) * 0.12);
-  col = mix(col, vec3(0.8, 0.92, 1.0), foam * 0.3);
+  // Crest foam: main band + high-frequency micro-lace.
+  float foam = smoothstep(0.32, 0.72, vCrest + snoise2(vWorldPos.xz * 3.0 + uTime * 0.5) * 0.18);
+  foam += smoothstep(0.6, 0.9, snoise2(vWorldPos.xz * 9.0 - uTime * 0.8)) * foam;
+  col = mix(col, vec3(0.85, 0.94, 1.0), clamp(foam, 0.0, 1.0) * 0.55);
+  // Cheap subsurface glow through the crests.
+  col += uShallowColor * vCrest * 0.35 * uSunIntensity;
   float dist = length(cameraPosition - vWorldPos);
   col = applyFogExp2(col, dist, uFogColor, uFogDensity);
   gl_FragColor = vec4(col, 0.94);

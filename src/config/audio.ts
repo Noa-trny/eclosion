@@ -14,7 +14,8 @@ export const ACT_AUDIO: Record<ActId, ActAudioRecipe> = {
   void: {
     act: "void",
     chord: [55, 82.5, 110],
-    padGain: 0.16,
+    // The first 30 seconds sell the audio — slightly forward.
+    padGain: 0.18,
     wind: 0.05,
     rain: 0,
     ocean: 0,
@@ -49,7 +50,8 @@ export const ACT_AUDIO: Record<ActId, ActAudioRecipe> = {
     rain: 0.35,
     ocean: 0,
     rumble: 0.06,
-    oneShots: { droplet: 0.3 },
+    // The rain bed already carries the water — one-shots stay sparse.
+    oneShots: { droplet: 0.15 },
   },
   ocean: {
     act: "ocean",

@@ -28,15 +28,17 @@ const PATHS: ActPath[] = [
     positions: [[1.5, 4.5, 26], [2.4, 3.4, 12], [2, 3, 6.5]],
     lookAts: [[0, 2.4, 0], [0, 2.5, 0], [0, 2.6, 0]],
   },
-  // forest — glide between the trees
+  // forest — a low glide BETWEEN the trees (canopy towers overhead), with a
+  // lingering beat among the fireflies before rising out.
   {
-    positions: [[-4, 4, -6], [-9, 5, -22], [-2, 8, -42]],
-    lookAts: [[-4, 4, -16], [-6, 8, -36], [4, 16, -60]],
+    positions: [[-4, 3.6, -6], [-8, 4.2, -20], [-6, 4.6, -32], [-2, 7.5, -42]],
+    lookAts: [[-5, 3.6, -16], [-7, 4.8, -30], [-2, 6, -44], [3, 13, -58]],
   },
-  // storm — rise above the canopy into the rain
+  // storm — rise above the canopy; hold a wide shot on the cloud wall so the
+  // lightning has a stage before the gaze sweeps toward the ocean.
   {
-    positions: [[6, 16, -58], [14, 30, -72], [32, 40, -55]],
-    lookAts: [[14, 26, -72], [34, 34, -52], [70, 24, -20]],
+    positions: [[6, 16, -58], [14, 30, -72], [24, 37, -62], [32, 40, -55]],
+    lookAts: [[14, 26, -72], [36, 32, -46], [42, 30, -38], [70, 24, -20]],
   },
   // ocean — approach, dive at local ≈0.2, bioluminescent depths
   {

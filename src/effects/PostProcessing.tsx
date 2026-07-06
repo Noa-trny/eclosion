@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, type ReactElement } from "react";
+import { useMemo, useRef, type ReactElement } from "react";
 import * as THREE from "three";
+import type { DepthOfFieldEffect } from "postprocessing";
 import { useFrame } from "@react-three/fiber";
 import {
   Bloom,
@@ -44,6 +45,7 @@ export function PostProcessing() {
   const speedBlur = useMemo(() => new SpeedBlurEffect(), []);
   const grade = useMemo(() => new ColorGradeEffect(), []);
   const ripple = useMemo(() => new ActTransitionEffect(), []);
+  const dofRef = useRef<DepthOfFieldEffect>(null);
 
   useFrame(() => {
     const g = uniformProxies.grade;
@@ -51,6 +53,13 @@ export function PostProcessing() {
     ripple.setRipple(uniformProxies.transition.ripple);
     const velocity = useProgressStore.getState().velocity;
     speedBlur.setStrength(flags.speedBlur ? clamp01(Math.abs(velocity) / 6000) : 0);
+    // Rack focus: the timeline pulls the focal plane per act (close-up on the
+    // seed, far vista at dawn) — written straight to the CoC material.
+    const dof = dofRef.current;
+    if (dof) {
+      const focusUniform = dof.cocMaterial.uniforms["focusDistance"];
+      if (focusUniform) focusUniform.value = uniformProxies.camera.focus;
+    }
   });
 
   const effects: ReactElement[] = [];
@@ -67,6 +76,7 @@ export function PostProcessing() {
     effects.push(
       <DepthOfField
         key="dof"
+        ref={dofRef}
         focusDistance={DOF_SETTINGS.focusDistance}
         focalLength={DOF_SETTINGS.focalLength}
         bokehScale={DOF_SETTINGS.bokehScale}

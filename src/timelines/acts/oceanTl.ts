@@ -24,4 +24,8 @@ export function buildOceanTl(tl: gsap.core.Timeline): void {
   tl.to(a, { planktonGlow: 1, duration: 0.05, ease: "power2.in" }, 0.52);
   tl.to(a, { fishActivity: 1, duration: 0.04 }, 0.52);
   tl.to(a, { waveHeight: 0.7, duration: 0.06 }, 0.54);
+  // Focus opens in the dive, then pulls near for the whale's passage.
+  tl.to(uniformProxies.camera, { focus: 0.03, duration: 0.02 }, 0.5);
+  tl.to(uniformProxies.camera, { focus: 0.015, duration: 0.02 }, 0.545);
+  tl.to(uniformProxies.camera, { focus: 0.02, duration: 0.02 }, 0.61);
 }

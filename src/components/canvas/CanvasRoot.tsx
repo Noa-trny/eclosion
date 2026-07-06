@@ -3,10 +3,10 @@
 import { useEffect } from "react";
 import * as THREE from "three";
 import { Canvas, useThree } from "@react-three/fiber";
-import { useAppStore } from "@/stores/appStore";
 import { useQualityStore } from "@/stores/qualityStore";
 import { attachContextLossHandlers } from "@/lib/webgl/contextLoss";
 import { SceneManager } from "./SceneManager";
+import { WarmupGate } from "./WarmupGate";
 import { CameraRig } from "./CameraRig";
 import { FreeRoamController } from "./FreeRoamController";
 import { GlobalEnvironment } from "./GlobalEnvironment";
@@ -40,10 +40,11 @@ export function CanvasRoot() {
         camera={{ fov: 55, near: 0.1, far: 1500, position: [0, 9, 66] }}
         onCreated={({ gl }) => {
           gl.setClearColor(new THREE.Color(0x020308), 1);
-          useAppStore.getState().setPhase("ready");
+          // phase flips to "ready" once WarmupGate has compiled the shaders.
         }}
       >
         <ContextLossBridge />
+        <WarmupGate />
         <QualityManager />
         <GlobalEnvironment />
         <WorldGround />
