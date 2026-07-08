@@ -91,10 +91,10 @@ export const PALETTES: Record<ActId, ActPalette> = {
     auroraIntensity: 0.5,
   },
   volcano: {
-    fogColor: [0.06, 0.03, 0.02],
+    fogColor: [0.075, 0.032, 0.02],
     fogDensity: 0.028,
-    skyTop: [0.03, 0.015, 0.015],
-    skyBottom: [0.14, 0.05, 0.02],
+    skyTop: [0.035, 0.014, 0.014],
+    skyBottom: [0.2, 0.06, 0.025],
     sunColor: [1, 0.45, 0.15],
     sunIntensity: 0.55,
     ambientColor: [0.6, 0.3, 0.2],

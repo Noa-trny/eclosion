@@ -12,6 +12,7 @@ export function createSmokeMaterial(): THREE.ShaderMaterial {
       uTime: sharedUniforms.uTime,
       uWind: sharedUniforms.uWind,
       uDensity: { value: 0 },
+      uEmber: { value: 0 },
       uRise: { value: 40 },
       uScale: { value: 1 },
       uColor: { value: new THREE.Color(0.16, 0.14, 0.14) },

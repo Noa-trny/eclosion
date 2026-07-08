@@ -10,6 +10,9 @@ const BEHAVIORS: Record<BehaviorKind, string> = {
   pos.x = mod(position.x + uTime * uWind.x * uWindInfluence + uSpawnSize.x * 0.5, uSpawnSize.x) - uSpawnSize.x * 0.5;
   pos.z = mod(position.z + uTime * uWind.z * uWindInfluence + uSpawnSize.z * 0.5, uSpawnSize.z) - uSpawnSize.z * 0.5;
   pos.x += sin(uTime * 1.7 + aSeed.z * 6.2832) * uNoiseScale;
+  // Traveling curtains: rain falls in wind-swept sheets, not as uniform static.
+  float curtain = 0.5 + 0.5 * snoise2(vec2(pos.x * 0.022 + uTime * 0.13, pos.z * 0.022 - uTime * 0.05));
+  alpha *= 1.0 - uWindInfluence * 0.55 * curtain;
 `,
   curl: /* glsl */ `
   vec3 flow = curlNoise(position * uNoiseScale + uTime * 0.05 * uSpeed + aSeed.xyz * 4.0);
@@ -33,6 +36,17 @@ const BEHAVIORS: Record<BehaviorKind, string> = {
   twinkle: /* glsl */ `
   float tw = 0.5 + 0.5 * sin(uTime * (0.5 + aSeed.w * 1.8) + aSeed.z * 6.2832);
   alpha *= 0.3 + 0.7 * tw * tw * tw;
+`,
+  // Lava fountain: parabolic arcs sprayed from the crater — pure ballistics
+  // as a closed form of (seed, uTime).
+  fountain: /* glsl */ `
+  float life = fract(uTime * uSpeed * 0.13 * (0.5 + aSeed.w * 0.8) + aSeed.z);
+  float angle = aSeed.x * 6.2832;
+  float spread = 0.1 + aSeed.y * 0.34;
+  float v0 = 13.0 * (0.65 + aSeed.w * 0.7);
+  float t = life * 2.3;
+  pos = position * 0.3 + vec3(cos(angle) * spread * v0 * t, v0 * t - 4.9 * t * t, sin(angle) * spread * v0 * t);
+  alpha *= (1.0 - life * life) * (0.6 + 0.4 * sin(uTime * 6.0 + aSeed.z * 6.2832));
 `,
   // The finale: petals of light drifting up a narrowing helix toward the
   // sun — deliberately slow and contemplative (fast swirl reads as vertigo).

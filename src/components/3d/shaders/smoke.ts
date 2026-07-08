@@ -35,6 +35,7 @@ export const smokeFragmentShader = /* glsl */ `
 ${noiseChunk}
 uniform float uTime;
 uniform float uDensity;
+uniform float uEmber;
 uniform vec3 uColor;
 varying vec2 vUv;
 varying float vLife;
@@ -46,6 +47,10 @@ void main() {
   float texture_ = fbm2(vUv * 3.5 + vSeed * 19.0 + vec2(0.0, uTime * 0.04)) * 0.5 + 0.5;
   float a = radial * texture_ * uDensity * (1.0 - vLife) * smoothstep(0.0, 0.12, vLife) * 0.55;
   if (a < 0.004) discard;
-  gl_FragColor = vec4(uColor * (0.6 + texture_ * 0.5), a);
+  // Fresh puffs catch a dim ember warmth at the base, cooling fast into ash
+  // grey — kept subtle: the camera flies THROUGH this column.
+  vec3 hot = vec3(0.5, 0.2, 0.08);
+  vec3 base = mix(uColor, hot, uEmber * (1.0 - smoothstep(0.02, 0.28, vLife)));
+  gl_FragColor = vec4(base * (0.6 + texture_ * 0.5), a);
 }
 `;
