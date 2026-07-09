@@ -24,12 +24,19 @@ export function groundHeight(x: number, z: number): number {
   const basin = 1 - smoothstep(OCEAN_RADIUS * 0.45, OCEAN_RADIUS, oceanDist);
   h -= basin * (OCEAN_DEPTH + fbm2(x * 0.03, z * 0.03, 3) * 5);
 
-  // Volcano cone with a crater dip.
+  // Volcano cone with a crater dip, radial gullies (barrancos) carving the
+  // flank, and coarse rubble — a volcano is anything but smooth.
   const [vx, vz] = VOLCANO_CENTER;
   const volcanoDist = Math.hypot(x - vx, z - vz);
   const cone = 1 - smoothstep(0, VOLCANO_RADIUS, volcanoDist);
   const crater = 1 - smoothstep(0, CRATER_RADIUS, volcanoDist);
   h += cone * cone * VOLCANO_HEIGHT * (1 + fbm2(x * 0.05, z * 0.05, 3) * 0.25);
+  if (cone > 0.02) {
+    const angle = Math.atan2(z - vz, x - vx);
+    const ridges = Math.abs(Math.sin(angle * 7 + fbm2(x * 0.02, z * 0.02, 2) * 3.2));
+    h += cone * (1 - crater) * ridges * 3.6;
+    h += cone * (fbm2(x * 0.085, z * 0.085, 3) - 0.5) * 6;
+  }
   h -= crater * 12;
 
   return h;
