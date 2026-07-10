@@ -46,6 +46,7 @@ export interface UniformProxies {
     underwaterLight: number;
     planktonGlow: number;
     fishActivity: number;
+    bubbleBurst: number;
     lavaFlow: number;
     emberIntensity: number;
     smokeDensity: number;
@@ -90,6 +91,7 @@ function defaults(): UniformProxies {
       underwaterLight: 0,
       planktonGlow: 0,
       fishActivity: 0,
+      bubbleBurst: 0,
       lavaFlow: 0,
       emberIntensity: 0,
       smokeDensity: 0,

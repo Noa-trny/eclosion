@@ -63,10 +63,12 @@ void main() {
   float sunDot = max(dot(reflDir, normalize(uSunDir)), 0.0);
   float spec = pow(sunDot, 200.0) * uSunIntensity * 4.0 + pow(sunDot, 40.0) * uSunIntensity * 0.6;
   col += uSunColor * spec;
-  // Crest foam: main band + high-frequency micro-lace.
-  float foam = smoothstep(0.32, 0.72, vCrest + snoise2(vWorldPos.xz * 3.0 + uTime * 0.5) * 0.18);
+  // Crest foam: main band + high-frequency micro-lace. Seen from BELOW the
+  // surface, foam reads as heavy white blobs — keep it faint underwater.
+  float foam = smoothstep(0.44, 0.82, vCrest + snoise2(vWorldPos.xz * 3.0 + uTime * 0.5) * 0.16);
   foam += smoothstep(0.6, 0.9, snoise2(vWorldPos.xz * 9.0 - uTime * 0.8)) * foam;
-  col = mix(col, vec3(0.85, 0.94, 1.0), clamp(foam, 0.0, 1.0) * 0.55);
+  float foamStrength = gl_FrontFacing ? 0.42 : 0.14;
+  col = mix(col, vec3(0.85, 0.94, 1.0), clamp(foam, 0.0, 1.0) * foamStrength);
   // Cheap subsurface glow through the crests.
   col += uShallowColor * vCrest * 0.35 * uSunIntensity;
   float dist = length(cameraPosition - vWorldPos);

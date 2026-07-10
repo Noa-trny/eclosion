@@ -107,6 +107,61 @@ export function playBell(ctx: AudioContext, out: AudioNode, frequency: number, a
   }
 }
 
+/** Whale call: a slow sine glide (up then settling down) with gentle vibrato,
+ *  doubled by a detuned partner, ringing through a dark watery echo. */
+export function playWhale(ctx: AudioContext, out: AudioNode): void {
+  const t = ctx.currentTime;
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0, t);
+  gain.gain.linearRampToValueAtTime(0.15, t + 1.2);
+  gain.gain.setTargetAtTime(0, t + 2.8, 0.9);
+
+  const delay = ctx.createDelay(1.5);
+  delay.delayTime.value = 0.55;
+  const feedback = ctx.createGain();
+  feedback.gain.value = 0.34;
+  const damp = ctx.createBiquadFilter();
+  damp.type = "lowpass";
+  damp.frequency.value = 850;
+  gain.connect(out);
+  gain.connect(delay);
+  delay.connect(damp).connect(feedback).connect(delay);
+  feedback.connect(out);
+
+  const vibrato = ctx.createOscillator();
+  vibrato.frequency.value = 4.6;
+  const vibratoDepth = ctx.createGain();
+  vibratoDepth.gain.value = 2.8;
+  vibrato.connect(vibratoDepth);
+  vibrato.start(t);
+  vibrato.stop(t + 5);
+
+  const oscillators: OscillatorNode[] = [];
+  for (const detune of [0, 8]) {
+    const osc = ctx.createOscillator();
+    osc.type = "sine";
+    osc.detune.value = detune;
+    osc.frequency.setValueAtTime(52, t);
+    osc.frequency.exponentialRampToValueAtTime(108, t + 1.5);
+    osc.frequency.exponentialRampToValueAtTime(64, t + 3.6);
+    vibratoDepth.connect(osc.frequency);
+    osc.connect(gain);
+    osc.start(t);
+    osc.stop(t + 5);
+    oscillators.push(osc);
+  }
+  // Let the echo tail ring out before tearing the graph down.
+  setTimeout(() => {
+    for (const osc of oscillators) osc.disconnect();
+    vibrato.disconnect();
+    vibratoDepth.disconnect();
+    gain.disconnect();
+    delay.disconnect();
+    damp.disconnect();
+    feedback.disconnect();
+  }, 9000);
+}
+
 /** Thunder: delayed (distance) brown-ish burst with a long lowpassed tail. */
 export function playThunder(ctx: AudioContext, out: AudioNode): void {
   const delay = 0.3 + Math.random() * 1.2;

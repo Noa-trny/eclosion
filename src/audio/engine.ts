@@ -6,7 +6,7 @@ import { useProgressStore } from "@/stores/progressStore";
 import { actGain } from "./buses";
 import { makeOcean, makeRain, makeRumble, makeWind } from "./sources/noiseSources";
 import { makePad } from "./sources/padSynth";
-import { playBell, playBird, playCrackle, playDroplet, playThunder } from "./sources/oneshots";
+import { playBell, playBird, playCrackle, playDroplet, playThunder, playWhale } from "./sources/oneshots";
 import { PannerPool, syncListener } from "./spatial";
 import { OneShotScheduler } from "./scheduler";
 
@@ -22,6 +22,7 @@ class AudioEngine {
   private readonly pool: PannerPool;
   private readonly scheduler: OneShotScheduler;
   private readonly unsubscribe: () => void;
+  private readonly underwaterFilter: BiquadFilterNode;
   private simRacks: SourceRack[] = [];
   private lastProgress = -1;
   private listenerPos = { x: 0, y: 0, z: 0 };
@@ -29,8 +30,8 @@ class AudioEngine {
 
   constructor() {
     this.ctx = new AudioContext();
-    // Gentle glue compressor (musical) → hard safety limiter (never clips,
-    // never pumps on thunder).
+    // Chain: master → underwater lowpass → glue compressor (musical) → hard
+    // safety limiter (never clips, never pumps on thunder).
     const limiter = this.ctx.createDynamicsCompressor();
     limiter.threshold.value = -6;
     limiter.knee.value = 0;
@@ -45,9 +46,14 @@ class AudioEngine {
     compressor.attack.value = 0.005;
     compressor.release.value = 0.25;
     compressor.connect(limiter);
+    this.underwaterFilter = this.ctx.createBiquadFilter();
+    this.underwaterFilter.type = "lowpass";
+    this.underwaterFilter.frequency.value = 18000;
+    this.underwaterFilter.Q.value = 0.4;
+    this.underwaterFilter.connect(compressor);
     this.master = this.ctx.createGain();
     this.master.gain.value = MASTER_GAIN;
-    this.master.connect(compressor);
+    this.master.connect(this.underwaterFilter);
     for (const act of ACTS) {
       const bus = this.ctx.createGain();
       bus.gain.value = 0;
@@ -98,6 +104,19 @@ class AudioEngine {
   /** Storm lightning calls this directly for a synced rumble. */
   thunder(): void {
     playThunder(this.ctx, this.master);
+  }
+
+  /** The whale's single pass calls home — spatialized at its position. */
+  whaleCall(x: number, y: number, z: number): void {
+    playWhale(this.ctx, this.pool.at(x, y, z));
+  }
+
+  /** 0 = air, 1 = fully submerged: hearing sinks with the camera.
+   *  Exponential sweep 18 kHz → ~420 Hz on the whole mix. */
+  setUnderwater(factor: number): void {
+    const clamped = Math.min(1, Math.max(0, factor));
+    const frequency = 18000 * Math.pow(420 / 18000, clamped);
+    this.underwaterFilter.frequency.setTargetAtTime(frequency, this.ctx.currentTime, 0.08);
   }
 
   /** Free-roam: the weather sim drives dedicated rain/wind sources that are
