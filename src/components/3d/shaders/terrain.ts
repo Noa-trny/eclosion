@@ -49,7 +49,7 @@ void main() {
   albedo = mix(uSandColor * (0.8 + detail * 0.3), albedo, smoothstep(-1.6, 1.4, vWorldPos.y));
   // Near the crater: basalt charcoal broken by oxidized rust patches.
   float nearCrater = exp(-distance(vWorldPos.xz, uCraterPos.xz) * 0.011);
-  vec3 basalt = mix(vec3(0.07, 0.06, 0.055), vec3(0.24, 0.09, 0.05), smoothstep(0.35, 0.75, detail));
+  vec3 basalt = mix(vec3(0.07, 0.06, 0.055), vec3(0.16, 0.08, 0.055), smoothstep(0.4, 0.8, detail));
   albedo = mix(albedo, basalt * (0.7 + detail * 0.6), smoothstep(0.08, 0.5, nearCrater));
 
   float light = halfLambert(n, uSunDir) * uSunIntensity;

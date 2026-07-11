@@ -49,7 +49,8 @@ export function CameraRig() {
     parallax.y = damp(parallax.y, state.pointer.y, 3, dt);
 
     const t = sharedUniforms.uTime.value;
-    const shake = uniformProxies.camera.shake;
+    // Lightning kicks the camera — the strike is FELT, not just seen.
+    const shake = uniformProxies.camera.shake + sharedUniforms.uFlash.value * 0.35;
     const shakeX = (Math.sin(t * 13.1) + Math.sin(t * 7.7) * 0.6) * 0.045 * shake;
     const shakeY = (Math.cos(t * 11.3) + Math.sin(t * 17.2) * 0.5) * 0.045 * shake;
 

@@ -68,6 +68,7 @@ export function GPUParticles({ preset, getIntensity, position, seed = 1 }: GPUPa
         uTime: sharedUniforms.uTime,
         uWind: sharedUniforms.uWind,
         uDpr: sharedUniforms.uDpr,
+        uFlash: sharedUniforms.uFlash,
         uIntensity: { value: 1 },
         uSize: { value: preset.size },
         uSpeed: { value: preset.speed },
