@@ -48,18 +48,19 @@ void main() {
   vec3 albedo = mix(grass, rock, smoothstep(0.18, 0.5, slope));
   albedo = mix(uSandColor * (0.8 + detail * 0.3), albedo, smoothstep(-1.6, 1.4, vWorldPos.y));
   // Near the crater: basalt charcoal broken by oxidized rust patches.
+  // Near the crater the ground turns charcoal basalt — grey-black, not red.
   float nearCrater = exp(-distance(vWorldPos.xz, uCraterPos.xz) * 0.011);
-  vec3 basalt = mix(vec3(0.07, 0.06, 0.055), vec3(0.16, 0.08, 0.055), smoothstep(0.4, 0.8, detail));
+  vec3 basalt = mix(vec3(0.055, 0.052, 0.05), vec3(0.115, 0.105, 0.1), smoothstep(0.4, 0.8, detail));
   albedo = mix(albedo, basalt * (0.7 + detail * 0.6), smoothstep(0.08, 0.5, nearCrater));
 
   float light = halfLambert(n, uSunDir) * uSunIntensity;
   vec3 col = albedo * (uAmbientColor * uAmbientIntensity * 3.0 + uSunColor * light * 2.0);
 
-  // Crater glow bleeding onto the volcano flank.
+  // Crater glow: a tight rim of fire at the mouth — NOT a flank-wide tint.
   if (uLavaGlow > 0.001) {
     float d = distance(vWorldPos.xz, uCraterPos.xz);
-    float glow = exp(-d * 0.045) * uLavaGlow * (0.8 + 0.2 * sin(uTime * 2.2));
-    col += vec3(1.0, 0.32, 0.05) * glow;
+    float glow = exp(-d * 0.11) * uLavaGlow * (0.8 + 0.2 * sin(uTime * 2.2));
+    col += vec3(1.0, 0.32, 0.05) * glow * 0.9;
   }
 
   float dist = length(cameraPosition - vWorldPos);

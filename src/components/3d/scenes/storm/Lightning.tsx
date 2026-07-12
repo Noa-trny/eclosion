@@ -85,6 +85,7 @@ export function Lightning() {
   const lightRef = useRef<THREE.PointLight>(null);
   const countdown = useRef(2.5);
   const restrike = useRef(0);
+  const wasActive = useRef(false);
   const forward = useRef(new THREE.Vector3()).current;
 
   const boltGeometry = useMemo(() => {
@@ -126,10 +127,19 @@ export function Lightning() {
       }
     }
     const activity = uniformProxies.acts.lightningActivity;
-    if (activity < 0.05) return;
+    if (activity < 0.05) {
+      wasActive.current = false;
+      return;
+    }
+    // First strike lands FAST on entry — a forward scroller crosses the act
+    // in seconds and must not leave before the sky answers.
+    if (!wasActive.current) {
+      wasActive.current = true;
+      countdown.current = 0.35;
+    }
     countdown.current -= dt;
     if (countdown.current > 0) return;
-    countdown.current = 0.9 + (Math.random() * 3.2) / activity;
+    countdown.current = 0.6 + (Math.random() * 2.2) / activity;
     // Strike INSIDE the camera's forward cone, wherever the rig is looking —
     // the camera travels the whole act, a fixed zone kept missing the frame.
     state.camera.getWorldDirection(forward);
