@@ -3,12 +3,14 @@
 import { motion, useTransform } from "motion/react";
 import { useScrollProgressMV } from "@/hooks/useScrollProgressMV";
 import { useAppStore } from "@/stores/appStore";
+import { useT } from "@/hooks/useLang";
 
 /** The scroll affordance — evaporates as soon as the journey begins. */
 export function ScrollHint() {
   const progress = useScrollProgressMV();
   const opacity = useTransform(progress, [0, 0.02], [1, 0]);
   const started = useAppStore((s) => s.started);
+  const t = useT();
   if (!started) return null;
 
   return (
@@ -23,7 +25,7 @@ export function ScrollHint() {
       >
         <div className="mx-auto h-2 w-0.5 rounded bg-white/60" />
       </motion.div>
-      <p className="text-[10px] uppercase tracking-[0.4em] text-white/40">Faites défiler</p>
+      <p className="text-[10px] uppercase tracking-[0.4em] text-white/40">{t.scrollHint}</p>
     </motion.div>
   );
 }

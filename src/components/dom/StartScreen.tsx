@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useAppStore } from "@/stores/appStore";
 import { initAudioEngine } from "@/audio/engine";
+import { useT } from "@/hooks/useLang";
 
 /** The gate: unlocks audio inside the click gesture, then hands the visitor
  *  to the scroll. Until dismissed, Lenis stays frozen. */
@@ -11,6 +12,7 @@ export function StartScreen() {
   const started = useAppStore((s) => s.started);
   const start = useAppStore((s) => s.start);
   const reducedMotion = useAppStore((s) => s.reducedMotion);
+  const t = useT();
 
   const enter = (withAudio: boolean): void => {
     if (withAudio) initAudioEngine();
@@ -30,7 +32,7 @@ export function StartScreen() {
             transition={{ delay: 0.3, duration: 1.2 }}
             className="mb-5 text-[11px] uppercase tracking-[0.6em] text-white/40"
           >
-            Une expérience où le défilement est le temps
+            {t.tagline}
           </motion.p>
           {/* The seed's heartbeat, before a single pixel of 3D: a double-thump
               pulse of scale + warm glow behind the title. */}
@@ -66,8 +68,7 @@ export function StartScreen() {
             transition={{ delay: 1.1, duration: 1.2 }}
             className="mt-4 max-w-sm text-sm leading-relaxed text-white/55"
           >
-            La naissance d&apos;un monde — du néant à l&apos;aube, huit actes portés par la
-            lumière, la matière et le son.
+            {t.intro}
           </motion.p>
 
           <motion.div
@@ -82,7 +83,7 @@ export function StartScreen() {
                 transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
                 className="text-xs uppercase tracking-[0.3em] text-white/50"
               >
-                le monde germe…
+                {t.sprouting}
               </motion.p>
             ) : (
               <>
@@ -91,26 +92,22 @@ export function StartScreen() {
                   onClick={() => enter(!reducedMotion)}
                   className="rounded-full border border-white/60 bg-white/95 px-8 py-3 text-xs font-medium uppercase tracking-[0.25em] text-black transition hover:bg-white"
                 >
-                  Entrer {reducedMotion ? "" : "avec le son"}
+                  {reducedMotion ? t.enter : t.enterSound}
                 </button>
                 <button
                   type="button"
                   onClick={() => enter(false)}
                   className="rounded-full border border-white/25 px-8 py-3 text-xs uppercase tracking-[0.25em] text-white/70 transition hover:border-white/60 hover:text-white"
                 >
-                  Entrer en silence
+                  {t.enterQuiet}
                 </button>
               </>
             )}
           </motion.div>
 
-          {reducedMotion && (
-            <p className="mt-6 text-[11px] text-white/35">
-              Animations réduites détectées — l&apos;expérience s&apos;adapte à vos préférences.
-            </p>
-          )}
+          {reducedMotion && <p className="mt-6 text-[11px] text-white/35">{t.reducedNote}</p>}
           <p className="absolute bottom-6 text-[10px] uppercase tracking-[0.3em] text-white/25">
-            Casque recommandé · 100% procédural · WebGL 2
+            {t.footer}
           </p>
         </motion.div>
       )}

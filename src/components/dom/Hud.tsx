@@ -4,6 +4,8 @@ import { useActIndex } from "@/hooks/useActState";
 import { useAppStore } from "@/stores/appStore";
 import { ACTS } from "@/config/acts";
 import { scrollToProgress } from "@/lib/scrollControl";
+import { useLang, useT } from "@/hooks/useLang";
+import { ACT_COPY } from "@/config/i18n";
 
 /** Persistent chrome: act dots (right rail on desktop, bottom on touch),
  *  audio toggle and the free-roam switch. */
@@ -14,6 +16,8 @@ export function Hud() {
   const mode = useAppStore((s) => s.mode);
   const toggleAudio = useAppStore((s) => s.toggleAudio);
   const requestModeToggle = useAppStore((s) => s.requestModeToggle);
+  const t = useT();
+  const lang = useLang();
   if (!started) return null;
 
   const inScroll = mode === "scroll";
@@ -23,15 +27,15 @@ export function Hud() {
       {/* Act navigation dots. */}
       {inScroll && (
         <nav
-          aria-label="Actes"
+          aria-label={t.acts}
           className="fixed right-4 top-1/2 z-30 hidden -translate-y-1/2 flex-col gap-3 sm:flex md:right-7"
         >
           {ACTS.map((act) => (
             <button
               key={act.id}
               type="button"
-              title={act.title}
-              aria-label={`${act.title} — aller à l'acte ${act.index + 1}`}
+              title={ACT_COPY[lang][act.id].title}
+              aria-label={`${ACT_COPY[lang][act.id].title} — ${t.goToAct} ${act.index + 1}`}
               aria-current={act.index === actIndex}
               onClick={() => scrollToProgress(act.range.start + 0.012)}
               className={`h-2.5 w-2.5 rounded-full border border-white/40 transition-all duration-500 ${
@@ -48,10 +52,10 @@ export function Hud() {
           type="button"
           onClick={toggleAudio}
           aria-pressed={audioOn}
-          aria-label={audioOn ? "Couper le son" : "Activer le son"}
+          aria-label={audioOn ? t.muteLabel : t.unmuteLabel}
           className="rounded-full border border-white/20 bg-black/30 px-4 py-2 text-[11px] uppercase tracking-[0.2em] text-white/70 backdrop-blur transition hover:border-white/50 hover:text-white"
         >
-          {audioOn ? "Son ✓" : "Muet"}
+          {audioOn ? t.soundOn : t.muted}
         </button>
         <button
           type="button"
@@ -59,7 +63,7 @@ export function Hud() {
           disabled={mode === "toScroll" || mode === "toFree"}
           className="rounded-full border border-white/20 bg-black/30 px-4 py-2 text-[11px] uppercase tracking-[0.2em] text-white/70 backdrop-blur transition hover:border-white/50 hover:text-white disabled:opacity-40"
         >
-          {inScroll ? "Explorer (F)" : "Reprendre le récit (F)"}
+          {inScroll ? t.explore : t.resume}
         </button>
       </div>
     </>
