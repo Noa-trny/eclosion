@@ -54,6 +54,12 @@ export function Whale() {
   useFrame(() => {
     const p = useProgressStore.getState().progress;
     const inWindow = p >= WINDOW[0] && p <= WINDOW[1];
+    // One pass per APPROACH: scrolling back before the window re-arms her,
+    // so revisiting the deep always grants another crossing.
+    if (p < WINDOW[0] - 0.02) {
+      done.current = false;
+      called.current = false;
+    }
     if (done.current || !inWindow) {
       mesh.visible = false;
       return;
@@ -62,8 +68,9 @@ export function Whale() {
     if (t > 0.985) done.current = true;
     mesh.visible = true;
     dummy.pos.lerpVectors(START, END, t);
-    // She calls once, early in her crossing — spatialized where she swims.
-    if (!called.current && t > 0.06) {
+    // She calls at mid-crossing — her closest point to the camera, so the
+    // HRTF distance falloff carries instead of burying her.
+    if (!called.current && t > 0.3 && getAudioEngine()) {
       called.current = true;
       getAudioEngine()?.whaleCall(dummy.pos.x, dummy.pos.y, dummy.pos.z);
     }
