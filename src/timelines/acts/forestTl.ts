@@ -14,5 +14,5 @@ export function buildForestTl(tl: gsap.core.Timeline): void {
   tl.to(a, { dustIntensity: 0.3, duration: 0.05 }, 0.21);
   // The storm announces itself: rare distant flashes over the canopy before
   // the act even begins.
-  tl.to(a, { lightningActivity: 0.12, duration: 0.015 }, 0.332);
+  tl.to(a, { lightningActivity: 0.12, duration: 0.015 }, 0.315);
 }
