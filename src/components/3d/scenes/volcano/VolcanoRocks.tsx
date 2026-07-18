@@ -4,7 +4,7 @@ import { useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { useQualityStore } from "@/stores/qualityStore";
 import { VOLCANO_CENTER, CRATER_RADIUS } from "@/config/world";
-import { groundHeight } from "@/utils/terrain";
+import { groundHeight, groundNormal } from "@/utils/terrain";
 import { mulberry32 } from "@/utils/random";
 import type { Tier } from "@/types/quality";
 
@@ -46,22 +46,27 @@ export function VolcanoRocks() {
     const euler = new THREE.Euler();
     const scale = new THREE.Vector3();
     const m = new THREE.Matrix4();
+    const normal = { x: 0, y: 1, z: 0 };
     let placed = 0;
     let guard = 0;
     while (placed < count && guard++ < count * 20) {
       const angle = rng() * Math.PI * 2;
-      const radius = CRATER_RADIUS + 4 + Math.pow(rng(), 0.7) * 58;
+      const radius = CRATER_RADIUS + 11 + Math.pow(rng(), 0.7) * 52;
       const x = VOLCANO_CENTER[0] + Math.cos(angle) * radius;
       const z = VOLCANO_CENTER[1] + Math.sin(angle) * radius;
       if (nearPath(x, z)) continue;
-      const i = placed++;
+      // Steep ridge flanks are where the analytic ground and the rendered
+      // mesh diverge most (and where debris wouldn't rest anyway).
+      groundNormal(x, z, normal);
+      if (normal.y < 0.62) continue;
       const s = 0.5 + Math.pow(rng(), 2.2) * 2.6;
-      // Sunk a third into the slope, like debris that rolled and settled.
-      pos.set(x, groundHeight(x, z) + s * 0.35, z);
+      const sy = s * (0.5 + rng() * 0.6);
+      // Sunk two thirds: the seat survives the mesh's linear interpolation.
+      pos.set(x, groundHeight(x, z) + sy * 0.35, z);
       euler.set(rng() * Math.PI, rng() * Math.PI, rng() * Math.PI);
       quat.setFromEuler(euler);
-      scale.set(s * (0.7 + rng() * 0.7), s * (0.5 + rng() * 0.6), s * (0.7 + rng() * 0.7));
-      instanced.setMatrixAt(i, m.compose(pos, quat, scale));
+      scale.set(s * (0.7 + rng() * 0.7), sy, s * (0.7 + rng() * 0.7));
+      instanced.setMatrixAt(placed++, m.compose(pos, quat, scale));
     }
     instanced.count = placed;
     instanced.instanceMatrix.needsUpdate = true;
