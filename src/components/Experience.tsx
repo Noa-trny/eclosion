@@ -16,6 +16,7 @@ import { Hud } from "./dom/Hud";
 import { ProgressLine } from "./dom/ProgressLine";
 import { Cursor } from "./dom/Cursor";
 import { LangToggle } from "./dom/LangToggle";
+import { PhotoFlash } from "./dom/PhotoFlash";
 import { initLang } from "@/stores/langStore";
 import { ScrollHint } from "./dom/ScrollHint";
 import { FreeRoamHint } from "./dom/FreeRoamHint";
@@ -68,6 +69,7 @@ export function Experience() {
       <ProgressLine />
       <Cursor />
       <LangToggle />
+      <PhotoFlash />
       <ScrollHint />
       <FreeRoamHint />
       <StartScreen />

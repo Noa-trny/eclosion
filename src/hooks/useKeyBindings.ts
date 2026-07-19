@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useAppStore } from "@/stores/appStore";
 import { scrollByViewport } from "@/lib/scrollControl";
+import { capturePhoto } from "@/lib/photo";
 import { KEYS } from "@/config/controls";
 import { KEY_SCROLL_STEP } from "@/config/scroll";
 
@@ -26,6 +27,9 @@ export function useKeyBindings(): void {
         case KEYS.editor:
           e.preventDefault();
           app.toggleEditor();
+          break;
+        case "KeyP":
+          if (app.started) capturePhoto();
           break;
         case "ArrowDown":
         case "PageDown":

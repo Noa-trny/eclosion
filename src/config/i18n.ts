@@ -81,7 +81,8 @@ export const UI = {
     goToAct: "aller à l'acte",
     freeRoamTitle: "Exploration libre",
     freeRoamHelp:
-      "ZQSD / WASD se déplacer · souris regarder · Maj sprint · Espace monter · C descendre · F reprendre le récit",
+      "ZQSD / WASD se déplacer · souris regarder · Maj sprint · Espace monter · C descendre · P photo · F reprendre le récit",
+    photoSaved: "Photo enregistrée",
     endKicker: "Un monde est né",
     endBody: "Du néant à l'aube — merci d'avoir porté ce monde jusqu'à la lumière.",
     replay: "Revoir le récit",
@@ -113,7 +114,8 @@ export const UI = {
     goToAct: "go to act",
     freeRoamTitle: "Free exploration",
     freeRoamHelp:
-      "WASD / ZQSD move · mouse look · Shift sprint · Space up · C down · F return to the story",
+      "WASD / ZQSD move · mouse look · Shift sprint · Space up · C down · P photo · F return to the story",
+    photoSaved: "Photo saved",
     endKicker: "A world is born",
     endBody: "From the void to the dawn — thank you for carrying this world into the light.",
     replay: "Replay the story",

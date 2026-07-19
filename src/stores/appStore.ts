@@ -15,12 +15,15 @@ interface AppState {
   /** Bumped by the HUD/keyboard; the FreeRoamController (which owns the
    *  camera) watches it and performs the actual transition. */
   modeToggleNonce: number;
+  /** Bumped after each photo capture — drives the shutter flash + toast. */
+  photoNonce: number;
   setPhase: (phase: AppPhase) => void;
   setMode: (mode: AppMode) => void;
   start: (withAudio: boolean) => void;
   toggleAudio: () => void;
   toggleEditor: () => void;
   requestModeToggle: () => void;
+  photoTaken: () => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -33,10 +36,12 @@ export const useAppStore = create<AppState>((set) => ({
   restoreNonce: 0,
   reducedMotion: false,
   modeToggleNonce: 0,
+  photoNonce: 0,
   setPhase: (phase) => set({ phase }),
   setMode: (mode) => set({ mode }),
   start: (withAudio) => set({ started: true, audioOn: withAudio, phase: "running" }),
   toggleAudio: () => set((s) => ({ audioOn: !s.audioOn })),
   toggleEditor: () => set((s) => ({ editorOpen: !s.editorOpen })),
   requestModeToggle: () => set((s) => ({ modeToggleNonce: s.modeToggleNonce + 1 })),
+  photoTaken: () => set((s) => ({ photoNonce: s.photoNonce + 1 })),
 }));
