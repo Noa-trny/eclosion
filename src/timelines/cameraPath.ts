@@ -102,11 +102,15 @@ function buildCurve(points: Array<[number, number, number]>): THREE.CatmullRomCu
 }
 
 /** Uniform curve parameter for (act, local) given segment bounds — the curve
- *  hits control point i exactly at u = i/(N-1). */
+ *  hits control point i exactly at u = i/(N-1). Each act travels THROUGH to
+ *  the next act's first point, so the camera is continuous at boundaries
+ *  (no teleport for the seam damping to whip across). */
 function actParam(bounds: Array<[number, number]>, total: number, act: number, local: number): number {
   const b = bounds[act];
   if (!b) return 0;
-  const [startIdx, endIdx] = b;
+  const [startIdx] = b;
+  const next = bounds[act + 1];
+  const endIdx = next ? next[0] : b[1];
   return (startIdx + local * (endIdx - startIdx)) / (total - 1);
 }
 
