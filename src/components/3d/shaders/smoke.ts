@@ -13,6 +13,7 @@ attribute vec2 aSeed;
 varying vec2 vUv;
 varying float vLife;
 varying float vSeed;
+varying float vDepth;
 
 void main() {
   float life = fract(uTime * 0.05 * (0.5 + aSeed.y * 0.9) + aSeed.x);
@@ -27,7 +28,9 @@ void main() {
   vUv = aCorner * 0.5 + 0.5;
   vLife = life;
   vSeed = aSeed.x;
-  gl_Position = projectionMatrix * viewMatrix * vec4(pos, 1.0);
+  vec4 viewPos = viewMatrix * vec4(pos, 1.0);
+  vDepth = -viewPos.z;
+  gl_Position = projectionMatrix * viewPos;
 }
 `;
 
@@ -40,12 +43,15 @@ uniform vec3 uColor;
 varying vec2 vUv;
 varying float vLife;
 varying float vSeed;
+varying float vDepth;
 
 void main() {
   vec2 uv = vUv - 0.5;
   float radial = smoothstep(0.5, 0.12, length(uv));
   float texture_ = fbm2(vUv * 3.5 + vSeed * 19.0 + vec2(0.0, uTime * 0.04)) * 0.5 + 0.5;
   float a = radial * texture_ * uDensity * (1.0 - vLife) * smoothstep(0.0, 0.12, vLife) * 0.55;
+  // Fade puffs the camera is about to fly through — no lens smear.
+  a *= smoothstep(2.5, 9.0, vDepth);
   if (a < 0.004) discard;
   // Fresh puffs catch a dim ember warmth at the base, cooling fast into ash
   // grey — kept subtle: the camera flies THROUGH this column.
