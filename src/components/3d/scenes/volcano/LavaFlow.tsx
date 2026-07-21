@@ -8,6 +8,7 @@ import { uniformProxies } from "@/timelines/uniformProxies";
 import { useDisposable } from "@/hooks/useDisposable";
 import { CRATER_RADIUS, VOLCANO_CENTER } from "@/config/world";
 import { groundHeight } from "@/utils/terrain";
+import { smoothstep } from "@/utils/math";
 
 /** A ribbon draped over the terrain, running downhill from the crater rim. */
 function buildRibbon(direction: number, width: number, length: number): THREE.BufferGeometry {
@@ -27,11 +28,12 @@ function buildRibbon(direction: number, width: number, length: number): THREE.Bu
     const dist = CRATER_RADIUS * 1.05 + t * length;
     const cx = vx + dx * dist;
     const cz = vz + dz * dist;
-    const w = width * (0.6 + t * 0.7);
+    // Swells mid-flow, then pinches to a POINT — a flow front, not a cut.
+    const w = width * (0.6 + t * 0.7) * (1 - smoothstep(0.78, 1, t));
     for (const side of [-1, 1]) {
       const x = cx + px * w * side * 0.5;
       const z = cz + pz * w * side * 0.5;
-      positions.push(x - vx, groundHeight(x, z) + 0.15, z - vz);
+      positions.push(x - vx, groundHeight(x, z) + 0.2, z - vz);
       uvs.push(side * 0.5 + 0.5, t);
     }
     if (i < segments) {

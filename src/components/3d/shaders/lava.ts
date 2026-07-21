@@ -33,6 +33,8 @@ void main() {
   col = mix(col, vec3(1.0, 0.42, 0.04), smoothstep(0.42, 0.72, heat * (0.75 + 0.5 * crust)));
   col = mix(col, vec3(1.0, 0.9, 0.55), smoothstep(0.78, 0.96, heat * crust));
   col *= 0.5 + uFlow * 1.7;
+  // The flow front cools: the last stretch darkens into crusting rock.
+  col *= 1.0 - smoothstep(0.72, 0.98, vUv.y) * 0.8;
 
   float dist = length(cameraPosition - vWorldPos);
   col = applyFogExp2(col, dist, uFogColor, uFogDensity * 0.5);
