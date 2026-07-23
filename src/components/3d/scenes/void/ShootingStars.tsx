@@ -61,7 +61,9 @@ export function ShootingStars() {
   const meshRefs = useRef<Array<THREE.Mesh | null>>([]);
   const meteors = useRef<Meteor[]>(
     Array.from({ length: METEOR_COUNT }, (_, i) => ({
-      wait: 3 + i * 4 + Math.random() * 6,
+      // The FIRST streak is guaranteed within ~1.5s — a cold visitor decides
+      // in ten seconds; the sky must answer immediately.
+      wait: i === 0 ? 1.4 : 4 + i * 4 + Math.random() * 6,
       life: 0,
       active: false,
       position: new THREE.Vector3(),

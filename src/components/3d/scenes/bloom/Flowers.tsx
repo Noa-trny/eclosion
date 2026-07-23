@@ -18,7 +18,12 @@ const COUNTS: Record<Tier, number> = { high: 900, medium: 450, low: 140 };
 export function Flowers() {
   const tier = useQualityStore((s) => s.tier);
   const count = COUNTS[tier];
-  const material = useMemo(() => createFlowerMaterial(), []);
+  const material = useMemo(() => {
+    const mat = createFlowerMaterial();
+    const center = mat.uniforms.uCenter;
+    if (center) (center.value as THREE.Vector2).set(MEADOW_CENTER[0], MEADOW_CENTER[1]);
+    return mat;
+  }, []);
 
   const mesh = useMemo(() => {
     const geometry = createFlowerGeometry();
