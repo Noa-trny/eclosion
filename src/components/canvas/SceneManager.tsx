@@ -1,6 +1,7 @@
 "use client";
 
-import { Suspense, lazy, useEffect, useState, type ComponentType, type LazyExoticComponent } from "react";
+import { Suspense, lazy, useEffect, useRef, useState, type ComponentType, type LazyExoticComponent } from "react";
+import { useThree } from "@react-three/fiber";
 import { ACTS, isActInWindow } from "@/config/acts";
 import { useProgressStore } from "@/stores/progressStore";
 import { useAppStore } from "@/stores/appStore";
@@ -34,6 +35,22 @@ export function SceneManager() {
   const [mounted, setMounted] = useState<boolean[]>(() =>
     computeMounted([], useProgressStore.getState().progress),
   );
+  const gl = useThree((s) => s.gl);
+  const scene = useThree((s) => s.scene);
+  const camera = useThree((s) => s.camera);
+  const compileTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  // Progressive warm-up: whenever a new act mounts (0.05 progress BEFORE it
+  // becomes visible), compile its shaders off the critical path — entering
+  // an act must never hitch on a compile (worst on mobile: the storm's
+  // volumetric clouds).
+  useEffect(() => {
+    clearTimeout(compileTimer.current);
+    compileTimer.current = setTimeout(() => {
+      void gl.compileAsync(scene, camera).catch(() => undefined);
+    }, 350);
+    return () => clearTimeout(compileTimer.current);
+  }, [mounted, gl, scene, camera]);
 
   useEffect(() => {
     const update = (): void => {

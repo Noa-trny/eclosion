@@ -16,7 +16,8 @@ export function ScrollHint() {
   return (
     <motion.div
       style={{ opacity }}
-      className="pointer-events-none fixed bottom-8 left-1/2 z-30 -translate-x-1/2 text-center"
+      // Raised on phones so it never collides with the HUD buttons.
+      className="pointer-events-none fixed bottom-24 left-1/2 z-30 -translate-x-1/2 text-center sm:bottom-8"
     >
       <motion.div
         animate={{ y: [0, 8, 0] }}
