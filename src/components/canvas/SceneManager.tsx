@@ -20,8 +20,9 @@ const SCENES: Array<LazyExoticComponent<ComponentType>> = [
 
 function computeMounted(prev: readonly boolean[], progress: number): boolean[] {
   const mounted = ACTS.map((_, i) => isActInWindow(i, progress, prev[i] ?? false));
-  // Pre-start: force acts 0-1 so WarmupGate can compile their shaders while
-  // the StartScreen still covers the canvas.
+  // The seed's distant ember is visible from the void's first frame — keep
+  // act 1 mounted whenever act 0 is (also covers the pre-start warm-up).
+  if (mounted[0]) mounted[1] = true;
   if (!useAppStore.getState().started) {
     mounted[0] = true;
     mounted[1] = true;

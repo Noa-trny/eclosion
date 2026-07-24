@@ -53,6 +53,9 @@ export function PostProcessing() {
     ripple.setRipple(uniformProxies.transition.ripple);
     const velocity = useProgressStore.getState().velocity;
     speedBlur.setStrength(flags.speedBlur ? clamp01(Math.abs(velocity) / 6000) : 0);
+    // Grain scales with scene light: near-invisible in the dark acts (where
+    // noise reads as banding), full texture in the bright ones.
+    grain.setAmount(0.016 + clamp01(uniformProxies.ambient.intensity / 0.45) * 0.026);
     // Rack focus: the timeline pulls the focal plane per act (close-up on the
     // seed, far vista at dawn) — written straight to the CoC material.
     const dof = dofRef.current;

@@ -27,4 +27,10 @@ export class GrainEffect extends Effect {
     const t = this.uniforms.get("uTime");
     if (t) t.value += deltaTime;
   }
+
+  /** Dark acts show grain hardest — the amount adapts to the scene light. */
+  setAmount(value: number): void {
+    const amount = this.uniforms.get("uAmount");
+    if (amount) amount.value = value;
+  }
 }

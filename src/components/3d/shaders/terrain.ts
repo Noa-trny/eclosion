@@ -43,6 +43,9 @@ void main() {
   n = normalize(vec3(n.x - (hx - h0) * rocky, n.y, n.z - (hz - h0) * rocky));
   float slope = 1.0 - n.y;
   float detail = fbm2(vWorldPos.xz * 0.3) * 0.5 + 0.5;
+  // Second, tighter octave breaks the low-frequency smudges near the camera.
+  float micro = fbm2(vWorldPos.xz * 1.4) * 0.5 + 0.5;
+  detail = detail * 0.7 + micro * 0.3;
   vec3 grass = uGrassColor * (0.75 + detail * 0.5);
   vec3 rock = uRockColor * (0.7 + detail * 0.55);
   vec3 albedo = mix(grass, rock, smoothstep(0.18, 0.5, slope));
