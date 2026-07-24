@@ -107,7 +107,7 @@ export function StartScreen() {
               <motion.h1
                 animate={reducedMotion ? {} : { scale: [1, 1.012, 1, 1.007, 1] }}
                 transition={{ scale: HEARTBEAT }}
-                className="font-display relative flex text-[13vw] leading-none tracking-[0.16em] text-white sm:text-8xl md:text-[7.5rem]"
+                className="font-display relative flex text-[15vw] leading-none tracking-[0.14em] text-white sm:text-[8.5rem] md:text-[10rem]"
               >
                 {/* Gradient per LETTER (background-clip:text breaks when child
                     spans carry their own transform/filter layers). CSS-animated:
@@ -115,7 +115,7 @@ export function StartScreen() {
                 {TITLE.split("").map((letter, i) => (
                   <span
                     key={i}
-                    className={`drop-shadow-[0_0_22px_rgba(255,228,180,0.4)] ${reducedMotion ? "" : "letter-rise"}`}
+                    className={`drop-shadow-[0_0_26px_rgba(255,228,180,0.45)] ${reducedMotion ? "" : "letter-rise"}`}
                     style={reducedMotion ? undefined : { animationDelay: `${0.5 + i * 0.09}s` }}
                   >
                     {letter}
