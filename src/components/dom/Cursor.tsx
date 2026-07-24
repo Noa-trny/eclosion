@@ -60,17 +60,19 @@ export function Cursor() {
 
   return (
     <>
+      {/* No blend mode: difference vanished on the pale sunrise/end card.
+          A dark halo guarantees contrast on light AND dark frames. */}
       <motion.div
         aria-hidden
         style={{ x, y }}
-        className="pointer-events-none fixed left-0 top-0 z-[70] h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white mix-blend-difference"
+        className="pointer-events-none fixed left-0 top-0 z-[70] h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow-[0_0_0_1.5px_rgba(2,3,8,0.55)]"
       />
       <motion.div
         aria-hidden
         style={{ x: ringX, y: ringY }}
-        animate={{ scale: hovering ? 1.7 : 1, opacity: hovering ? 0.9 : 0.5 }}
+        animate={{ scale: hovering ? 1.7 : 1, opacity: hovering ? 0.95 : 0.65 }}
         transition={{ duration: 0.25 }}
-        className="pointer-events-none fixed left-0 top-0 z-[70] h-7 w-7 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white mix-blend-difference"
+        className="pointer-events-none fixed left-0 top-0 z-[70] h-7 w-7 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white shadow-[0_0_0_1px_rgba(2,3,8,0.4),inset_0_0_0_1px_rgba(2,3,8,0.4)]"
       />
     </>
   );
