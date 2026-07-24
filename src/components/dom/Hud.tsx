@@ -35,7 +35,7 @@ export function Hud() {
       {inScroll && (
         <nav
           aria-label={t.acts}
-          className="fixed left-1/2 top-3 z-30 flex -translate-x-1/2 flex-row gap-1 sm:left-auto sm:right-4 sm:top-1/2 sm:-translate-x-0 sm:-translate-y-1/2 sm:flex-col sm:gap-1.5 md:right-6"
+          className="fixed left-3 top-3 z-30 flex flex-row gap-1 sm:left-auto sm:right-4 sm:top-1/2 sm:-translate-y-1/2 sm:flex-col sm:gap-1.5 md:right-6"
         >
           {ACTS.map((act) => (
             <button
