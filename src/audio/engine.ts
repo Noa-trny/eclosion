@@ -7,6 +7,7 @@ import { actGain } from "./buses";
 import { makeGust, makeOcean, makeRain, makeRumble, makeWind } from "./sources/noiseSources";
 import { makePad } from "./sources/padSynth";
 import { playBell, playBird, playCrackle, playDroplet, playThunder, playWhale } from "./sources/oneshots";
+import { playMotif } from "./sources/leitmotiv";
 import { PannerPool, syncListener } from "./spatial";
 import { OneShotScheduler } from "./scheduler";
 
@@ -28,6 +29,8 @@ class AudioEngine {
   private lastProgress = -1;
   private listenerPos = { x: 0, y: 0, z: 0 };
   private finalePlayed = false;
+  private motifCountdown = 4;
+  private motifTimer: ReturnType<typeof setInterval> | null = null;
 
   constructor() {
     this.ctx = new AudioContext();
@@ -72,6 +75,27 @@ class AudioEngine {
       (kind) => this.playOneShot(kind),
     );
     this.scheduler.start();
+    // The leitmotiv: the seed's three notes, restated in the character of
+    // whichever act currently owns the mix.
+    this.motifTimer = setInterval(() => {
+      this.motifCountdown -= 0.5;
+      if (this.motifCountdown > 0) return;
+      let bestAct = ACTS[0];
+      let bestGain = 0;
+      for (const act of ACTS) {
+        const gain = this.gains.get(act.id) ?? 0;
+        if (gain > bestGain) {
+          bestGain = gain;
+          bestAct = act;
+        }
+      }
+      if (!bestAct || bestGain < 0.35) return;
+      const recipe = ACT_AUDIO[bestAct.id];
+      const bus = this.buses.get(bestAct.id);
+      const root = recipe.chord[0];
+      if (bus && root) playMotif(this.ctx, bus, root * 2, recipe.motif.variant);
+      this.motifCountdown = recipe.motif.every + Math.random() * 3;
+    }, 500);
     this.unsubscribe = useProgressStore.subscribe((state) => {
       // ~Throttle: only re-evaluate when progress moved meaningfully.
       if (Math.abs(state.progress - this.lastProgress) < 0.002) return;
@@ -142,6 +166,7 @@ class AudioEngine {
   dispose(): void {
     this.unsubscribe();
     this.scheduler.stop();
+    if (this.motifTimer) clearInterval(this.motifTimer);
     for (const racks of this.racks.values()) for (const r of racks) r.stop();
     void this.ctx.close();
   }

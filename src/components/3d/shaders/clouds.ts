@@ -9,42 +9,77 @@ void main() {
 }
 `;
 
-/** Cheap raymarch (8 steps) through an FBM density slab under the plane. */
+/** Volumetric slab march: Beer's law transmittance, one light sample toward
+ *  the sun per step (silver linings, sunrise-lit bellies), detail erosion,
+ *  blue-noise-ish jitter against banding. Steps scale with quality tier. */
 export const cloudsFragmentShader = /* glsl */ `
 ${noiseChunk}
 uniform float uTime;
 uniform float uDensity;
 uniform float uFlash;
+uniform float uSteps;
+uniform float uWarm;
 uniform vec3 uWind;
 uniform vec3 uFogColor;
+uniform vec3 uSunDir;
+uniform vec3 uSunColor;
 varying vec3 vWorldPos;
 
-const int STEPS = 8;
+const int MAX_STEPS = 30;
+const float SLAB = 16.0;
+
+float cloudDensity(vec3 p, float topY) {
+  float hNorm = clamp((topY - p.y) / SLAB, 0.0, 1.0);
+  float heightShape = smoothstep(0.0, 0.22, hNorm) * smoothstep(1.0, 0.5, hNorm);
+  vec3 q = p * 0.018 + vec3(uWind.x, 0.0, uWind.z) * uTime * 0.012;
+  float base = fbm3(q) * 0.5 + 0.5;
+  float detail = snoise3(q * 3.9 + vec3(0.0, uTime * 0.02, 0.0)) * 0.5 + 0.5;
+  float d = base - (1.0 - uDensity) * 0.72;
+  // Strong erosion: ragged, sculpted shapes instead of a uniform ceiling.
+  d -= (1.0 - detail) * 0.34;
+  return clamp(d * 1.4, 0.0, 1.0) * heightShape;
+}
 
 void main() {
-  if (uDensity < 0.005) discard;
+  if (uDensity < 0.005 || uSteps < 1.0) discard;
   vec3 ro = cameraPosition;
   vec3 rd = normalize(vWorldPos - cameraPosition);
   float top = vWorldPos.y;
-  float base = top - 14.0;
-  // Entry/exit of the slab along the view ray.
-  float tTop = (top - ro.y) / max(abs(rd.y), 0.02) * sign(rd.y) * sign(top - ro.y);
-  float t0 = max(0.0, min(tTop, 400.0));
-  float stepLen = 14.0 / float(STEPS);
-  vec3 p = ro + rd * t0;
-  float acc = 0.0;
-  float glow = 0.0;
-  for (int i = 0; i < STEPS; i++) {
-    p += rd * stepLen * 2.2;
-    float d = fbm3(vec3(p.x * 0.02, p.y * 0.05, p.z * 0.02) + vec3(uWind.x, 0.0, uWind.z) * uTime * 0.01);
-    d = clamp(d * 0.5 + 0.5 - (1.0 - uDensity) * 0.85, 0.0, 1.0);
-    acc += d * (1.0 - acc) * 0.32;
-    glow += d * clamp((p.y - base) / 14.0, 0.0, 1.0) * 0.1;
+  float base = top - SLAB;
+  // Slab entry along the ray (camera may be under, inside, or level with it).
+  float t0 = 0.0;
+  if (ro.y < base && rd.y > 0.02) t0 = (base - ro.y) / rd.y;
+  else if (ro.y > top && rd.y < -0.02) t0 = (top - ro.y) / rd.y;
+  else if (ro.y > top || ro.y < base) discard;
+  t0 = clamp(t0, 0.0, 600.0);
+
+  float stepLen = (SLAB * 2.2) / uSteps;
+  float jitter = hash21(gl_FragCoord.xy + fract(uTime) * 61.0);
+  vec3 p = ro + rd * (t0 + jitter * stepLen);
+  vec3 sun = normalize(uSunDir);
+
+  float T = 1.0;
+  vec3 acc = vec3(0.0);
+  int steps = int(uSteps);
+  for (int i = 0; i < MAX_STEPS; i++) {
+    if (i >= steps || T < 0.03) break;
+    p += rd * stepLen;
+    float d = cloudDensity(p, top);
+    if (d > 0.012) {
+      // One occlusion tap toward the sun: bright rims against DARK bellies —
+      // the contrast IS the volumetric read.
+      float toLight = cloudDensity(p + sun * 6.0, top);
+      float lit = exp(-toLight * 4.5);
+      vec3 col = mix(uFogColor * 0.35, vec3(0.82, 0.85, 0.93), lit * lit);
+      col = mix(col, uSunColor * 1.6, lit * lit * uWarm);
+      col += vec3(0.9, 0.92, 1.0) * uFlash * (0.35 + lit);
+      float a = d * stepLen * 0.17;
+      acc += col * a * T;
+      T *= exp(-d * stepLen * 0.21);
+    }
   }
-  float a = clamp(acc, 0.0, 1.0) * uDensity;
-  if (a < 0.01) discard;
-  vec3 col = mix(uFogColor * 0.9, vec3(0.62, 0.64, 0.72), glow * 1.4);
-  col += vec3(0.9, 0.92, 1.0) * uFlash * (0.6 + glow * 1.2);
-  gl_FragColor = vec4(col, a * 0.85);
+  float alpha = (1.0 - T) * clamp(uDensity * 1.7, 0.0, 1.0);
+  if (alpha < 0.012) discard;
+  gl_FragColor = vec4(acc / max(1.0 - T, 0.001), alpha * 0.92);
 }
 `;
