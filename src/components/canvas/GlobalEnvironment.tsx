@@ -9,6 +9,7 @@ import { uniformProxies } from "@/timelines/uniformProxies";
 import { GPUParticles } from "@/lib/particles/GPUParticles";
 import { PARTICLE_PRESETS } from "@/config/particles";
 import { useDisposable } from "@/hooks/useDisposable";
+import { groundHeight } from "@/utils/terrain";
 
 /** Owns everything persistent: the sky dome + star field (camera-following),
  *  scene fog, the sun/ambient lights, and the once-per-frame refresh of the
@@ -83,6 +84,10 @@ export function GlobalEnvironment() {
         calls: gl.info.render.calls,
         triangles: gl.info.render.triangles,
         dpr: gl.getPixelRatio(),
+        clearance:
+          Math.round(
+            (state.camera.position.y - groundHeight(state.camera.position.x, state.camera.position.z)) * 10,
+          ) / 10,
       };
     }
   });
