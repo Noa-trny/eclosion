@@ -48,13 +48,13 @@ export function ActSection({ act, progress }: ActSectionProps) {
       className={`absolute inset-0 flex flex-col px-6 py-16 sm:px-14 md:px-24 ${alignClass} ${flowClass}`}
       aria-hidden={act.index !== 0 ? undefined : false}
     >
-      <p className="mb-3 text-[11px] uppercase tracking-[0.5em] text-white/45 sm:text-xs">
+      <p className="mb-3 text-[11px] uppercase tracking-[0.5em] text-white/60 sm:text-xs">
         {t.act} {ROMAN[act.index]} — {copy.subtitle}
       </p>
       {/* The visible title now lives IN the 3D world (ActTitles); this copy
           stays for screen readers and the /fallback route keeps its own. */}
       <h2 className="sr-only">{copy.title}</h2>
-      <p className="mt-5 max-w-md text-sm leading-relaxed text-white/60 sm:text-base">
+      <p className="mt-5 max-w-md text-sm leading-relaxed text-white/70 sm:text-base">
         {copy.body}
       </p>
     </motion.section>

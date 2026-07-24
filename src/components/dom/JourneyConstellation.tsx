@@ -63,7 +63,7 @@ export function JourneyConstellation() {
           );
         })}
       </svg>
-      <p className="mt-2 text-[9px] uppercase tracking-[0.4em] text-white/40">
+      <p className="mt-2 text-[9px] uppercase tracking-[0.4em] text-white/55">
         {t.journeyCaption}
       </p>
     </div>

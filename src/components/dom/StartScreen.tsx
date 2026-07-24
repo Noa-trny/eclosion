@@ -115,7 +115,7 @@ export function StartScreen() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 1.2 }}
-              className="mb-7 max-w-[80vw] text-[10px] uppercase tracking-[0.4em] text-white/40 sm:max-w-none sm:tracking-[0.65em] sm:text-[11px]"
+              className="mb-7 max-w-[80vw] text-[10px] uppercase tracking-[0.4em] text-white/55 sm:max-w-none sm:tracking-[0.65em] sm:text-[11px]"
             >
               {t.tagline}
             </motion.p>
@@ -243,7 +243,7 @@ export function StartScreen() {
             {reducedMotion && <p className="mt-6 text-[11px] text-white/35">{t.reducedNote}</p>}
           </motion.div>
 
-          <p className="absolute bottom-8 text-[10px] uppercase tracking-[0.3em] text-white/25 sm:bottom-10">
+          <p className="absolute bottom-8 text-[10px] uppercase tracking-[0.3em] text-white/40 sm:bottom-10">
             {t.footer}
           </p>
         </motion.div>
