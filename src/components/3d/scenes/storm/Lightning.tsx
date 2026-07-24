@@ -192,7 +192,8 @@ export function Lightning() {
       restrike.current = 0.12;
       restrikeSlot.current = slot.current;
     }
-    getAudioEngine()?.thunder();
+    // Close bolts CLAP almost instantly; the distant foreshadow only rumbles.
+    getAudioEngine()?.thunder(Math.min(1, Math.max(0, 1 - (distance - 32) / 110)));
     if (process.env.NODE_ENV !== "production") {
       (window as unknown as { __boltDebug?: object }).__boltDebug = {
         x,

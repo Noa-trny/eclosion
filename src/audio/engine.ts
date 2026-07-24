@@ -127,9 +127,9 @@ class AudioEngine {
     syncListener(this.ctx, position, forward);
   }
 
-  /** Storm lightning calls this directly for a synced rumble. */
-  thunder(): void {
-    playThunder(this.ctx, this.master);
+  /** Storm lightning calls this per strike; closeness 0..1 scales the clap. */
+  thunder(closeness = 0.3): void {
+    playThunder(this.ctx, this.master, closeness);
   }
 
   /** The whale's single pass calls home — spatialized at its position. */
