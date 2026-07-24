@@ -45,14 +45,12 @@ varying vec3 vColor;
 varying vec3 vNormal;
 varying vec3 vWorldPos;
 
-uniform vec3 uSeasonTint;
-
 void main() {
   float shade = halfLambert(vNormal, uSunDir);
   float light = shade * uSunIntensity;
   // Shadowed foliage picks up the cool sky, lit foliage the moon — contrast.
   vec3 ambient = mix(uAmbientColor * 0.55, uAmbientColor, shade);
-  vec3 col = vColor * uSeasonTint * (ambient * uAmbientIntensity * 2.4 + uSunColor * light * 2.2);
+  vec3 col = vColor * (ambient * uAmbientIntensity * 2.4 + uSunColor * light * 2.2);
   // Moon rim: silhouettes against the moonlit fog.
   vec3 viewDir = normalize(cameraPosition - vWorldPos);
   float rim = fresnel(viewDir, normalize(vNormal), 2.5);
@@ -79,7 +77,6 @@ export function createTreeMaterial(): THREE.ShaderMaterial {
       uFogColor: sharedUniforms.uFogColor,
       uFogDensity: sharedUniforms.uFogDensity,
       uGrowth: { value: 0 },
-      uSeasonTint: { value: new THREE.Vector3(1, 1, 1) },
     },
   });
 }

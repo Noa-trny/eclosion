@@ -98,8 +98,6 @@ export const UI = {
     secretSub: "Tout recommence.",
     trailer: "Bande-annonce",
     trailerExit: "Reprendre la main",
-    seasonAutumn: "Le monde se souvient de vous — l'automne est venu.",
-    seasonWinter: "Le monde se souvient de vous — l'hiver s'est posé.",
     journeyCaption: "Votre traversée, dessinée dans les étoiles",
   },
   en: {
@@ -140,8 +138,6 @@ export const UI = {
     secretSub: "Everything begins anew.",
     trailer: "Trailer",
     trailerExit: "Take back control",
-    seasonAutumn: "The world remembers you — autumn has come.",
-    seasonWinter: "The world remembers you — winter has settled.",
     journeyCaption: "Your crossing, drawn in the stars",
   },
 } as const satisfies Record<Lang, Record<string, string>>;

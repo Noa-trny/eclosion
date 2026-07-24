@@ -1,10 +1,8 @@
 "use client";
 
 import { AnimatePresence, motion, useMotionValue, useTransform } from "motion/react";
-import { useEffect, useState } from "react";
 import { useAppStore } from "@/stores/appStore";
 import { initAudioEngine } from "@/audio/engine";
-import { getSeason, type Season } from "@/lib/season";
 import { useT } from "@/hooks/useLang";
 
 const TITLE = "ÉCLOSION";
@@ -21,9 +19,6 @@ export function StartScreen() {
   const start = useAppStore((s) => s.start);
   const reducedMotion = useAppStore((s) => s.reducedMotion);
   const t = useT();
-  // Post-mount read: localStorage must not desync SSR hydration.
-  const [season, setSeason] = useState<Season>(0);
-  useEffect(() => setSeason(getSeason()), []);
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
   const titleX = useTransform(mx, (v) => v * -18);
@@ -140,19 +135,6 @@ export function StartScreen() {
             >
               {t.intro}
             </motion.p>
-
-            {season > 0 && (
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 2.3, duration: 1.4 }}
-                className={`mt-4 text-[11px] uppercase tracking-[0.3em] ${
-                  season === 1 ? "text-[#e8a35c]/70" : "text-[#a9c3ef]/70"
-                }`}
-              >
-                {season === 1 ? t.seasonAutumn : t.seasonWinter}
-              </motion.p>
-            )}
 
             {/* Light gathering to a point: the ember, held by two threads. */}
             <motion.div

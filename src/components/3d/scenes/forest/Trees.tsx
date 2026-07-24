@@ -11,7 +11,6 @@ import { QUALITY_PRESETS } from "@/config/quality";
 import { FOREST_CENTER, FOREST_RADIUS, WATER_LEVEL } from "@/config/world";
 import { groundHeight } from "@/utils/terrain";
 import { mulberry32 } from "@/utils/random";
-import { getSeason, SEASON_LOOKS } from "@/lib/season";
 
 /** The camera glides between these path anchors — keep a clearing around them. */
 const PATH_CLEARANCE: Array<[number, number]> = [
@@ -28,13 +27,7 @@ export function Trees() {
     const rng = mulberry32(4242);
     return Array.from({ length: 5 }, () => createTreeGeometry(rng));
   }, []);
-  const material = useMemo(() => {
-    const mat = createTreeMaterial();
-    // The world remembers: returning visitors find the foliage turned.
-    const [r, g, b] = SEASON_LOOKS[getSeason()].tree;
-    (mat.uniforms.uSeasonTint?.value as THREE.Vector3 | undefined)?.set(r, g, b);
-    return mat;
-  }, []);
+  const material = useMemo(() => createTreeMaterial(), []);
 
   const meshes = useMemo(() => {
     const total = QUALITY_PRESETS[tier].treeCount;
