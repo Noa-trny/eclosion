@@ -94,6 +94,8 @@ export const UI = {
     acts: "Actes",
     secretLine: "La graine retombe.",
     secretSub: "Tout recommence.",
+    trailer: "Bande-annonce",
+    trailerExit: "Reprendre la main",
   },
   en: {
     act: "Act",
@@ -129,6 +131,8 @@ export const UI = {
     acts: "Acts",
     secretLine: "The seed falls again.",
     secretSub: "Everything begins anew.",
+    trailer: "Trailer",
+    trailerExit: "Take back control",
   },
 } as const satisfies Record<Lang, Record<string, string>>;
 
