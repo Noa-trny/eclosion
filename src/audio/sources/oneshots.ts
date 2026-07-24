@@ -163,10 +163,58 @@ export function playWhale(ctx: AudioContext, out: AudioNode): void {
   }, 9000);
 }
 
-/** Thunder: delayed (distance) brown-ish burst with a long lowpassed tail. */
-export function playThunder(ctx: AudioContext, out: AudioNode): void {
-  const delay = 0.3 + Math.random() * 1.2;
+/** Thunder in three layers — CRACK (broadband tear), sub THUMP (the hit in
+ *  the chest) and the rolling rumble. `closeness` 0..1 comes from the bolt's
+ *  distance: a close strike claps almost instantly and hits hard, a distant
+ *  one arrives late as rumble only. */
+export function playThunder(ctx: AudioContext, out: AudioNode, closeness = 0.3): void {
+  const delay = 0.1 + (1 - closeness) * (0.9 + Math.random() * 0.5);
   const t = ctx.currentTime + delay;
+
+  // 1. The crack — a sharp broadband tear sweeping down. Close strikes only.
+  if (closeness > 0.15) {
+    const crackLen = Math.floor(ctx.sampleRate * 0.5);
+    const crackBuf = ctx.createBuffer(1, crackLen, ctx.sampleRate);
+    const cd = crackBuf.getChannelData(0);
+    for (let i = 0; i < crackLen; i++) {
+      cd[i] = (Math.random() * 2 - 1) * Math.exp(-i / (crackLen * 0.09));
+    }
+    const crack = ctx.createBufferSource();
+    crack.buffer = crackBuf;
+    const bp = ctx.createBiquadFilter();
+    bp.type = "bandpass";
+    bp.Q.value = 0.7;
+    bp.frequency.setValueAtTime(3200, t);
+    bp.frequency.exponentialRampToValueAtTime(320, t + 0.4);
+    const cg = ctx.createGain();
+    cg.gain.setValueAtTime(0.55 * closeness, t);
+    crack.connect(bp).connect(cg).connect(out);
+    crack.start(t);
+    crack.onended = () => {
+      crack.disconnect();
+      bp.disconnect();
+      cg.disconnect();
+    };
+  }
+
+  // 2. The sub thump — a fast sine drop you feel more than hear.
+  const thump = ctx.createOscillator();
+  thump.type = "sine";
+  thump.frequency.setValueAtTime(90, t);
+  thump.frequency.exponentialRampToValueAtTime(36, t + 0.35);
+  const tg = ctx.createGain();
+  tg.gain.setValueAtTime(0.0001, t);
+  tg.gain.exponentialRampToValueAtTime(0.5 * (0.3 + closeness * 0.7), t + 0.02);
+  tg.gain.exponentialRampToValueAtTime(0.0001, t + 0.6);
+  thump.connect(tg).connect(out);
+  thump.start(t);
+  thump.stop(t + 0.7);
+  thump.onended = () => {
+    thump.disconnect();
+    tg.disconnect();
+  };
+
+  // 3. The rolling rumble — brown-ish burst, opened up when the strike is close.
   const length = Math.floor(ctx.sampleRate * 2.8);
   const buffer = ctx.createBuffer(1, length, ctx.sampleRate);
   const data = buffer.getChannelData(0);
@@ -179,10 +227,10 @@ export function playThunder(ctx: AudioContext, out: AudioNode): void {
   src.buffer = buffer;
   const filter = ctx.createBiquadFilter();
   filter.type = "lowpass";
-  filter.frequency.setValueAtTime(140, t);
+  filter.frequency.setValueAtTime(140 + closeness * 260, t);
   filter.frequency.exponentialRampToValueAtTime(70, t + 2.2);
   const gain = ctx.createGain();
-  gain.gain.setValueAtTime(0.4, t);
+  gain.gain.setValueAtTime(0.35 + closeness * 0.3, t);
   src.connect(filter).connect(gain).connect(out);
   src.start(t);
   src.onended = () => {
