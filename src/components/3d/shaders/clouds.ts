@@ -28,16 +28,24 @@ varying vec3 vWorldPos;
 const int MAX_STEPS = 30;
 const float SLAB = 16.0;
 
-float cloudDensity(vec3 p, float topY) {
+// Two-octave base: the march runs this dozens of times per pixel — every
+// snoise call counts. The full 4-octave fbm was the storm's frame-killer.
+float cloudBase(vec3 p, float topY) {
   float hNorm = clamp((topY - p.y) / SLAB, 0.0, 1.0);
   float heightShape = smoothstep(0.0, 0.22, hNorm) * smoothstep(1.0, 0.5, hNorm);
   vec3 q = p * 0.018 + vec3(uWind.x, 0.0, uWind.z) * uTime * 0.012;
-  float base = fbm3(q) * 0.5 + 0.5;
-  float detail = snoise3(q * 3.9 + vec3(0.0, uTime * 0.02, 0.0)) * 0.5 + 0.5;
+  float base = snoise3(q) * 0.62 + snoise3(q * 2.3) * 0.3 + 0.5;
   float d = base - (1.0 - uDensity) * 0.72;
-  // Strong erosion: ragged, sculpted shapes instead of a uniform ceiling.
-  d -= (1.0 - detail) * 0.34;
   return clamp(d * 1.4, 0.0, 1.0) * heightShape;
+}
+
+// Full density (base + erosion detail) — primary samples only.
+float cloudDensity(vec3 p, float topY) {
+  float d = cloudBase(p, topY);
+  if (d < 0.01) return d;
+  vec3 q = p * 0.018 + vec3(uWind.x, 0.0, uWind.z) * uTime * 0.012;
+  float detail = snoise3(q * 3.9 + vec3(0.0, uTime * 0.02, 0.0)) * 0.5 + 0.5;
+  return clamp(d - (1.0 - detail) * 0.34, 0.0, 1.0);
 }
 
 void main() {
@@ -67,8 +75,9 @@ void main() {
     float d = cloudDensity(p, top);
     if (d > 0.012) {
       // One occlusion tap toward the sun: bright rims against DARK bellies —
-      // the contrast IS the volumetric read.
-      float toLight = cloudDensity(p + sun * 6.0, top);
+      // the contrast IS the volumetric read. Cheap base only: erosion detail
+      // is invisible through Beer's law anyway.
+      float toLight = cloudBase(p + sun * 6.0, top);
       float lit = exp(-toLight * 4.5);
       vec3 col = mix(uFogColor * 0.35, vec3(0.82, 0.85, 0.93), lit * lit);
       col = mix(col, uSunColor * 1.6, lit * lit * uWarm);
