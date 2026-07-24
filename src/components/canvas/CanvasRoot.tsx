@@ -15,6 +15,7 @@ import { WeatherSystem } from "./WeatherSystem";
 import { QualityManager } from "./QualityManager";
 import { AudioListenerSync } from "./AudioListenerSync";
 import { CursorWake } from "./CursorWake";
+import { ActTitles } from "@/components/3d/ActTitles";
 import { PostProcessing } from "@/effects/PostProcessing";
 
 function ContextLossBridge() {
@@ -52,6 +53,7 @@ export function CanvasRoot() {
         <WorldGround />
         <WeatherSystem />
         <SceneManager />
+        <ActTitles />
         <CameraRig />
         <FreeRoamController />
         <CursorWake />

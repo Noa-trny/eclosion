@@ -92,6 +92,8 @@ export const UI = {
     credits: "Conçu et développé par Noa · 100 % procédural — WebGL 2 · Typographie Fraunces (OFL)",
     contextLost: "Le monde se reconstruit… (contexte graphique perdu)",
     acts: "Actes",
+    secretLine: "La graine retombe.",
+    secretSub: "Tout recommence.",
   },
   en: {
     act: "Act",
@@ -125,6 +127,8 @@ export const UI = {
     credits: "Designed & built by Noa · 100% procedural — WebGL 2 · Type: Fraunces (OFL)",
     contextLost: "The world is rebuilding… (graphics context lost)",
     acts: "Acts",
+    secretLine: "The seed falls again.",
+    secretSub: "Everything begins anew.",
   },
 } as const satisfies Record<Lang, Record<string, string>>;
 
