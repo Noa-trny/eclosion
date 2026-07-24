@@ -133,31 +133,6 @@ export function StartScreen() {
               {t.intro}
             </motion.p>
 
-            {/* Light gathering to a point: the ember, held by two threads. */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.8, duration: 1.2 }}
-              className="mt-9 flex items-center gap-3"
-            >
-              <motion.div
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ delay: 1.8, duration: 1.4, ease: "easeOut" }}
-                className="h-px w-20 origin-right bg-gradient-to-l from-white/40 to-transparent"
-              />
-              <motion.div
-                animate={reducedMotion ? {} : { opacity: [0.5, 1, 0.6, 0.9, 0.5], scale: [1, 1.25, 1, 1.15, 1] }}
-                transition={HEARTBEAT}
-                className="h-1.5 w-1.5 rounded-full bg-[#ffd9a0] shadow-[0_0_14px_4px_rgba(255,190,110,0.45)]"
-              />
-              <motion.div
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{ delay: 1.8, duration: 1.4, ease: "easeOut" }}
-                className="h-px w-20 origin-left bg-gradient-to-r from-white/40 to-transparent"
-              />
-            </motion.div>
 
             {/* Boot indicator: OUTSIDE any JS-delayed entrance and CSS-only —
                 shader compiles freeze the main thread, and this must be
@@ -175,8 +150,8 @@ export function StartScreen() {
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 2.1, duration: 0.9 }}
-              className="mt-9 flex flex-col items-center gap-3 sm:flex-row"
+              transition={{ delay: 1.9, duration: 0.9 }}
+              className="mt-10 flex flex-col items-center gap-3 sm:flex-row"
             >
               {phase !== "boot" && (
                 <>
