@@ -34,9 +34,10 @@ float cloudDensity(vec3 p, float topY) {
   vec3 q = p * 0.018 + vec3(uWind.x, 0.0, uWind.z) * uTime * 0.012;
   float base = fbm3(q) * 0.5 + 0.5;
   float detail = snoise3(q * 3.9 + vec3(0.0, uTime * 0.02, 0.0)) * 0.5 + 0.5;
-  float d = base - (1.0 - uDensity) * 0.78;
-  d -= (1.0 - detail) * 0.2;
-  return clamp(d, 0.0, 1.0) * heightShape;
+  float d = base - (1.0 - uDensity) * 0.72;
+  // Strong erosion: ragged, sculpted shapes instead of a uniform ceiling.
+  d -= (1.0 - detail) * 0.34;
+  return clamp(d * 1.4, 0.0, 1.0) * heightShape;
 }
 
 void main() {
@@ -65,11 +66,12 @@ void main() {
     p += rd * stepLen;
     float d = cloudDensity(p, top);
     if (d > 0.012) {
-      // One occlusion tap toward the sun: lit rims, dark bellies.
+      // One occlusion tap toward the sun: bright rims against DARK bellies —
+      // the contrast IS the volumetric read.
       float toLight = cloudDensity(p + sun * 6.0, top);
-      float lit = exp(-toLight * 3.2);
-      vec3 col = mix(uFogColor * 0.65, vec3(0.62, 0.66, 0.74), lit);
-      col = mix(col, uSunColor * 1.5, lit * lit * uWarm);
+      float lit = exp(-toLight * 4.5);
+      vec3 col = mix(uFogColor * 0.35, vec3(0.82, 0.85, 0.93), lit * lit);
+      col = mix(col, uSunColor * 1.6, lit * lit * uWarm);
       col += vec3(0.9, 0.92, 1.0) * uFlash * (0.35 + lit);
       float a = d * stepLen * 0.17;
       acc += col * a * T;

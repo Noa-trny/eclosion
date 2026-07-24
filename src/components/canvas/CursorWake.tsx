@@ -8,7 +8,6 @@ import { uniformProxies } from "@/timelines/uniformProxies";
 import { useProgressStore } from "@/stores/progressStore";
 import { useAppStore } from "@/stores/appStore";
 import { useDisposable } from "@/hooks/useDisposable";
-import { recordSow } from "@/lib/sowStore";
 
 const MAX = 160;
 const LIFETIME = 1.6;
@@ -100,8 +99,6 @@ export function CursorWake() {
     if (intensity > 0.05 && moved > 0.004) {
       state.world.set(pointer.x, pointer.y, 0.5).unproject(camera).sub(camera.position).normalize();
       state.world.multiplyScalar(13).add(camera.position);
-      // Every wake gesture is remembered — it will bloom golden in act VII.
-      recordSow(pointer.x);
       const emit = Math.min(coarse ? 5 : 3, Math.ceil(moved * 40));
       const spread = coarse ? 0.9 : 0.5;
       const positions = geometry.attributes.position;

@@ -74,15 +74,8 @@ void main() {
 }
 `;
 
-interface FlowerColors {
-  center?: THREE.ColorRepresentation;
-  petal?: THREE.ColorRepresentation;
-  petalAlt?: THREE.ColorRepresentation;
-}
-
-/** Instanced flowers whose corolla opens with the bloom act's radial wave.
- *  Colors are overridable — the visitor's sown flowers bloom golden. */
-export function createFlowerMaterial(colors: FlowerColors = {}): THREE.ShaderMaterial {
+/** Instanced flowers whose corolla opens with the bloom act's uBloom scrub. */
+export function createFlowerMaterial(): THREE.ShaderMaterial {
   return new THREE.ShaderMaterial({
     vertexShader,
     fragmentShader,
@@ -100,9 +93,9 @@ export function createFlowerMaterial(colors: FlowerColors = {}): THREE.ShaderMat
       uBloom: { value: 0 },
       uCenter: { value: new THREE.Vector2(0, 0) },
       uRadius: { value: 50 },
-      uCenterColor: { value: new THREE.Color(colors.center ?? 0xffc24d) },
-      uPetalColor: { value: new THREE.Color(colors.petal ?? 0xe86fa4) },
-      uPetalColorAlt: { value: new THREE.Color(colors.petalAlt ?? 0x8f7ff0) },
+      uCenterColor: { value: new THREE.Color(0xffc24d) },
+      uPetalColor: { value: new THREE.Color(0xe86fa4) },
+      uPetalColorAlt: { value: new THREE.Color(0x8f7ff0) },
     },
   });
 }

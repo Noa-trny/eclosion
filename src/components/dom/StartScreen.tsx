@@ -1,13 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useAppStore } from "@/stores/appStore";
 import { initAudioEngine } from "@/audio/engine";
 import { useT } from "@/hooks/useLang";
-
-const HOLD_SECONDS = 1.15;
-const RING_LENGTH = 2 * Math.PI * 46;
 
 /** The gate: unlocks audio inside the click gesture, then hands the visitor
  *  to the scroll. Until dismissed, Lenis stays frozen. */
@@ -17,43 +13,11 @@ export function StartScreen() {
   const start = useAppStore((s) => s.start);
   const reducedMotion = useAppStore((s) => s.reducedMotion);
   const t = useT();
-  const [holdProgress, setHoldProgress] = useState(0);
-  const [planted, setPlanted] = useState(false);
-  const holding = useRef(false);
-  const progressRef = useRef(0);
-  const rafRef = useRef(0);
-  const lastTime = useRef(0);
 
   const enter = (withAudio: boolean): void => {
     if (withAudio) initAudioEngine();
     start(withAudio);
   };
-
-  // The founding gesture: HOLD to plant the seed. The press is the user
-  // gesture that legally unlocks the audio, and emotionally plants the world.
-  const plant = (): void => {
-    if (planted) return;
-    setPlanted(true);
-    initAudioEngine();
-    setTimeout(() => start(true), 900);
-  };
-
-  useEffect(() => {
-    const tick = (time: number): void => {
-      const dt = lastTime.current ? Math.min((time - lastTime.current) / 1000, 0.05) : 0;
-      lastTime.current = time;
-      const target = holding.current
-        ? progressRef.current + dt / HOLD_SECONDS
-        : progressRef.current - dt * 2.2;
-      progressRef.current = Math.max(0, Math.min(1, target));
-      setHoldProgress(progressRef.current);
-      if (progressRef.current >= 1) plant();
-      rafRef.current = requestAnimationFrame(tick);
-    };
-    rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [planted]);
 
   return (
     <AnimatePresence>
@@ -121,14 +85,14 @@ export function StartScreen() {
               >
                 {t.sprouting}
               </motion.p>
-            ) : reducedMotion ? (
+            ) : (
               <>
                 <button
                   type="button"
-                  onClick={() => enter(true)}
+                  onClick={() => enter(!reducedMotion)}
                   className="rounded-full border border-white/60 bg-white/95 px-8 py-3 text-xs font-medium uppercase tracking-[0.25em] text-black transition hover:bg-white"
                 >
-                  {t.enterSound}
+                  {reducedMotion ? t.enter : t.enterSound}
                 </button>
                 <button
                   type="button"
@@ -138,63 +102,6 @@ export function StartScreen() {
                   {t.enterQuiet}
                 </button>
               </>
-            ) : (
-              <div className="flex flex-col items-center gap-4">
-                <button
-                  type="button"
-                  aria-label={t.plantHold}
-                  onPointerDown={() => {
-                    holding.current = true;
-                  }}
-                  onPointerUp={() => {
-                    holding.current = false;
-                  }}
-                  onPointerLeave={() => {
-                    holding.current = false;
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.code === "Enter" || e.code === "Space") plant();
-                  }}
-                  className="relative h-28 w-28 cursor-pointer touch-none select-none rounded-full outline-offset-8"
-                >
-                  <svg viewBox="0 0 100 100" className="absolute inset-0 h-full w-full -rotate-90">
-                    <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(255,255,255,0.14)" strokeWidth="1.5" />
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="46"
-                      fill="none"
-                      stroke="rgba(255,184,92,0.95)"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeDasharray={RING_LENGTH}
-                      strokeDashoffset={RING_LENGTH * (1 - holdProgress)}
-                    />
-                  </svg>
-                  {/* The seed itself, swelling with the hold. */}
-                  <div
-                    className="absolute left-1/2 top-1/2 h-6 w-4 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-b from-[#ffb85c] to-[#7a4514]"
-                    style={{
-                      transform: `translate(-50%, -50%) scale(${1 + holdProgress * 0.7}) ${planted ? "translateY(18px)" : ""}`,
-                      opacity: planted ? 0 : 0.65 + holdProgress * 0.35,
-                      boxShadow: `0 0 ${8 + holdProgress * 26}px rgba(255,184,92,${0.25 + holdProgress * 0.55})`,
-                      transition: planted ? "all 0.8s ease-in" : "box-shadow 0.1s",
-                    }}
-                  />
-                </button>
-                <p className="text-[11px] uppercase tracking-[0.3em] text-white/50">
-                  {planted ? t.planted : t.plantHold}
-                </p>
-                {!planted && (
-                  <button
-                    type="button"
-                    onClick={() => enter(false)}
-                    className="text-[10px] uppercase tracking-[0.25em] text-white/35 underline-offset-4 transition hover:text-white/70 hover:underline"
-                  >
-                    {t.enterQuiet}
-                  </button>
-                )}
-              </div>
             )}
           </motion.div>
 
