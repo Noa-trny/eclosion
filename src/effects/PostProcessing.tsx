@@ -19,6 +19,7 @@ import { useAppStore } from "@/stores/appStore";
 import { useProgressStore } from "@/stores/progressStore";
 import { uniformProxies } from "@/timelines/uniformProxies";
 import { clamp01 } from "@/utils/math";
+import { getSeason, SEASON_LOOKS } from "@/lib/season";
 import { GrainEffect } from "./GrainEffect";
 import { SpeedBlurEffect } from "./SpeedBlurEffect";
 import { ColorGradeEffect } from "./ColorGradeEffect";
@@ -47,9 +48,17 @@ export function PostProcessing() {
   const ripple = useMemo(() => new ActTransitionEffect(), []);
   const dofRef = useRef<DepthOfFieldEffect>(null);
 
+  const season = useMemo(() => SEASON_LOOKS[getSeason()], []);
+
   useFrame(() => {
     const g = uniformProxies.grade;
-    grade.setGrade(g.temperature, g.saturation, g.lift, g.underwater);
+    // The season colours the whole film: warm-shifted autumn, drained winter.
+    grade.setGrade(
+      g.temperature + season.temperature,
+      g.saturation * season.saturation,
+      g.lift,
+      g.underwater,
+    );
     ripple.setRipple(uniformProxies.transition.ripple);
     const velocity = useProgressStore.getState().velocity;
     speedBlur.setStrength(flags.speedBlur ? clamp01(Math.abs(velocity) / 6000) : 0);

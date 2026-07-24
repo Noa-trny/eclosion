@@ -10,6 +10,7 @@ import { useQualityStore } from "@/stores/qualityStore";
 import { MEADOW_CENTER, WATER_LEVEL } from "@/config/world";
 import { groundHeight } from "@/utils/terrain";
 import { mulberry32 } from "@/utils/random";
+import { getSeason, SEASON_LOOKS } from "@/lib/season";
 import type { Tier } from "@/types/quality";
 
 const COUNTS: Record<Tier, number> = { high: 900, medium: 450, low: 140 };
@@ -22,6 +23,9 @@ export function Flowers() {
     const mat = createFlowerMaterial();
     const center = mat.uniforms.uCenter;
     if (center) (center.value as THREE.Vector2).set(MEADOW_CENTER[0], MEADOW_CENTER[1]);
+    // Returning visitors bloom into a turned season.
+    const [r, g, b] = SEASON_LOOKS[getSeason()].flower;
+    (mat.uniforms.uSeasonTint?.value as THREE.Vector3 | undefined)?.set(r, g, b);
     return mat;
   }, []);
 

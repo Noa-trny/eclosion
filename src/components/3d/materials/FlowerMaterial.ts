@@ -61,8 +61,10 @@ varying float vTip;
 varying float vPhase;
 varying float vWave;
 
+uniform vec3 uSeasonTint;
+
 void main() {
-  vec3 petal = mix(uPetalColor, uPetalColorAlt, fract(vPhase * 7.31));
+  vec3 petal = mix(uPetalColor, uPetalColorAlt, fract(vPhase * 7.31)) * uSeasonTint;
   vec3 albedo = mix(uCenterColor, petal, smoothstep(0.05, 0.5, vTip));
   float light = halfLambert(vNormal, uSunDir) * uSunIntensity;
   vec3 col = albedo * (uAmbientColor * uAmbientIntensity * 3.4 + uSunColor * light * 2.2);
@@ -96,6 +98,7 @@ export function createFlowerMaterial(): THREE.ShaderMaterial {
       uCenterColor: { value: new THREE.Color(0xffc24d) },
       uPetalColor: { value: new THREE.Color(0xe86fa4) },
       uPetalColorAlt: { value: new THREE.Color(0x8f7ff0) },
+      uSeasonTint: { value: new THREE.Vector3(1, 1, 1) },
     },
   });
 }

@@ -6,6 +6,7 @@ import { useAppStore } from "@/stores/appStore";
 import { useProgressStore } from "@/stores/progressStore";
 import { scrollToProgress } from "@/lib/scrollControl";
 import { getAudioEngine } from "@/audio/engine";
+import { markCrossingComplete } from "@/lib/season";
 import { useT } from "@/hooks/useLang";
 
 /** How long the visitor must stay still on the end card before the world
@@ -20,6 +21,7 @@ export function PostCredits() {
   const secretActive = useAppStore((s) => s.secretActive);
   const t = useT();
   const lastProgress = useRef(0);
+  const crossed = useRef(false);
 
   // Armed by stillness: 20s without scroll while parked on the end card.
   useEffect(() => {
@@ -34,6 +36,11 @@ export function PostCredits() {
     };
     const unsub = useProgressStore.subscribe(() => {
       const { progress } = useProgressStore.getState();
+      // One completed crossing per session — the NEXT visit turns the season.
+      if (progress > 0.985 && !crossed.current) {
+        crossed.current = true;
+        markCrossingComplete();
+      }
       if (Math.abs(progress - lastProgress.current) < 0.003) return;
       lastProgress.current = progress;
       if (progress < 0.97 && useAppStore.getState().secretActive) {
