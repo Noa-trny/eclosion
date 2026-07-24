@@ -110,18 +110,19 @@ export function StartScreen() {
                 transition={{ scale: HEARTBEAT }}
                 className="font-display relative flex text-[15vw] leading-none tracking-[0.14em] sm:text-[7.5rem] md:text-[9rem]"
               >
-                {/* Gradient per LETTER: background-clip:text breaks when child
-                    spans carry their own transform/filter layers. */}
+                {/* Gradient per LETTER (background-clip:text breaks when child
+                    spans carry their own transform/filter layers). CSS-animated:
+                    JS staggering froze mid-word during first-load compiles. */}
                 {TITLE.split("").map((letter, i) => (
-                  <motion.span
+                  <span
                     key={i}
-                    initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 30, filter: "blur(12px)" }}
-                    animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                    transition={{ delay: 0.5 + i * 0.09, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                    className="bg-gradient-to-b from-white via-white to-[#f4c98a] bg-clip-text text-transparent"
+                    className={`bg-gradient-to-b from-white via-white to-[#f4c98a] bg-clip-text text-transparent ${
+                      reducedMotion ? "" : "letter-rise"
+                    }`}
+                    style={reducedMotion ? undefined : { animationDelay: `${0.5 + i * 0.09}s` }}
                   >
                     {letter}
-                  </motion.span>
+                  </span>
                 ))}
               </motion.h1>
             </div>
