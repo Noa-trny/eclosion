@@ -29,7 +29,7 @@ export function DawnClouds() {
     const density = material.uniforms.uDensity;
     if (density) density.value = uniformProxies.acts.sunriseProgress * 0.8;
     const steps = material.uniforms.uSteps;
-    if (steps) steps.value = tier === "high" ? 24 : 12;
+    if (steps) steps.value = tier === "high" ? 16 : 9;
   });
 
   if (tier === "low") return null;
