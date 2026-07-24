@@ -25,6 +25,8 @@ export function CloudLayer() {
   useFrame(() => {
     const d = material.uniforms.uDensity;
     if (d) d.value = uniformProxies.acts.cloudDensity;
+    const steps = material.uniforms.uSteps;
+    if (steps) steps.value = tier === "high" ? 26 : 13;
   });
 
   if (tier === "low") return null;

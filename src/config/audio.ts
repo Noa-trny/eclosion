@@ -21,6 +21,7 @@ export const ACT_AUDIO: Record<ActId, ActAudioRecipe> = {
     ocean: 0,
     rumble: 0.04,
     oneShots: {},
+    motif: { every: 13, variant: "faint" },
   },
   seed: {
     act: "seed",
@@ -31,6 +32,7 @@ export const ACT_AUDIO: Record<ActId, ActAudioRecipe> = {
     ocean: 0,
     rumble: 0,
     oneShots: { droplet: 0.1 },
+    motif: { every: 9, variant: "music" },
   },
   forest: {
     act: "forest",
@@ -41,6 +43,7 @@ export const ACT_AUDIO: Record<ActId, ActAudioRecipe> = {
     ocean: 0,
     rumble: 0,
     oneShots: { bird: 0.12, droplet: 0.05 },
+    motif: { every: 10, variant: "pluck" },
   },
   storm: {
     act: "storm",
@@ -52,6 +55,7 @@ export const ACT_AUDIO: Record<ActId, ActAudioRecipe> = {
     rumble: 0.06,
     // The rain bed already carries the water — one-shots stay sparse.
     oneShots: { droplet: 0.15 },
+    motif: { every: 14, variant: "dark" },
   },
   ocean: {
     act: "ocean",
@@ -62,6 +66,7 @@ export const ACT_AUDIO: Record<ActId, ActAudioRecipe> = {
     ocean: 0.35,
     rumble: 0,
     oneShots: { droplet: 0.15 },
+    motif: { every: 11, variant: "deep" },
   },
   volcano: {
     act: "volcano",
@@ -72,6 +77,7 @@ export const ACT_AUDIO: Record<ActId, ActAudioRecipe> = {
     ocean: 0,
     rumble: 0.3,
     oneShots: { crackle: 0.35 },
+    motif: { every: 14, variant: "tense" },
   },
   bloom: {
     act: "bloom",
@@ -82,6 +88,7 @@ export const ACT_AUDIO: Record<ActId, ActAudioRecipe> = {
     ocean: 0,
     rumble: 0,
     oneShots: { bird: 0.25 },
+    motif: { every: 9, variant: "bright" },
   },
   dawn: {
     act: "dawn",
@@ -92,5 +99,6 @@ export const ACT_AUDIO: Record<ActId, ActAudioRecipe> = {
     ocean: 0,
     rumble: 0,
     oneShots: { bird: 0.3 },
+    motif: { every: 7, variant: "bright" },
   },
 };

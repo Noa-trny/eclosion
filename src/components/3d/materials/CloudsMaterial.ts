@@ -14,7 +14,11 @@ export function createCloudsMaterial(): THREE.ShaderMaterial {
       uWind: sharedUniforms.uWind,
       uFlash: sharedUniforms.uFlash,
       uFogColor: sharedUniforms.uFogColor,
+      uSunDir: sharedUniforms.uSunDir,
+      uSunColor: sharedUniforms.uSunColor,
       uDensity: { value: 0 },
+      uSteps: { value: 14 },
+      uWarm: { value: 0 },
     },
   });
 }
