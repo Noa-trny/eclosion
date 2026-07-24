@@ -10,10 +10,11 @@ import { ActSection } from "./ActSection";
 export function Overlay() {
   const progress = useScrollProgressMV();
   const mode = useAppStore((s) => s.mode);
+  const started = useAppStore((s) => s.started);
   return (
     <div
       className={`pointer-events-none fixed inset-0 z-20 transition-opacity duration-700 ${
-        mode === "scroll" ? "opacity-100" : "opacity-0"
+        mode === "scroll" && started ? "opacity-100" : "opacity-0"
       }`}
     >
       {ACTS.map((act) => (

@@ -28,7 +28,8 @@ interface TitleAnchor {
 /** Hand-placed: each title hangs in the act's opening sightline, far enough
  *  to sit IN the world (fog, DOF, parallax), near enough to read. */
 const ANCHORS: TitleAnchor[] = [
-  { pos: [0, 8.6, 30], portraitPos: [0, 10.4, 30], face: [0, 9, 66], width: 17, window: [0, 0.02, 0.55, 0.75] },
+  // Negative fade-in start: fully present at rest (p=0), right after entry.
+  { pos: [0, 10, 30], portraitPos: [0, 11.5, 30], face: [0, 9, 66], width: 17, window: [-0.02, 0, 0.55, 0.75] },
   { pos: [-2.4, 4.8, 6.5], portraitPos: [0.4, 5.4, 7], face: [1.5, 4.5, 26], width: 6, window: [0.05, 0.16, 0.42, 0.6] },
   { pos: [-6.5, 7, -36], face: [-4, 3.6, -6], width: 9, window: [0.05, 0.16, 0.42, 0.6] },
   { pos: [27.5, 29.5, -56.5], face: [12.4, 28, -71.3], width: 13, window: [0.05, 0.16, 0.45, 0.62] },
@@ -93,7 +94,10 @@ export function ActTitles() {
 
   useFrame((state, delta) => {
     const progress = useProgressStore.getState().progress;
-    const inScroll = useAppStore.getState().mode === "scroll" ? 1 : 0;
+    const app = useAppStore.getState();
+    // Hidden until entry — the start screen's veil is translucent and the
+    // void title would ghost through it.
+    const inScroll = app.mode === "scroll" && app.started ? 1 : 0;
     const screenAspect = state.size.width / state.size.height;
     const portrait = screenAspect < 0.9;
     // Narrow screens: shrink the plane so the words stay inside the frame.
