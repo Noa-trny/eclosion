@@ -5,6 +5,7 @@ import { Fireflies } from "./Fireflies";
 import { Moon } from "./Moon";
 import { MoonShafts } from "./MoonShafts";
 import { Undergrowth } from "./Undergrowth";
+import { Owl } from "@/components/3d/encounters/Owl";
 
 /** Act 2 — trees rise under the moon, fireflies wake between the trunks,
  *  ferns and creeping mist inhabit the floor. The ground itself is the
@@ -17,6 +18,7 @@ export function ForestScene() {
       <Fireflies />
       <Moon />
       <MoonShafts />
+      <Owl />
     </group>
   );
 }
