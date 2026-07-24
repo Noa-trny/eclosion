@@ -55,9 +55,12 @@ export function CinematicController() {
 
   useEffect(() => {
     if (!cinema) return;
-    const t0 = performance.now();
+    let t0 = performance.now();
     let raf = 0;
-    const stop = (): void => useAppStore.getState().setCinema(false);
+    const stop = (): void => {
+      useAppStore.getState().setCinema(false);
+      useAppStore.getState().setScreensaver(false);
+    };
     const tick = (): void => {
       const p = paceProgress((performance.now() - t0) / 1000);
       const max = document.documentElement.scrollHeight - window.innerHeight;
@@ -65,6 +68,12 @@ export function CinematicController() {
       if (lenis) lenis.scrollTo(p * max, { immediate: true });
       else window.scrollTo(0, p * max);
       if (p >= 1) {
+        // Screensaver: the film is an exhibit — rewind and play again.
+        if (useAppStore.getState().screensaver) {
+          t0 = performance.now() + 1800;
+          raf = requestAnimationFrame(tick);
+          return;
+        }
         stop();
         return;
       }
