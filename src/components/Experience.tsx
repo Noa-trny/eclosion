@@ -23,6 +23,7 @@ import { FreeRoamHint } from "./dom/FreeRoamHint";
 import { StartScreen } from "./dom/StartScreen";
 import { A11yAnnouncer } from "./dom/A11yAnnouncer";
 import { ContextLossOverlay } from "./dom/ContextLossOverlay";
+import { PostCredits } from "./dom/PostCredits";
 
 /** Client boundary. Canvas (and thus all of three) is ssr:false — Next 15
  *  only allows that from inside a client component, which this is. */
@@ -65,6 +66,7 @@ export function Experience() {
       <DomRoot />
       <Overlay />
       <EndCard />
+      <PostCredits />
       <Hud />
       <ProgressLine />
       <Cursor />

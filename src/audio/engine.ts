@@ -132,6 +132,11 @@ class AudioEngine {
     playThunder(this.ctx, this.master, closeness);
   }
 
+  /** The post-credits secret: the theme, deep and slow, as the seed lands. */
+  secretMotif(): void {
+    playMotif(this.ctx, this.master, 98, "deep");
+  }
+
   /** The whale's single pass calls home — spatialized at its position. */
   whaleCall(x: number, y: number, z: number): void {
     playWhale(this.ctx, this.pool.at(x, y, z));

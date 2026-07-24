@@ -45,9 +45,9 @@ export function ActSection({ act, progress }: ActSectionProps) {
       <p className="mb-3 text-[11px] uppercase tracking-[0.5em] text-white/45 sm:text-xs">
         {t.act} {ROMAN[act.index]} — {copy.subtitle}
       </p>
-      <h2 className="font-display text-5xl leading-none tracking-tight text-white/95 sm:text-7xl md:text-8xl">
-        {copy.title}
-      </h2>
+      {/* The visible title now lives IN the 3D world (ActTitles); this copy
+          stays for screen readers and the /fallback route keeps its own. */}
+      <h2 className="sr-only">{copy.title}</h2>
       <p className="mt-5 max-w-md text-sm leading-relaxed text-white/60 sm:text-base">
         {copy.body}
       </p>
