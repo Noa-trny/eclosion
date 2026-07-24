@@ -49,7 +49,7 @@ export function ActSection({ act, progress }: ActSectionProps) {
       aria-hidden={act.index !== 0 ? undefined : false}
     >
       <p className="mb-3 text-[11px] uppercase tracking-[0.5em] text-white/60 sm:text-xs">
-        {t.act} {ROMAN[act.index]} — {copy.subtitle}
+        {t.act} {ROMAN[act.index]} - {copy.subtitle}
       </p>
       {/* The visible title now lives IN the 3D world (ActTitles); this copy
           stays for screen readers and the /fallback route keeps its own. */}

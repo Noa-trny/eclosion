@@ -16,7 +16,7 @@ export function StorySections({ lang }: { lang: Lang }) {
           <section key={act.id} aria-labelledby={`act-${act.id}`}>
             <ActIllustration act={act.id} />
             <p className="mt-6 text-[11px] uppercase tracking-[0.45em] text-white/45">
-              {actWord} {ROMAN[act.index]} — {copy.subtitle}
+              {actWord} {ROMAN[act.index]} - {copy.subtitle}
             </p>
             <h2 id={`act-${act.id}`} className="font-display mt-2 text-4xl text-white/95 sm:text-5xl">
               {copy.title}

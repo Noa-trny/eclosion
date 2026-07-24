@@ -18,7 +18,7 @@ export function EditorPanel() {
 
   return (
     <Leva
-      titleBar={{ title: "Éclosion — éditeur", filter: false }}
+      titleBar={{ title: "Éclosion - éditeur", filter: false }}
       theme={{ sizes: { rootWidth: "300px" } }}
     />
   );

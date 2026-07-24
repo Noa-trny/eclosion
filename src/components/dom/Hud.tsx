@@ -42,7 +42,7 @@ export function Hud() {
               key={act.id}
               type="button"
               title={ACT_COPY[lang][act.id].title}
-              aria-label={`${ACT_COPY[lang][act.id].title} — ${t.goToAct} ${act.index + 1}`}
+              aria-label={`${ACT_COPY[lang][act.id].title} - ${t.goToAct} ${act.index + 1}`}
               aria-current={act.index === actIndex}
               onClick={() => scrollToProgress(act.range.start + 0.012)}
               className="group p-1.5"

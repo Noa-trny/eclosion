@@ -22,7 +22,7 @@ export function capturePhoto(): void {
   const act = ACTS[index];
   const lang = useLangStore.getState().lang;
   const actLine = act
-    ? `${lang === "fr" ? "ACTE" : "ACT"} ${ROMAN[index]} — ${ACT_COPY[lang][act.id].title.toUpperCase()}`
+    ? `${lang === "fr" ? "ACTE" : "ACT"} ${ROMAN[index]} - ${ACT_COPY[lang][act.id].title.toUpperCase()}`
     : "";
   const family = displayFamily();
 
