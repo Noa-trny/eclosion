@@ -18,7 +18,7 @@ const display = localFont({
 export const metadata: Metadata = {
   title: "Éclosion — la naissance d'un monde",
   description:
-    "Expérience 3D cinématique pilotée par le défilement : du néant à l'aube, huit actes de lumière, de matière et de son — entièrement procédurale.",
+    "Expérience 3D cinématique pilotée par le défilement : du néant à l'aube, huit actes de lumière, de matière et de son, entièrement procédurale.",
   openGraph: {
     title: "Éclosion — la naissance d'un monde",
     description:
