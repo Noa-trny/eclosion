@@ -10,6 +10,7 @@ import { GPUParticles } from "@/lib/particles/GPUParticles";
 import { PARTICLE_PRESETS } from "@/config/particles";
 import { useDisposable } from "@/hooks/useDisposable";
 import { groundHeight } from "@/utils/terrain";
+import { getSeason, SEASON_LOOKS, applySeasonToColor } from "@/lib/season";
 
 /** Owns everything persistent: the sky dome + star field (camera-following),
  *  scene fog, the sun/ambient lights, and the once-per-frame refresh of the
@@ -33,6 +34,7 @@ export function GlobalEnvironment() {
   const sunRef = useRef<THREE.DirectionalLight>(null);
   const ambientRef = useRef<THREE.AmbientLight>(null);
   const sunDir = useMemo(() => new THREE.Vector3(), []);
+  const seasonLook = useMemo(() => SEASON_LOOKS[getSeason()], []);
 
   useFrame((state, delta) => {
     const dt = Math.min(delta, 0.05);
@@ -48,6 +50,10 @@ export function GlobalEnvironment() {
     u.uFogDensity.value = p.fog.density;
     u.uSkyTop.value.setRGB(p.sky.topColor.r, p.sky.topColor.g, p.sky.topColor.b);
     u.uSkyBottom.value.setRGB(p.sky.bottomColor.r, p.sky.bottomColor.g, p.sky.bottomColor.b);
+    // The season recolours EVERY sky in the film — autumn ambers, winter blues.
+    applySeasonToColor(u.uFogColor.value, seasonLook);
+    applySeasonToColor(u.uSkyTop.value, seasonLook);
+    applySeasonToColor(u.uSkyBottom.value, seasonLook);
 
     const el = p.sky.sunElevation;
     const az = p.sky.sunAzimuth;
@@ -57,6 +63,8 @@ export function GlobalEnvironment() {
     u.uSunIntensity.value = p.sun.intensity;
     u.uAmbientColor.value.setRGB(p.ambient.color.r, p.ambient.color.g, p.ambient.color.b);
     u.uAmbientIntensity.value = p.ambient.intensity;
+    applySeasonToColor(u.uSunColor.value, seasonLook);
+    applySeasonToColor(u.uAmbientColor.value, seasonLook);
 
     const aurora = skyMaterial.uniforms.uAurora;
     if (aurora) aurora.value = p.sky.auroraIntensity;
