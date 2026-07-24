@@ -32,9 +32,13 @@ ${behaviorChunk}
   alpha *= smoothstep(uIntensity + 0.08, uIntensity - 0.02, aSeed.x);
   vColor = mix(uColorA, uColorB, aSeed.y);
   vec4 mv = modelViewMatrix * vec4(pos, 1.0);
-  float dist = max(-mv.z, 1.0);
-  gl_PointSize = min(uSize * uDpr * 340.0 / dist, 60.0 * uDpr);
-  vAlpha = alpha * uOpacity;
+  float dist = max(-mv.z, 0.5);
+  // Lens guard: a particle ON the camera would rasterize a huge capped sprite
+  // (the finale swirl surrounds the camera — thousands of them). Shrink and
+  // fade only the sub-2.4u ones; rain curtains live further out.
+  float nearFade = smoothstep(0.5, 2.4, dist);
+  gl_PointSize = min(uSize * uDpr * 340.0 / dist, 50.0 * uDpr) * mix(0.2, 1.0, nearFade);
+  vAlpha = alpha * uOpacity * nearFade;
   gl_Position = projectionMatrix * mv;
 }
 `;

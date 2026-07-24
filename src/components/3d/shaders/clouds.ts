@@ -80,7 +80,7 @@ void main() {
   float lit = 0.5;
   bool litFresh = false;
   for (int i = 0; i < MAX_STEPS; i++) {
-    if (i >= steps || T < 0.03) break;
+    if (i >= steps || T < 0.06) break;
     p += rd * stepLen;
     float d = cloudDensity(p, top);
     if (d > 0.012) {
