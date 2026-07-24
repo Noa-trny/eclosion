@@ -16,6 +16,7 @@ export function EndCard() {
   const y = useTransform(progress, [0.972, 0.995], [30, 0]);
   const pointerEvents = useTransform(progress, (p) => (p > 0.985 ? "auto" : "none"));
   const mode = useAppStore((s) => s.mode);
+  const started = useAppStore((s) => s.started);
   const secretActive = useAppStore((s) => s.secretActive);
   const requestModeToggle = useAppStore((s) => s.requestModeToggle);
   const [copied, setCopied] = useState(false);
@@ -34,7 +35,7 @@ export function EndCard() {
     <motion.div
       style={{ opacity, pointerEvents }}
       className={`fixed inset-0 z-40 flex flex-col items-center justify-center px-6 text-center transition-opacity duration-700 ${
-        mode === "scroll" && !secretActive ? "" : "!opacity-0 !pointer-events-none"
+        mode === "scroll" && started && !secretActive ? "" : "!opacity-0 !pointer-events-none"
       }`}
     >
       {/* Radial scrim: the sunrise stays visible at the edges, but the card's
