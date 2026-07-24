@@ -6,6 +6,7 @@ import { useScrollProgressMV } from "@/hooks/useScrollProgressMV";
 import { useAppStore } from "@/stores/appStore";
 import { scrollToProgress } from "@/lib/scrollControl";
 import { useT } from "@/hooks/useLang";
+import { useCoarse, stripKey } from "@/hooks/useCoarse";
 
 /** The closing card, revealed by the last breath of scroll: the title earns
  *  its meaning, then offers two doors — replay, or inhabit the world. */
@@ -19,6 +20,7 @@ export function EndCard() {
   const requestModeToggle = useAppStore((s) => s.requestModeToggle);
   const [copied, setCopied] = useState(false);
   const t = useT();
+  const coarse = useCoarse();
 
   const share = (): void => {
     // URL only — anything prepended would break pasting into an address bar.
@@ -64,7 +66,7 @@ export function EndCard() {
             onClick={requestModeToggle}
             className="rounded-full border border-white/30 bg-black/20 px-7 py-3 text-xs uppercase tracking-[0.25em] text-white/85 backdrop-blur transition hover:border-white/70 hover:text-white"
           >
-            {t.exploreWorld}
+            {coarse ? stripKey(t.exploreWorld) : t.exploreWorld}
           </button>
         </div>
         <button

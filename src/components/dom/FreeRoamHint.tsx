@@ -3,11 +3,13 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useAppStore } from "@/stores/appStore";
 import { useT } from "@/hooks/useLang";
+import { useCoarse } from "@/hooks/useCoarse";
 
 /** Controls card shown while exploring. */
 export function FreeRoamHint() {
   const mode = useAppStore((s) => s.mode);
   const t = useT();
+  const coarse = useCoarse();
   return (
     <AnimatePresence>
       {mode === "free" && (
@@ -19,7 +21,9 @@ export function FreeRoamHint() {
           className="pointer-events-none fixed left-1/2 top-5 z-30 -translate-x-1/2 rounded-xl border border-white/15 bg-black/40 px-5 py-3 text-center backdrop-blur"
         >
           <p className="text-[11px] uppercase tracking-[0.25em] text-white/70">{t.freeRoamTitle}</p>
-          <p className="mt-1 text-[11px] text-white/45">{t.freeRoamHelp}</p>
+          <p className="mt-1 text-[11px] text-white/45">
+            {coarse ? t.freeRoamHelpTouch : t.freeRoamHelp}
+          </p>
         </motion.div>
       )}
     </AnimatePresence>

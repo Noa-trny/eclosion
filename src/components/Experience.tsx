@@ -25,6 +25,7 @@ import { A11yAnnouncer } from "./dom/A11yAnnouncer";
 import { ContextLossOverlay } from "./dom/ContextLossOverlay";
 import { PostCredits } from "./dom/PostCredits";
 import { CinematicController } from "./dom/CinematicController";
+import { TouchControls } from "./dom/TouchControls";
 
 /** Client boundary. Canvas (and thus all of three) is ssr:false — Next 15
  *  only allows that from inside a client component, which this is. */
@@ -69,6 +70,7 @@ export function Experience() {
       <EndCard />
       <PostCredits />
       <CinematicController />
+      <TouchControls />
       <Hud />
       <ProgressLine />
       <Cursor />
