@@ -7,6 +7,7 @@ import { useAppStore } from "@/stores/appStore";
 import { scrollToProgress } from "@/lib/scrollControl";
 import { useT } from "@/hooks/useLang";
 import { useCoarse, stripKey } from "@/hooks/useCoarse";
+import { JourneyConstellation } from "./JourneyConstellation";
 
 /** The closing card, revealed by the last breath of scroll: the title earns
  *  its meaning, then offers two doors — replay, or inhabit the world. */
@@ -45,6 +46,8 @@ export function EndCard() {
         className="absolute inset-0 bg-[radial-gradient(ellipse_55%_60%_at_center,rgba(2,3,8,0.62)_0%,rgba(2,3,8,0.35)_55%,transparent_80%)]"
       />
       <motion.div style={{ y }} className="relative flex flex-col items-center">
+        {/* The visitor's own crossing, drawn in the stars above the name. */}
+        <JourneyConstellation />
         <p className="mb-4 text-[11px] uppercase tracking-[0.6em] text-white/75 drop-shadow-[0_1px_8px_rgba(2,3,8,0.9)]">
           {t.endKicker}
         </p>
