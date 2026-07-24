@@ -17,6 +17,8 @@ interface AppState {
   modeToggleNonce: number;
   /** Bumped after each photo capture — drives the shutter flash + toast. */
   photoNonce: number;
+  /** The post-credits secret: armed by stillness at the very end. */
+  secretActive: boolean;
   setPhase: (phase: AppPhase) => void;
   setMode: (mode: AppMode) => void;
   start: (withAudio: boolean) => void;
@@ -24,6 +26,7 @@ interface AppState {
   toggleEditor: () => void;
   requestModeToggle: () => void;
   photoTaken: () => void;
+  setSecret: (on: boolean) => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -37,6 +40,7 @@ export const useAppStore = create<AppState>((set) => ({
   reducedMotion: false,
   modeToggleNonce: 0,
   photoNonce: 0,
+  secretActive: false,
   setPhase: (phase) => set({ phase }),
   setMode: (mode) => set({ mode }),
   start: (withAudio) => set({ started: true, audioOn: withAudio, phase: "running" }),
@@ -44,4 +48,5 @@ export const useAppStore = create<AppState>((set) => ({
   toggleEditor: () => set((s) => ({ editorOpen: !s.editorOpen })),
   requestModeToggle: () => set((s) => ({ modeToggleNonce: s.modeToggleNonce + 1 })),
   photoTaken: () => set((s) => ({ photoNonce: s.photoNonce + 1 })),
+  setSecret: (on) => set({ secretActive: on }),
 }));

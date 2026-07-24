@@ -2,6 +2,7 @@
 
 import { Sun } from "./Sun";
 import { DawnClouds } from "./DawnClouds";
+import { FallingSeed } from "./FallingSeed";
 import { BirdFlock } from "@/components/3d/scenes/bloom/BirdFlock";
 import { GPUParticles } from "@/lib/particles/GPUParticles";
 import { PARTICLE_PRESETS } from "@/config/particles";
@@ -15,6 +16,8 @@ export function DawnScene() {
     <group>
       <Sun />
       <DawnClouds />
+      {/* The post-credits secret — invisible until stillness arms it. */}
+      <FallingSeed />
       {/* Silhouettes across the sun's sightline — distant and slow, so they
           read as calligraphy against the disc, never as vertigo. */}
       <BirdFlock center={[472, 38, 66]} size={[64, 20, 46]} baseCount={70} seed={77} speed={4.5} />
