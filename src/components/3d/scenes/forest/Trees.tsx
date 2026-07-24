@@ -25,14 +25,14 @@ export function Trees() {
   const tier = useQualityStore((s) => s.tier);
   const variants = useMemo(() => {
     const rng = mulberry32(4242);
-    return [createTreeGeometry(rng), createTreeGeometry(rng), createTreeGeometry(rng)];
+    return Array.from({ length: 5 }, () => createTreeGeometry(rng));
   }, []);
   const material = useMemo(() => createTreeMaterial(), []);
 
   const meshes = useMemo(() => {
     const total = QUALITY_PRESETS[tier].treeCount;
     const rng = mulberry32(1337);
-    const lists: THREE.Matrix4[][] = [[], [], []];
+    const lists: THREE.Matrix4[][] = [[], [], [], [], []];
     const pos = new THREE.Vector3();
     const quat = new THREE.Quaternion();
     const scale = new THREE.Vector3();
@@ -51,7 +51,7 @@ export function Trees() {
       quat.setFromAxisAngle(up, rng() * Math.PI * 2);
       const s = 0.7 + rng() * 0.8;
       scale.set(s, s, s);
-      const bucket = lists[Math.floor(rng() * 3) % 3];
+      const bucket = lists[Math.floor(rng() * 5) % 5];
       bucket?.push(new THREE.Matrix4().compose(pos, quat, scale));
       placed++;
     }
