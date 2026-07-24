@@ -2,9 +2,11 @@ import { noiseChunk } from "./chunks/noise";
 
 export const cloudsVertexShader = /* glsl */ `
 varying vec3 vWorldPos;
+varying vec2 vUv;
 void main() {
   vec4 wp = modelMatrix * vec4(position, 1.0);
   vWorldPos = wp.xyz;
+  vUv = uv;
   gl_Position = projectionMatrix * viewMatrix * wp;
 }
 `;
@@ -24,6 +26,7 @@ uniform vec3 uFogColor;
 uniform vec3 uSunDir;
 uniform vec3 uSunColor;
 varying vec3 vWorldPos;
+varying vec2 vUv;
 
 const int MAX_STEPS = 30;
 const float SLAB = 16.0;
@@ -88,6 +91,12 @@ void main() {
     }
   }
   float alpha = (1.0 - T) * clamp(uDensity * 1.7, 0.0, 1.0);
+  // The slab is finite: seen edge-on it saturates and cuts to a dead-straight
+  // horizon-wide line at the geometry's border. Dissolve toward the plane's
+  // UV edges, and melt grazing rays into the sky before they reach it.
+  float edge = smoothstep(0.0, 0.16, vUv.x) * smoothstep(1.0, 0.84, vUv.x)
+             * smoothstep(0.0, 0.16, vUv.y) * smoothstep(1.0, 0.84, vUv.y);
+  alpha *= edge * smoothstep(0.015, 0.09, abs(rd.y));
   if (alpha < 0.012) discard;
   gl_FragColor = vec4(acc / max(1.0 - T, 0.001), alpha * 0.92);
 }
