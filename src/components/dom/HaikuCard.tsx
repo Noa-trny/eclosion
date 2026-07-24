@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { HAIKUS, useHaikuStore } from "@/lib/haikus";
+import { useProgressStore } from "@/stores/progressStore";
 import { useLang, useT } from "@/hooks/useLang";
 import { ACTS } from "@/config/acts";
 
@@ -17,13 +18,28 @@ export function HaikuCard() {
   const lang = useLang();
   const t = useT();
 
+  // Fades on its own — and immediately lets go if the visitor scrolls on.
   useEffect(() => {
     if (!reveal) return;
-    const timer = setTimeout(closeReveal, 8000);
-    return () => clearTimeout(timer);
+    const timer = setTimeout(closeReveal, 6500);
+    const origin = useProgressStore.getState().progress;
+    const unsub = useProgressStore.subscribe(() => {
+      if (Math.abs(useProgressStore.getState().progress - origin) > 0.012) closeReveal();
+    });
+    return () => {
+      clearTimeout(timer);
+      unsub();
+    };
   }, [reveal, closeReveal]);
 
   const actIndex = ACTS.findIndex((a) => a.id === reveal);
+
+  if (process.env.NODE_ENV !== "production" && typeof window !== "undefined") {
+    (window as unknown as { __haikuDebug?: object }).__haikuDebug = {
+      reveal,
+      count: collected.length,
+    };
+  }
 
   return (
     <AnimatePresence>
