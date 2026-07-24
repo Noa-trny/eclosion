@@ -81,34 +81,48 @@ function buildBolt(positions: Float32Array, x: number, z: number): number {
 /** Randomized strikes: a sky-wide flash (uFlash, read by the sky/cloud
  *  shaders), a decaying point light, a VISIBLE jagged bolt, and a
  *  distance-delayed thunder clap. */
+const BOLT_SLOTS = 3;
+
 export function Lightning() {
   const lightRef = useRef<THREE.PointLight>(null);
   const countdown = useRef(2.5);
   const restrike = useRef(0);
+  const restrikeSlot = useRef(0);
+  const slot = useRef(0);
   const wasActive = useRef(false);
   const forward = useRef(new THREE.Vector3()).current;
 
-  const boltGeometry = useMemo(() => {
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(MAX_SEGMENTS * 18), 3));
-    geo.setDrawRange(0, 0);
-    return geo;
-  }, []);
-  const boltMaterial = useMemo(
+  // Several bolts can be alive at once — a storm rarely strikes politely
+  // one channel at a time.
+  const boltGeometries = useMemo(
     () =>
-      new THREE.MeshBasicMaterial({
-        color: 0xeaf1ff,
-        transparent: true,
-        opacity: 0,
-        blending: THREE.AdditiveBlending,
-        depthWrite: false,
-        side: THREE.DoubleSide,
-        // Lightning PIERCES the fog — scene.fog would wash it to grey.
-        fog: false,
+      Array.from({ length: BOLT_SLOTS }, () => {
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(MAX_SEGMENTS * 18), 3));
+        geo.setDrawRange(0, 0);
+        return geo;
       }),
     [],
   );
-  useDisposable(boltGeometry, boltMaterial);
+  const boltMaterials = useMemo(
+    () =>
+      Array.from(
+        { length: BOLT_SLOTS },
+        () =>
+          new THREE.MeshBasicMaterial({
+            color: 0xeaf1ff,
+            transparent: true,
+            opacity: 0,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            side: THREE.DoubleSide,
+            // Lightning PIERCES the fog — scene.fog would wash it to grey.
+            fog: false,
+          }),
+      ),
+    [],
+  );
+  useDisposable(...boltGeometries, ...boltMaterials);
 
   useFrame((state, delta) => {
     const light = lightRef.current;
@@ -116,14 +130,15 @@ export function Lightning() {
     const dt = Math.min(delta, 0.05);
     light.intensity *= Math.exp(-8 * dt);
     // A strike lingers ~0.3s and flickers — real lightning is not one frame.
-    boltMaterial.opacity *= Math.exp(-4.5 * dt);
+    for (const material of boltMaterials) material.opacity *= Math.exp(-4.5 * dt);
     // The double-strike flicker that makes lightning feel real.
     if (restrike.current > 0) {
       restrike.current -= dt;
       if (restrike.current <= 0) {
         sharedUniforms.uFlash.value = 0.5 + Math.random() * 0.4;
         light.intensity = 800;
-        boltMaterial.opacity = 0.85;
+        const material = boltMaterials[restrikeSlot.current];
+        if (material) material.opacity = 0.85;
       }
     }
     const activity = uniformProxies.acts.lightningActivity;
@@ -139,33 +154,41 @@ export function Lightning() {
     }
     countdown.current -= dt;
     if (countdown.current > 0) return;
-    countdown.current = 0.6 + (Math.random() * 2.2) / activity;
+    countdown.current = 0.4 + (Math.random() * 1.6) / activity;
     // Strike INSIDE the camera's forward cone, wherever the rig is looking —
     // the camera travels the whole act, a fixed zone kept missing the frame.
     state.camera.getWorldDirection(forward);
     forward.y = 0;
     forward.normalize();
-    const distance = 32 + Math.random() * 48;
+    // Low activity = the distant foreshadow over the canopy; full activity =
+    // strikes close enough to feel.
+    const distance = activity < 0.4 ? 90 + Math.random() * 60 : 32 + Math.random() * 48;
     const lateral = (Math.random() - 0.5) * distance * 0.9;
     const x = state.camera.position.x + forward.x * distance - forward.z * lateral;
     const z = state.camera.position.z + forward.z * distance + forward.x * lateral;
     sharedUniforms.uFlash.value = 0.85 + Math.random() * 0.35;
     light.position.set(x, 38 + Math.random() * 18, z);
     light.intensity = 1400;
-    const positions = boltGeometry.attributes.position;
-    if (positions) {
+    slot.current = (slot.current + 1) % BOLT_SLOTS;
+    const geometry = boltGeometries[slot.current];
+    const material = boltMaterials[slot.current];
+    const positions = geometry?.attributes.position;
+    if (geometry && positions) {
       const segments = buildBolt(positions.array as Float32Array, x, z);
       positions.needsUpdate = true;
-      boltGeometry.setDrawRange(0, segments * 6);
+      geometry.setDrawRange(0, segments * 6);
     }
-    boltMaterial.opacity = 1;
-    if (Math.random() < 0.35) restrike.current = 0.12;
+    if (material) material.opacity = 1;
+    if (Math.random() < 0.35) {
+      restrike.current = 0.12;
+      restrikeSlot.current = slot.current;
+    }
     getAudioEngine()?.thunder();
     if (process.env.NODE_ENV !== "production") {
       (window as unknown as { __boltDebug?: object }).__boltDebug = {
         x,
         z,
-        drawCount: boltGeometry.drawRange.count,
+        slot: slot.current,
         strikes: ((window as unknown as { __boltDebug?: { strikes?: number } }).__boltDebug?.strikes ?? 0) + 1,
       };
     }
@@ -174,7 +197,9 @@ export function Lightning() {
   return (
     <group>
       <pointLight ref={lightRef} color={0xbfd0ff} distance={280} decay={1.6} intensity={0} />
-      <mesh geometry={boltGeometry} material={boltMaterial} frustumCulled={false} />
+      {boltGeometries.map((geometry, i) => (
+        <mesh key={i} geometry={geometry} material={boltMaterials[i]} frustumCulled={false} />
+      ))}
     </group>
   );
 }
