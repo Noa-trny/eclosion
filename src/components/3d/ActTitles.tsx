@@ -74,7 +74,7 @@ export function ActTitles() {
       });
       return { anchor, material, aspect: title.aspect, act };
     });
-  }, [lang, fontReady, geometry]);
+  }, [lang, fontReady]);
 
   useEffect(() => {
     return () => {
