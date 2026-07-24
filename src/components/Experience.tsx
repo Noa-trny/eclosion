@@ -25,6 +25,7 @@ import { A11yAnnouncer } from "./dom/A11yAnnouncer";
 import { ContextLossOverlay } from "./dom/ContextLossOverlay";
 import { PostCredits } from "./dom/PostCredits";
 import { CinematicController } from "./dom/CinematicController";
+import { HaikuCard } from "./dom/HaikuCard";
 import { startJourneyTrace } from "@/lib/journeyTrace";
 import { TouchControls } from "./dom/TouchControls";
 
@@ -84,6 +85,7 @@ export function Experience() {
       <EndCard />
       <PostCredits />
       <CinematicController />
+      <HaikuCard />
       <TouchControls />
       <Hud />
       <ProgressLine />

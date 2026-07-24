@@ -137,6 +137,11 @@ class AudioEngine {
     playMotif(this.ctx, this.master, 98, "deep");
   }
 
+  /** A found haiku: the theme as a bright little music box, once. */
+  haikuChime(): void {
+    playMotif(this.ctx, this.master, 523.25, "music");
+  }
+
   /** The whale's single pass calls home — spatialized at its position. */
   whaleCall(x: number, y: number, z: number): void {
     playWhale(this.ctx, this.pool.at(x, y, z));
