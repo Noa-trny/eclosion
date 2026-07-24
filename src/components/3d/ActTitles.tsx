@@ -112,6 +112,9 @@ export function ActTitles() {
         const w = entry.anchor.width * widthScale;
         mesh.scale.set(w, w / entry.aspect, 1);
         mesh.lookAt(entry.anchor.face[0], entry.anchor.face[1], entry.anchor.face[2]);
+        // Faded-out planes still rasterize (transparent + no culling) — eight
+        // near-fullscreen quads of pure fill-rate. Only draw the living one.
+        mesh.visible = (fadeRef.current[i] ?? 0) > 0.01;
       }
       const { start, end } = entry.act.range;
       const local = clamp01((progress - start) / (end - start));

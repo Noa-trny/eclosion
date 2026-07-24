@@ -48,10 +48,15 @@ varying float vDepth;
 void main() {
   vec2 uv = vUv - 0.5;
   float radial = smoothstep(0.5, 0.12, length(uv));
-  float texture_ = fbm2(vUv * 3.5 + vSeed * 19.0 + vec2(0.0, uTime * 0.04)) * 0.5 + 0.5;
-  float a = radial * texture_ * uDensity * (1.0 - vLife) * smoothstep(0.0, 0.12, vLife) * 0.55;
-  // Fade puffs the camera is about to fly through — no lens smear.
-  a *= smoothstep(2.5, 9.0, vDepth);
+  // Cheap gates FIRST: the puffs overlap several screens' worth of fill —
+  // never pay for noise on pixels the mask or depth fade will kill anyway.
+  float lifeShape = (1.0 - vLife) * smoothstep(0.0, 0.12, vLife);
+  float gate = radial * uDensity * lifeShape * smoothstep(2.5, 9.0, vDepth);
+  if (gate < 0.008) discard;
+  // Two octaves: billowing reads at this scale, extra octaves don't.
+  vec2 q = vUv * 3.5 + vSeed * 19.0 + vec2(0.0, uTime * 0.04);
+  float texture_ = (snoise2(q) * 0.68 + snoise2(q * 2.4) * 0.32) * 0.5 + 0.5;
+  float a = gate * texture_ * 0.55;
   if (a < 0.004) discard;
   // Fresh puffs catch a dim ember warmth at the base, cooling fast into ash
   // grey — kept subtle: the camera flies THROUGH this column.

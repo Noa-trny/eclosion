@@ -55,6 +55,11 @@ void main() {
   if (uDensity < 0.005 || uSteps < 1.0) discard;
   vec3 ro = cameraPosition;
   vec3 rd = normalize(vWorldPos - cameraPosition);
+  // Grazing rays fade to nothing at the end anyway (the horizon dissolve) —
+  // refuse them BEFORE paying for the march, and give the ones that barely
+  // survive a shorter march. This is where the slab's cost hid.
+  float grazing = smoothstep(0.015, 0.09, abs(rd.y));
+  if (grazing < 0.002) discard;
   float top = vWorldPos.y;
   float base = top - SLAB;
   // Slab entry along the ray (camera may be under, inside, or level with it).
@@ -71,17 +76,21 @@ void main() {
 
   float T = 1.0;
   vec3 acc = vec3(0.0);
-  int steps = int(uSteps);
+  int steps = int(uSteps * mix(0.4, 1.0, grazing));
+  float lit = 0.5;
+  bool litFresh = false;
   for (int i = 0; i < MAX_STEPS; i++) {
     if (i >= steps || T < 0.03) break;
     p += rd * stepLen;
     float d = cloudDensity(p, top);
     if (d > 0.012) {
       // One occlusion tap toward the sun: bright rims against DARK bellies —
-      // the contrast IS the volumetric read. Cheap base only: erosion detail
-      // is invisible through Beer's law anyway.
-      float toLight = cloudBase(p + sun * 6.0, top);
-      float lit = exp(-toLight * 4.5);
+      // the contrast IS the volumetric read. Cheap base only, refreshed every
+      // OTHER lit step — lighting varies far slower than density.
+      if (!litFresh || (i & 1) == 0) {
+        lit = exp(-cloudBase(p + sun * 6.0, top) * 4.5);
+        litFresh = true;
+      }
       vec3 col = mix(uFogColor * 0.35, vec3(0.82, 0.85, 0.93), lit * lit);
       col = mix(col, uSunColor * 1.6, lit * lit * uWarm);
       col += vec3(0.9, 0.92, 1.0) * uFlash * (0.35 + lit);
@@ -96,7 +105,7 @@ void main() {
   // UV edges, and melt grazing rays into the sky before they reach it.
   float edge = smoothstep(0.0, 0.16, vUv.x) * smoothstep(1.0, 0.84, vUv.x)
              * smoothstep(0.0, 0.16, vUv.y) * smoothstep(1.0, 0.84, vUv.y);
-  alpha *= edge * smoothstep(0.015, 0.09, abs(rd.y));
+  alpha *= edge * grazing;
   if (alpha < 0.012) discard;
   gl_FragColor = vec4(acc / max(1.0 - T, 0.001), alpha * 0.92);
 }
