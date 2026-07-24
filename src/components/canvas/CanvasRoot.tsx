@@ -16,7 +16,6 @@ import { QualityManager } from "./QualityManager";
 import { AudioListenerSync } from "./AudioListenerSync";
 import { CursorWake } from "./CursorWake";
 import { ActTitles } from "@/components/3d/ActTitles";
-import { HaikuSigils } from "@/components/3d/HaikuSigils";
 import { PostProcessing } from "@/effects/PostProcessing";
 
 function ContextLossBridge() {
@@ -55,7 +54,6 @@ export function CanvasRoot() {
         <WeatherSystem />
         <SceneManager />
         <ActTitles />
-        <HaikuSigils />
         <CameraRig />
         <FreeRoamController />
         <CursorWake />

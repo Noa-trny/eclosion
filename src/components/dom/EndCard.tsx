@@ -8,7 +8,6 @@ import { scrollToProgress } from "@/lib/scrollControl";
 import { useT } from "@/hooks/useLang";
 import { useCoarse, stripKey } from "@/hooks/useCoarse";
 import { JourneyConstellation } from "./JourneyConstellation";
-import { useHaikuStore } from "@/lib/haikus";
 
 /** The closing card, revealed by the last breath of scroll: the title earns
  *  its meaning, then offers two doors — replay, or inhabit the world. */
@@ -24,7 +23,6 @@ export function EndCard() {
   const [copied, setCopied] = useState(false);
   const t = useT();
   const coarse = useCoarse();
-  const haikuCount = useHaikuStore((s) => s.collected.length);
 
   const share = (): void => {
     // URL only — anything prepended would break pasting into an address bar.
@@ -82,11 +80,6 @@ export function EndCard() {
         >
           {copied ? t.shared : t.share}
         </button>
-        {haikuCount > 0 && (
-          <p className="mt-6 text-[10px] uppercase tracking-[0.35em] text-[#ffd9a0]/60">
-            {haikuCount} / 8 {t.haikusFound}
-          </p>
-        )}
         <p className="mt-8 text-[10px] uppercase tracking-[0.25em] text-white/45 drop-shadow-[0_1px_6px_rgba(2,3,8,0.9)]">
           {t.credits}
         </p>

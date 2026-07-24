@@ -99,8 +99,6 @@ export const UI = {
     trailer: "Bande-annonce",
     trailerExit: "Reprendre la main",
     journeyCaption: "Votre traversée, dessinée dans les étoiles",
-    haikuKicker: "haïku recueilli",
-    haikusFound: "haïkus recueillis",
   },
   en: {
     act: "Act",
@@ -141,8 +139,6 @@ export const UI = {
     trailer: "Trailer",
     trailerExit: "Take back control",
     journeyCaption: "Your crossing, drawn in the stars",
-    haikuKicker: "haiku gathered",
-    haikusFound: "haiku gathered",
   },
 } as const satisfies Record<Lang, Record<string, string>>;
 
