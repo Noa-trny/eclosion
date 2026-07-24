@@ -54,7 +54,7 @@ export function LavaFlow() {
     return geo;
   }, []);
   const ribbons = useMemo(
-    () => [buildRibbon(0.7, 5, 60), buildRibbon(2.5, 3.5, 48)],
+    () => [buildRibbon(0.7, 5, 60), buildRibbon(2.5, 3.5, 48), buildRibbon(4.3, 4.2, 68)],
     [],
   );
   useDisposable(material, craterGeometry, ...ribbons);

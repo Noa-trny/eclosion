@@ -56,6 +56,8 @@ export function SmokeColumn() {
   useFrame(() => {
     const d = material.uniforms.uDensity;
     if (d) d.value = uniformProxies.acts.smokeDensity;
+    const ember = material.uniforms.uEmber;
+    if (ember) ember.value = uniformProxies.acts.lavaFlow;
   });
 
   return (
