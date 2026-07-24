@@ -14,6 +14,9 @@ import { clamp01 } from "@/utils/math";
 interface TitleAnchor {
   /** World position of the title's center. */
   pos: [number, number, number];
+  /** Portrait screens see a much narrower horizontal field — laterally
+   *  offset anchors need a re-centered variant or they get cut off. */
+  portraitPos?: [number, number, number];
   /** Point the plane faces — the act's opening camera position. */
   face: [number, number, number];
   /** World width of the plane (height follows the texture aspect). */
@@ -25,8 +28,8 @@ interface TitleAnchor {
 /** Hand-placed: each title hangs in the act's opening sightline, far enough
  *  to sit IN the world (fog, DOF, parallax), near enough to read. */
 const ANCHORS: TitleAnchor[] = [
-  { pos: [0, 8.6, 30], face: [0, 9, 66], width: 17, window: [0, 0.02, 0.55, 0.75] },
-  { pos: [-2.4, 4.8, 6.5], face: [1.5, 4.5, 26], width: 6, window: [0.05, 0.16, 0.42, 0.6] },
+  { pos: [0, 8.6, 30], portraitPos: [0, 10.4, 30], face: [0, 9, 66], width: 17, window: [0, 0.02, 0.55, 0.75] },
+  { pos: [-2.4, 4.8, 6.5], portraitPos: [0.4, 5.4, 7], face: [1.5, 4.5, 26], width: 6, window: [0.05, 0.16, 0.42, 0.6] },
   { pos: [-6.5, 7, -36], face: [-4, 3.6, -6], width: 9, window: [0.05, 0.16, 0.42, 0.6] },
   { pos: [27.5, 29.5, -56.5], face: [12.4, 28, -71.3], width: 13, window: [0.05, 0.16, 0.45, 0.62] },
   { pos: [121, 5, 5], face: [99, 14.6, -3.5], width: 13.5, window: [0.03, 0.1, 0.17, 0.26] },
@@ -42,6 +45,7 @@ export function ActTitles() {
   const [fontReady, setFontReady] = useState(0);
   const geometry = useMemo(() => new THREE.PlaneGeometry(1, 1), []);
   const fadeRef = useRef<number[]>(ACTS.map(() => 0));
+  const meshRefs = useRef<Array<THREE.Mesh | null>>([]);
 
   useEffect(() => {
     let alive = true;
@@ -87,12 +91,24 @@ export function ActTitles() {
   }, [entries]);
   useEffect(() => () => geometry.dispose(), [geometry]);
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     const progress = useProgressStore.getState().progress;
     const inScroll = useAppStore.getState().mode === "scroll" ? 1 : 0;
+    const screenAspect = state.size.width / state.size.height;
+    const portrait = screenAspect < 0.9;
+    // Narrow screens: shrink the plane so the words stay inside the frame.
+    const widthScale = Math.min(1, Math.max(0.55, screenAspect / 1.5));
     for (let i = 0; i < entries.length; i++) {
       const entry = entries[i];
       if (!entry) continue;
+      const mesh = meshRefs.current[i];
+      if (mesh) {
+        const p = portrait && entry.anchor.portraitPos ? entry.anchor.portraitPos : entry.anchor.pos;
+        mesh.position.set(p[0], p[1], p[2]);
+        const w = entry.anchor.width * widthScale;
+        mesh.scale.set(w, w / entry.aspect, 1);
+        mesh.lookAt(entry.anchor.face[0], entry.anchor.face[1], entry.anchor.face[2]);
+      }
       const { start, end } = entry.act.range;
       const local = clamp01((progress - start) / (end - start));
       const [i0, i1, o0, o1] = entry.anchor.window;
@@ -123,11 +139,10 @@ export function ActTitles() {
             geometry={geometry}
             material={entry.material}
             position={entry.anchor.pos}
-            scale={[entry.anchor.width, entry.anchor.width / entry.aspect, 1]}
             renderOrder={40 + i}
             frustumCulled={false}
             ref={(mesh) => {
-              mesh?.lookAt(...entry.anchor.face);
+              meshRefs.current[i] = mesh;
             }}
           />
         ) : null,
