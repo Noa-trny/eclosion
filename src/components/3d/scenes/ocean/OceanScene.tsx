@@ -5,6 +5,7 @@ import { UnderwaterVolume } from "./UnderwaterVolume";
 import { FishFlock } from "./FishFlock";
 import { Plankton } from "./Plankton";
 import { Whale } from "./Whale";
+import { FishJump } from "@/components/3d/encounters/FishJump";
 import { GPUParticles } from "@/lib/particles/GPUParticles";
 import { PARTICLE_PRESETS } from "@/config/particles";
 import { uniformProxies } from "@/timelines/uniformProxies";
@@ -19,6 +20,7 @@ export function OceanScene() {
       <FishFlock />
       <Plankton />
       <Whale />
+      <FishJump />
       {/* The dive's bubble curtain, along the descent segment of the path. */}
       <GPUParticles
         preset={PARTICLE_PRESETS.bubbles}

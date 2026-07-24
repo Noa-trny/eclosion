@@ -25,6 +25,7 @@ import { A11yAnnouncer } from "./dom/A11yAnnouncer";
 import { ContextLossOverlay } from "./dom/ContextLossOverlay";
 import { PostCredits } from "./dom/PostCredits";
 import { CinematicController } from "./dom/CinematicController";
+import { startJourneyTrace } from "@/lib/journeyTrace";
 import { TouchControls } from "./dom/TouchControls";
 
 /** Client boundary. Canvas (and thus all of three) is ssr:false — Next 15
@@ -62,6 +63,11 @@ export function Experience() {
   useEffect(() => {
     window.history.scrollRestoration = "manual";
     window.scrollTo(0, 0);
+  }, []);
+
+  // Every crossing writes its trace — the end card draws it as stars.
+  useEffect(() => {
+    startJourneyTrace();
   }, []);
 
   useLenisScroll(!reduced);

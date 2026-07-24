@@ -3,6 +3,7 @@ import { useProgressStore } from "@/stores/progressStore";
 import { useLangStore } from "@/stores/langStore";
 import { ACTS, getActState } from "@/config/acts";
 import { ACT_COPY } from "@/config/i18n";
+import { getConstellation } from "@/lib/journeyTrace";
 
 const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII"];
 
@@ -42,6 +43,35 @@ export function capturePhoto(): void {
       ctx.fillStyle = "#0a0c12";
       ctx.fillRect(0, 0, card.width, card.height);
       ctx.drawImage(canvas, margin, margin, w, h);
+
+      // The visitor's constellation signs the sky — their crossing, so far.
+      const stars = getConstellation();
+      if (stars.length > 0) {
+        const bw = w * 0.2;
+        const bh = h * 0.14;
+        const bx = margin + w - bw - w * 0.04;
+        const by = margin + h * 0.05;
+        ctx.save();
+        ctx.strokeStyle = "rgba(255, 236, 200, 0.4)";
+        ctx.lineWidth = Math.max(1, w * 0.0006);
+        ctx.beginPath();
+        stars.forEach((s, i) => {
+          const sx = bx + s.x * bw;
+          const sy = by + s.y * bh;
+          if (i === 0) ctx.moveTo(sx, sy);
+          else ctx.lineTo(sx, sy);
+        });
+        ctx.stroke();
+        ctx.fillStyle = "rgba(255, 236, 200, 0.9)";
+        ctx.shadowColor = "rgba(255, 220, 160, 0.9)";
+        ctx.shadowBlur = w * 0.004;
+        for (const s of stars) {
+          ctx.beginPath();
+          ctx.arc(bx + s.x * bw, by + s.y * bh, (1 + s.w * 2.2) * (w / 1600), 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
 
       const baseline = h + margin + footer * 0.62;
       ctx.fillStyle = "#f2ede4";
