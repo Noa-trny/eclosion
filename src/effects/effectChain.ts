@@ -26,9 +26,9 @@ export const DOF_SETTINGS = {
 export const GOD_RAYS_SETTINGS = {
   samples: 42,
   density: 0.92,
-  decay: 0.94,
-  weight: 0.35,
-  exposure: 0.5,
+  decay: 0.95,
+  weight: 0.4,
+  exposure: 0.52,
 };
 
 export const VIGNETTE_SETTINGS = { offset: 0.24, darkness: 0.72 };
