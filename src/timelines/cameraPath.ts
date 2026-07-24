@@ -45,12 +45,13 @@ const PATHS: ActPath[] = [
     positions: [[72, 26, -18], [112, 9, 2], [141, -3, 12], [162, -13, 20], [186, -9, 12]],
     lookAts: [[105, 8, 0], [138, -4, 12], [158, -12, 19], [182, -10, 13], [212, 2, -6]],
   },
-  // volcano — emerge, ascend the flank, then swing AROUND the summit's
-  // shoulder (the ridged crest rose above the old rim point — clearance
-  // verified ≥ +4 across the whole traverse).
+  // volcano — emerge, climb the flank, then fly OVER the crater itself: the
+  // gaze plunges into the lava lake before sweeping out toward the meadow.
   {
-    positions: [[216, 7, -12], [252, 26, -32], [286, 59, -46], [314, 50, -16]],
-    lookAts: [[248, 24, -32], [288, 52, -48], [305, 48, -42], [326, 20, 0]],
+    positions: [[216, 7, -12], [252, 26, -32], [281, 63, -48], [300, 70, -50]],
+    // 4th lookAt = crater floor, aligned with the 4th position (the apex
+    // directly above it) — the plunge and the flyover land on the same beat.
+    lookAts: [[248, 24, -32], [290, 50, -49], [298, 49, -50], [301, 45, -49]],
   },
   // bloom — descend into the meadow
   {
