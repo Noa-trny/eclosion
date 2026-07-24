@@ -90,6 +90,7 @@ export function Lightning() {
   const restrikeSlot = useRef(0);
   const slot = useRef(0);
   const wasActive = useRef(false);
+  const wasFull = useRef(false);
   const forward = useRef(new THREE.Vector3()).current;
 
   // Several bolts can be alive at once — a storm rarely strikes politely
@@ -151,6 +152,14 @@ export function Lightning() {
     if (!wasActive.current) {
       wasActive.current = true;
       countdown.current = 0.35;
+    }
+    // Entering FULL storm cancels any long lull rolled during the distant
+    // foreshadow — visitors give this act ~4 seconds, strike NOW.
+    if (activity > 0.6 && !wasFull.current) {
+      wasFull.current = true;
+      countdown.current = Math.min(countdown.current, 0.3);
+    } else if (activity <= 0.6 && wasFull.current) {
+      wasFull.current = false;
     }
     countdown.current -= dt;
     if (countdown.current > 0) return;
