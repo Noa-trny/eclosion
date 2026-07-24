@@ -97,10 +97,12 @@ export const PALETTES: Record<ActId, ActPalette> = {
     fogDensity: 0.026,
     skyTop: [0.022, 0.014, 0.016],
     skyBottom: [0.13, 0.05, 0.028],
-    sunColor: [1, 0.45, 0.15],
-    sunIntensity: 0.55,
-    ambientColor: [0.6, 0.3, 0.2],
-    ambientIntensity: 0.2,
+    // The MOUNTAIN is charcoal night — cool dim light; fire belongs to the
+    // lava, the crater rim and the embers, never to the light rig.
+    sunColor: [0.5, 0.44, 0.5],
+    sunIntensity: 0.3,
+    ambientColor: [0.3, 0.27, 0.32],
+    ambientIntensity: 0.18,
     temperature: 0.5,
     saturation: 1.05,
     starIntensity: 0.1,
