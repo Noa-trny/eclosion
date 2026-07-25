@@ -5,6 +5,8 @@ import { useAppStore } from "@/stores/appStore";
 import { ACTS } from "@/config/acts";
 import { scrollToProgress } from "@/lib/scrollControl";
 import { useLang, useT } from "@/hooks/useLang";
+import { useCoarse, stripKey } from "@/hooks/useCoarse";
+import { capturePhoto } from "@/lib/photo";
 import { ACT_COPY } from "@/config/i18n";
 
 /** Persistent chrome: act dots (right rail on desktop, bottom on touch),
@@ -18,9 +20,12 @@ export function Hud() {
   const requestModeToggle = useAppStore((s) => s.requestModeToggle);
   const t = useT();
   const lang = useLang();
+  const coarse = useCoarse();
   if (!started) return null;
 
   const inScroll = mode === "scroll";
+  // Touch keyboards don't exist: drop the "(F)" hints there.
+  const modeLabel = inScroll ? t.explore : t.resume;
 
   return (
     <>
@@ -48,6 +53,16 @@ export function Hud() {
 
       {/* Bottom-right controls. */}
       <div className="fixed bottom-5 right-5 z-30 flex items-center gap-2.5">
+        {/* Touch free-roam has no P key — give the photo its own button. */}
+        {coarse && mode === "free" && (
+          <button
+            type="button"
+            onClick={capturePhoto}
+            className="rounded-full border border-white/20 bg-black/30 px-4 py-2 text-[11px] uppercase tracking-[0.2em] text-white/70 backdrop-blur transition hover:border-white/50 hover:text-white"
+          >
+            {t.photo}
+          </button>
+        )}
         <button
           type="button"
           onClick={toggleAudio}
@@ -63,7 +78,7 @@ export function Hud() {
           disabled={mode === "toScroll" || mode === "toFree"}
           className="rounded-full border border-white/20 bg-black/30 px-4 py-2 text-[11px] uppercase tracking-[0.2em] text-white/70 backdrop-blur transition hover:border-white/50 hover:text-white disabled:opacity-40"
         >
-          {inScroll ? t.explore : t.resume}
+          {coarse ? stripKey(modeLabel) : modeLabel}
         </button>
       </div>
     </>
