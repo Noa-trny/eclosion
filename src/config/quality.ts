@@ -18,7 +18,9 @@ export const QUALITY_PRESETS: Record<Tier, QualityPreset> = {
     },
   },
   medium: {
-    dprMax: 1.5,
+    // 2, not 1.5: modern phones land here (mobile caps the tier) and a 3x
+    // screen at half res reads pixelated; the monitor demotes weak devices.
+    dprMax: 2,
     particleScale: 0.4,
     treeCount: 220,
     boidScale: 0.7,

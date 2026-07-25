@@ -11,7 +11,7 @@ function displayFamily(): string {
   return family.length > 0 ? family : "Georgia, serif";
 }
 
-export const TITLE_FONT_PX = 220;
+export const TITLE_FONT_PX = 300;
 
 /** Pre-warms the display font at the title weight so canvases draw with
  *  Fraunces, not the serif fallback. */
@@ -41,6 +41,6 @@ export function createTitleTexture(text: string): TitleTexture | null {
   ctx.fillText(text, pad, TITLE_FONT_PX * 1.06);
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
-  texture.anisotropy = 4;
+  texture.anisotropy = 8;
   return { texture, aspect: canvas.width / canvas.height };
 }

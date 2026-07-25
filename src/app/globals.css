@@ -30,6 +30,26 @@ body {
   font-variation-settings: "opsz" 130, "SOFT" 30;
 }
 
+/* Start-screen title reveal — pure CSS so the compositor keeps animating
+   even while the main thread is busy compiling shaders on first load
+   (JS-driven staggering froze mid-word there). */
+@keyframes letter-rise {
+  from {
+    opacity: 0;
+    transform: translateY(26px);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+.letter-rise {
+  opacity: 0;
+  animation: letter-rise 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 /* Keyboard a11y: juries tab through the page — make focus unmistakable. */
 :focus-visible {
   outline: 1.5px solid rgba(255, 200, 120, 0.9);
