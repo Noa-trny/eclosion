@@ -35,11 +35,17 @@ export function ActSection({ act, progress }: ActSectionProps) {
       : act.align === "right"
         ? "items-end text-right"
         : "items-start text-left";
+  // Phones: the 3D subject owns the middle of a portrait frame — side-aligned
+  // copy drops to the lower third (above the HUD), centered acts stay centered.
+  const flowClass =
+    act.align === "center"
+      ? "justify-center"
+      : "justify-end pb-36 sm:justify-center sm:pb-16";
 
   return (
     <motion.section
       style={{ opacity, y }}
-      className={`absolute inset-0 flex flex-col justify-center px-6 py-16 sm:px-14 md:px-24 ${alignClass}`}
+      className={`absolute inset-0 flex flex-col px-6 py-16 sm:px-14 md:px-24 ${alignClass} ${flowClass}`}
       aria-hidden={act.index !== 0 ? undefined : false}
     >
       <p className="mb-3 text-[11px] uppercase tracking-[0.5em] text-white/45 sm:text-xs">

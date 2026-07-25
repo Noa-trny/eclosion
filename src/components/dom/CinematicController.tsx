@@ -91,7 +91,8 @@ export function CinematicController() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.9, delay: 1.4 }}
-          className="fixed bottom-6 left-1/2 z-40 -translate-x-1/2"
+          // Raised on phones: the HUD pills own the bottom edge there.
+          className="fixed bottom-20 left-1/2 z-40 -translate-x-1/2 sm:bottom-6"
         >
           <button
             type="button"
