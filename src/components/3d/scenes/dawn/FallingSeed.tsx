@@ -27,9 +27,12 @@ export function FallingSeed() {
     if (!secretActive) {
       startTime.current = null;
       mesh.visible = false;
-      light.intensity = 0;
+      // Invisible lights leave the render list entirely — a dormant point
+      // light must not tax every dawn frame.
+      light.visible = false;
       return;
     }
+    light.visible = true;
     if (startTime.current === null) startTime.current = clock.elapsedTime;
     const t = clock.elapsedTime - startTime.current;
     const fall = Math.min(1, t / FALL_SECONDS);

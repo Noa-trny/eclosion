@@ -24,7 +24,7 @@ export const DOF_SETTINGS = {
 };
 
 export const GOD_RAYS_SETTINGS = {
-  samples: 42,
+  samples: 32,
   density: 0.92,
   decay: 0.95,
   weight: 0.4,
