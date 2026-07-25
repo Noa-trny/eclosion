@@ -56,6 +56,14 @@ export function Experience() {
     initLang();
   }, []);
 
+  // The film always opens on its first frame: a reload used to restore the
+  // browser's old scroll position, so the end card (or any act) sat behind
+  // the start screen's translucent veil like a second, ghosted home page.
+  useEffect(() => {
+    window.history.scrollRestoration = "manual";
+    window.scrollTo(0, 0);
+  }, []);
+
   useLenisScroll(!reduced);
   useKeyBindings();
   useAudioBridge();
