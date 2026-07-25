@@ -12,8 +12,11 @@ import { useDisposable } from "@/hooks/useDisposable";
  *  bellies catching fire as sunriseProgress climbs. */
 export function DawnClouds() {
   const tier = useQualityStore((s) => s.tier);
+  // A BAND around the sunrise, not a ceiling: the deck only reads where it
+  // catches fire near the sun. Half the old plane = half the screen it fills
+  // (the overhead sky was pure raymarch cost with nothing to say).
   const geometry = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(700, 460, 1, 1);
+    const geo = new THREE.PlaneGeometry(300, 240, 1, 1);
     geo.rotateX(-Math.PI / 2);
     return geo;
   }, []);
@@ -29,9 +32,12 @@ export function DawnClouds() {
     const density = material.uniforms.uDensity;
     if (density) density.value = uniformProxies.acts.sunriseProgress * 0.8;
     const steps = material.uniforms.uSteps;
-    if (steps) steps.value = tier === "high" ? 16 : 9;
+    // The dawn deck fills the upper half of the frame staring INTO the sun —
+    // no grazing discount applies. Fewer steps here buy the finale its fps;
+    // the per-pixel jitter hides the difference.
+    if (steps) steps.value = tier === "high" ? 11 : 7;
   });
 
   if (tier === "low") return null;
-  return <mesh geometry={geometry} material={material} position={[440, 88, 60]} frustumCulled={false} />;
+  return <mesh geometry={geometry} material={material} position={[566, 88, 64]} frustumCulled={false} />;
 }
