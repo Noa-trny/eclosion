@@ -3,6 +3,7 @@
 import { Trees } from "./Trees";
 import { Fireflies } from "./Fireflies";
 import { Moon } from "./Moon";
+import { MoonShafts } from "./MoonShafts";
 import { Undergrowth } from "./Undergrowth";
 
 /** Act 2 — trees rise under the moon, fireflies wake between the trunks,
@@ -15,6 +16,7 @@ export function ForestScene() {
       <Undergrowth />
       <Fireflies />
       <Moon />
+      <MoonShafts />
     </group>
   );
 }

@@ -7,6 +7,8 @@ import { useDisposable } from "@/hooks/useDisposable";
 import { mulberry32 } from "@/utils/random";
 import { GlowingSeed } from "./GlowingSeed";
 import { Roots } from "./Roots";
+import { LightVeins } from "./LightVeins";
+import { HeartbeatRing } from "./HeartbeatRing";
 
 /** Act 1 — the seed on its cairn at the world origin. The mound is faceted
  *  earth ringed by standing stones: the style is OWNED, not a naked sphere. */
@@ -68,6 +70,9 @@ export function SeedScene() {
         <GlowingSeed />
         <Roots />
       </group>
+      {/* Light crawling out of the earth, and the beat that drives it. */}
+      <LightVeins />
+      <HeartbeatRing />
     </group>
   );
 }
