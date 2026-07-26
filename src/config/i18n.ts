@@ -98,6 +98,7 @@ export const UI = {
     secretSub: "Tout recommence.",
     trailer: "Bande-annonce",
     trailerExit: "Reprendre la main",
+    journeyCaption: "Votre traversée, dessinée dans les étoiles",
   },
   en: {
     act: "Act",
@@ -137,6 +138,7 @@ export const UI = {
     secretSub: "Everything begins anew.",
     trailer: "Trailer",
     trailerExit: "Take back control",
+    journeyCaption: "Your crossing, drawn in the stars",
   },
 } as const satisfies Record<Lang, Record<string, string>>;
 
