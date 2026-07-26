@@ -33,7 +33,10 @@ interface TitleAnchor {
 const ANCHORS: TitleAnchor[] = [
   // Negative fade-in start: fully present at rest (p=0), right after entry.
   { pos: [0, 10, 30], portraitPos: [0, 11.5, 30], face: [0, 9, 66], width: 17, window: [-0.02, 0, 0.55, 0.75] },
-  { pos: [-2.4, 4.8, 6.5], portraitPos: [0.7, 5.3, 7], face: [1.5, 4.5, 26], width: 6, window: [0.05, 0.16, 0.42, 0.6], portraitWindow: [0.05, 0.14, 0.26, 0.38] },
+  // Portrait: FAR BEHIND the seed, on the camera→seed axis — distance keeps
+  // the size stable and the drift tiny for the whole push-in (the close
+  // anchor ballooned and slid off the narrow frame).
+  { pos: [-2.4, 4.8, 6.5], portraitPos: [-1.9, 6, -12], face: [1.9, 4, 19], width: 9, window: [0.05, 0.16, 0.42, 0.6], portraitWindow: [0.05, 0.14, 0.3, 0.45] },
   { pos: [-6.5, 7, -36], face: [-4, 3.6, -6], width: 9, window: [0.05, 0.16, 0.42, 0.6] },
   { pos: [27.5, 29.5, -56.5], face: [12.4, 28, -71.3], width: 13, window: [0.05, 0.16, 0.45, 0.62] },
   { pos: [121, 5, 5], face: [99, 14.6, -3.5], width: 13.5, window: [0.03, 0.1, 0.17, 0.26] },
