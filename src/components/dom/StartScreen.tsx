@@ -162,21 +162,26 @@ export function StartScreen() {
               />
             </motion.div>
 
+            {/* Boot indicator: OUTSIDE any JS-delayed entrance and CSS-only —
+                shader compiles freeze the main thread, and this must be
+                visible and spinning exactly then. */}
+            {phase === "boot" && (
+              <div className="fade-in mt-9 flex flex-col items-center gap-4">
+                <div
+                  aria-hidden
+                  className="h-7 w-7 animate-spin rounded-full border-2 border-white/15 border-t-[#ffd9a0]"
+                />
+                <p className="text-xs uppercase tracking-[0.3em] text-white/50">{t.sprouting}</p>
+              </div>
+            )}
+
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 2.1, duration: 0.9 }}
               className="mt-9 flex flex-col items-center gap-3 sm:flex-row"
             >
-              {phase === "boot" ? (
-                <motion.p
-                  animate={{ opacity: [0.35, 0.75, 0.35] }}
-                  transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
-                  className="text-xs uppercase tracking-[0.3em] text-white/50"
-                >
-                  {t.sprouting}
-                </motion.p>
-              ) : (
+              {phase !== "boot" && (
                 <>
                   <button
                     type="button"
