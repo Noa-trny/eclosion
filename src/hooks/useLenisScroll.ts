@@ -6,7 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 import { LENIS_LERP } from "@/config/scroll";
 import { buildMasterTimeline } from "@/timelines/masterTimeline";
-import { writeProgress } from "@/stores/progressStore";
+import { decayVelocity, writeProgress } from "@/stores/progressStore";
 import { useAppStore } from "@/stores/appStore";
 import { registerLenis } from "@/lib/scrollControl";
 
@@ -25,7 +25,12 @@ export function useLenisScroll(smooth: boolean): void {
     if (smooth) {
       lenis = new Lenis({ autoRaf: false, lerp: LENIS_LERP, syncTouch: true });
       lenis.on("scroll", ScrollTrigger.update);
-      tick = (time: number) => lenis?.raf(time * 1000);
+      let last = 0;
+      tick = (time: number) => {
+        lenis?.raf(time * 1000);
+        decayVelocity(last ? Math.min(time - last, 0.05) : 0.016);
+        last = time;
+      };
       gsap.ticker.add(tick);
       gsap.ticker.lagSmoothing(0);
       registerLenis(lenis);

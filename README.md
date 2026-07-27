@@ -2,41 +2,50 @@
 
 # É C L O S I O N
 
-**La naissance d'un monde — une expérience web 3D où le défilement est le temps.**
+**La naissance d'un monde - une expérience web 3D où le défilement est le temps.**
 
-*The birth of a world — a 3D web experience where scrolling is time. Fully bilingual (FR/EN).*
+*The birth of a world - a 3D web experience where scrolling is time. Fully bilingual (FR/EN).*
 
-<img src="docs/screens/forest.jpg" alt="Acte III — La Forêt : conifères sous la lune, lucioles, brume rasante" width="100%" />
+<img src="docs/screens/forest.jpg" alt="Acte III - La Forêt : conifères sous la lune, lucioles, brume rasante" width="100%" />
 
 </div>
 
 Du néant à l'aube : une graine germe, une forêt s'éveille sous les lucioles, l'orage éclate,
 la caméra plonge dans un océan bioluminescent où passe une baleine, émerge au pied d'un
-volcan — et la cendre devient jardin sous le premier lever de soleil du monde.
+volcan - et la cendre devient jardin sous le premier lever de soleil du monde.
 
 **100 % procédural** : aucun modèle, aucune texture, aucun fichier audio. Géométrie,
 matériaux (bruit/FBM en GLSL), 100 000+ particules et musique (synthèse WebAudio pure) sont
 générés par le code. Seule exception assumée : la typographie **Fraunces** (OFL, committée
-dans le repo — aucune requête externe au runtime).
+dans le repo - aucune requête externe au runtime).
 
 ## Le voyage
 
 | | |
 |:---:|:---:|
-| <img src="docs/screens/void-constellations.jpg" alt="Acte I — les constellations de la promesse" /> **I — Le Néant.** La promesse du monde s'écrit dans les étoiles : la Graine, la Baleine, l'Oiseau se dessinent trait par trait. | <img src="docs/screens/seed.jpg" alt="Acte II — la graine incandescente" /> **II — La Graine.** Une étincelle de vie perce la nuit ; le rack focus cinématographique isole son battement. |
-| <img src="docs/screens/storm.jpg" alt="Acte IV — l'orage" /> **IV — L'Orage.** Pluie GPU, nuages raymarchés, éclairs à double impact et tonnerre synthétisé retardé par la distance. | <img src="docs/screens/ocean-dive.jpg" alt="Acte V — la plongée" /> **V — La Plongée.** La surface percée dans une ondulation plein écran ; l'ouïe s'enfonce derrière un filtre passe-bas. |
-| <img src="docs/screens/ocean-whale.jpg" alt="Acte V — la baleine" /> **V — La Baleine.** Une seule traversée par plongée — son dos passe sous les bancs de poissons, son chant spatialisé arrive de là où elle nage. | <img src="docs/screens/volcano.jpg" alt="Acte VI — le survol du cratère" /> **VI — Le Volcan.** Le survol du cratère : le regard plonge dans le lac en fusion pendant que la fontaine de braises monte vers l'objectif. |
-| <img src="docs/screens/bloom.jpg" alt="Acte VII — l'éclosion" /> **VII — L'Éclosion.** Corolles instanciées qui s'ouvrent au scroll, oiseaux en boids, capsules physiques qui rebondissent. | <img src="docs/screens/finale.jpg" alt="Acte VIII — l'aube" /> **VIII — L'Aube.** Les oiseaux traversent le premier lever de soleil, les pétales du Souffle montent vers la lumière, l'accord se résout en cloches. |
+| <img src="docs/screens/void-constellations.jpg" alt="Acte I - les constellations de la promesse" /> **I - Le Néant.** La promesse du monde s'écrit dans les étoiles : la Graine, la Baleine, l'Oiseau se dessinent trait par trait. Les titres d'actes vivent DANS le monde : parallaxe, brume, profondeur de champ. | <img src="docs/screens/seed.jpg" alt="Acte II - la graine incandescente" /> **II - La Graine.** Une étincelle de vie perce la nuit : des veines de lumière rampent hors du cairn au rythme de son battement, des braises dérivent dans l'air. |
+| <img src="docs/screens/storm.jpg" alt="Acte IV - l'orage" /> **IV - L'Orage.** Pluie GPU, nuages raymarchés, éclairs à double impact et tonnerre synthétisé retardé par la distance. | <img src="docs/screens/ocean-dive.jpg" alt="Acte V - la plongée" /> **V - La Plongée.** La surface percée dans une ondulation plein écran ; l'ouïe s'enfonce derrière un filtre passe-bas. |
+| <img src="docs/screens/ocean-whale.jpg" alt="Acte V - la baleine" /> **V - La Baleine.** Une seule traversée par plongée - son dos passe sous les bancs de poissons, son chant spatialisé arrive de là où elle nage. | <img src="docs/screens/volcano.jpg" alt="Acte VI - le survol du cratère" /> **VI - Le Volcan.** Le survol du cratère : le regard plonge dans le lac en fusion pendant que la fontaine de braises monte vers l'objectif. |
+| <img src="docs/screens/bloom.jpg" alt="Acte VII - l'éclosion" /> **VII - L'Éclosion.** Corolles instanciées qui s'ouvrent au scroll, oiseaux en boids, capsules physiques qui rebondissent. | <img src="docs/screens/finale.jpg" alt="Acte VIII - l'aube" /> **VIII - L'Aube.** Les oiseaux traversent le premier lever de soleil, les pétales du Souffle montent vers la lumière, l'accord se résout en cloches. |
 
 <div align="center">
 <img src="docs/screens/endcard.jpg" alt="Écran final" width="70%" />
 
-*Le titre prend son sens à la toute fin — puis deux portes : revoir le récit, ou habiter le monde.*
+*Le titre prend son sens à la toute fin, sous VOTRE constellation : chaque étoile est un moment où vous vous êtes attardé, reliées dans l'ordre de votre voyage. Elle signe aussi chaque carte postale (touche P).*
 
-<img src="docs/screens/mobile-forest.jpg" alt="Version mobile — la forêt en portrait" width="32%" />
+<img src="docs/screens/mobile-forest.jpg" alt="Version mobile - la forêt en portrait" width="32%" />
 
-*Entièrement responsive — le doigt sème les lucioles au fil du scroll tactile.*
+*Entièrement responsive - le doigt sème les lucioles au fil du scroll tactile.*
 </div>
+
+## Ce que le monde garde de vous
+
+- **Votre constellation** : le film échantillonne où votre temps s'écoule ; la carte de fin la dessine, la carte postale la signe. Deux visiteurs ne partagent jamais la même image.
+- **Les rencontres** : une chouette au-dessus des sapins, un poisson hors de la houle, un lièvre dans la prairie. 60 % de chance chacune, par traversée. Parfois on les manque : c'est le principe.
+- **Le secret** : restez immobile vingt secondes sur l'écran final.
+- **La bande-annonce** : le film se déroule seul, au rythme réalisé (ralenti sur les éclairs, la plongée, le survol du cratère). Une minute d'immobilité sur l'accueil et il se lance de lui-même, muet, en boucle.
+- **Le temps recommence** : en exploration libre, un jour complet passe en cinq minutes : aube dorée, midi, crépuscule, nuit, sur n'importe quel point du monde.
+- **L'orage vous touche** : les gouttes frappent l'objectif et y ruissellent ; le tonnerre claque selon la distance de l'éclair.
 
 ## Démarrer
 
@@ -53,10 +62,10 @@ pnpm typecheck  # tsc strict
 | Entrée | Action |
 |---|---|
 | Molette / tactile / flèches / espace | Avancer dans le récit (le scroll est la timeline) |
-| Points à droite | Aller directement à un acte |
+| Points (rail à droite ; bande en haut sur mobile) | Aller directement à un acte |
 | `F` | Basculer exploration libre ↔ récit (retour exact à la progression) |
-| ZQSD / WASD + souris (exploration) | Se déplacer / regarder — `Maj` sprint, `Espace` monter, `C` descendre |
-| `P` | Mode photo — capture du rendu 3D pur, téléchargée |
+| ZQSD / WASD + souris ; joystick + glisser au tactile (exploration) | Se déplacer / regarder - `Maj` sprint, `Espace` monter, `C` descendre |
+| `P` (bouton dédié sur mobile) | Carte postale : la capture montée, signée de votre constellation ; partage natif au tactile |
 | `M` | Couper / activer le son |
 | `` ` `` | Éditeur de scène temps réel (leva) |
 | FR / EN (en haut à droite) | Basculer la langue du récit |
@@ -72,7 +81,7 @@ Tailwind CSS 4 · WebAudio (synthèse pure).
 ### Le contrat de scroll (le cœur du système)
 
 ```
-wheel/touch → Lenis (lerp 0.08 — le SEUL lissage) → scrollTop
+wheel/touch → Lenis (lerp 0.08 - le SEUL lissage) → scrollTop
   → gsap.ticker pilote lenis.raf ; lenis "scroll" → ScrollTrigger.update()
   → un ScrollTrigger maître (scrub: true) scrub la timeline GSAP (durée 1 = progress)
       ├─ les tweens mutent uniformProxies (objets plains) + uniforms des matériaux
@@ -92,10 +101,10 @@ défaut de GSAP vaut la moitié du film).
 - **WebGL2 + GLSL, pas WebGPURenderer** : l'exigence de shaders custom est incompatible avec
   TSL/WGSL. Les particules sont *stateless* : chaque comportement (pluie, lucioles en
   curl-noise, braises, vortex du final…) est une fonction fermée de `(seed, uTime)` évaluée en
-  vertex shader — pas de ping-pong FBO. Buffers alloués au tier max ; changer de qualité ne
+  vertex shader - pas de ping-pong FBO. Buffers alloués au tier max ; changer de qualité ne
   fait que déplacer `setDrawRange`.
 - **Un seul sol analytique** : `groundHeight(x, z)` génère l'unique mesh de terrain, contraint
-  la marche en exploration libre, fait rebondir les props physiques et borne les boids — ce
+  la marche en exploration libre, fait rebondir les props physiques et borne les boids - ce
   qu'on voit est exactement ce qu'on touche.
 - **Caméra continue** : chemin CatmullRom paramétré par acte, chaque acte voyageant jusqu'au
   premier point du suivant (continuité C0 aux frontières) + amortissement spatial léger (λ=9)
@@ -112,7 +121,7 @@ défaut de GSAP vaut la moitié du film).
 - **Qualité adaptative sans réseau** : tiering GPU par heuristique locale, puis un
   `PerformanceMonitor` qui descend DPR → tier avec un plancher. Post par tier (Bloom HalfFloat,
   DOF, GodRays lune/soleil, grain, speed-blur radial, grade timeline, ondulation de plongée).
-- **IA comportementale** : boids CPU (grille de hachage) rendus en InstancedMesh — poissons,
+- **IA comportementale** : boids CPU (grille de hachage) rendus en InstancedMesh - poissons,
   oiseaux, et une baleine qui ne passe qu'une fois par approche ; physique légère maison
   (Euler semi-implicite + collision heightfield + sommeil).
 
