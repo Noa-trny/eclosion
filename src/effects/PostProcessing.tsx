@@ -19,6 +19,7 @@ import { useAppStore } from "@/stores/appStore";
 import { useProgressStore } from "@/stores/progressStore";
 import { uniformProxies } from "@/timelines/uniformProxies";
 import { clamp01 } from "@/utils/math";
+import { groundHeight } from "@/utils/terrain";
 import { GrainEffect } from "./GrainEffect";
 import { LensRainEffect } from "./LensRainEffect";
 import { SpeedBlurEffect } from "./SpeedBlurEffect";
@@ -48,8 +49,10 @@ export function PostProcessing() {
   const grade = useMemo(() => new ColorGradeEffect(), []);
   const ripple = useMemo(() => new ActTransitionEffect(), []);
   const dofRef = useRef<DepthOfFieldEffect>(null);
+  const viewDir = useMemo(() => new THREE.Vector3(), []);
+  const freeFocus = useRef(0.02);
 
-  useFrame(() => {
+  useFrame((state, delta) => {
     const g = uniformProxies.grade;
     grade.setGrade(g.temperature, g.saturation, g.lift, g.underwater);
     ripple.setRipple(uniformProxies.transition.ripple);
@@ -61,11 +64,34 @@ export function PostProcessing() {
     // Storm rain hits the LENS itself — droplets refract, drips run.
     lensRain.setAmount(uniformProxies.acts.rainIntensity);
     // Rack focus: the timeline pulls the focal plane per act (close-up on the
-    // seed, far vista at dawn) — written straight to the CoC material.
+    // seed, far vista at dawn) — written straight to the CoC material. In
+    // free-roam the story's plan is meaningless: focus on what the walker is
+    // LOOKING AT, via a cheap analytic march against the terrain.
     const dof = dofRef.current;
     if (dof) {
+      let focus = uniformProxies.camera.focus;
+      if (useAppStore.getState().mode === "free") {
+        const camera = state.camera;
+        camera.getWorldDirection(viewDir);
+        let d = 4;
+        let hit = 220;
+        for (let i = 0; i < 12; i++) {
+          const y = camera.position.y + viewDir.y * d;
+          if (y <= groundHeight(camera.position.x + viewDir.x * d, camera.position.z + viewDir.z * d) + 0.3) {
+            hit = d;
+            break;
+          }
+          d *= 1.45;
+          if (d > 220) break;
+        }
+        const target = Math.min(0.15, Math.max(0.005, hit / 1500));
+        freeFocus.current += (target - freeFocus.current) * (1 - Math.exp(-4 * Math.min(delta, 0.05)));
+        focus = freeFocus.current;
+      } else {
+        freeFocus.current = focus;
+      }
       const focusUniform = dof.cocMaterial.uniforms["focusDistance"];
-      if (focusUniform) focusUniform.value = uniformProxies.camera.focus;
+      if (focusUniform) focusUniform.value = focus;
     }
   });
 

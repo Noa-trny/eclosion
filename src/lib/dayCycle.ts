@@ -4,9 +4,15 @@
 
 export const CYCLE_PERIOD_SEC = 300;
 
+/** Live cycle state, written by GlobalEnvironment each frame — consumers that
+ *  can't reach the render loop (the star field's intensity closure) read it. */
+export const cycleState = { daylight: 0, blend: 0 };
+
 export interface CycleLook {
   sunElevation: number;
   sunAzimuth: number;
+  /** 0 night .. 1 full day — also used to drown the stars at noon. */
+  daylight: number;
   skyTop: [number, number, number];
   skyBottom: [number, number, number];
   fog: [number, number, number];
@@ -67,6 +73,7 @@ export function computeCycleLook(phase: number): CycleLook {
   return {
     sunElevation,
     sunAzimuth,
+    daylight,
     skyTop: lerp3(NIGHT.skyTop, DAY.skyTop, daylight),
     skyBottom,
     fog,

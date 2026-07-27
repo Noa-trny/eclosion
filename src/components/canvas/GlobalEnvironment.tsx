@@ -11,7 +11,7 @@ import { PARTICLE_PRESETS } from "@/config/particles";
 import { useDisposable } from "@/hooks/useDisposable";
 import { groundHeight } from "@/utils/terrain";
 import { useAppStore } from "@/stores/appStore";
-import { computeCycleLook, CYCLE_PERIOD_SEC } from "@/lib/dayCycle";
+import { computeCycleLook, cycleState, CYCLE_PERIOD_SEC } from "@/lib/dayCycle";
 
 /** Owns everything persistent: the sky dome + star field (camera-following),
  *  scene fog, the sun/ambient lights, and the once-per-frame refresh of the
@@ -68,9 +68,11 @@ export function GlobalEnvironment() {
     const exploring = useAppStore.getState().mode === "free";
     c.blend += ((exploring ? 1 : 0) - c.blend) * (1 - Math.exp(-0.5 * dt));
     if (exploring) c.phase = (c.phase + dt / CYCLE_PERIOD_SEC) % 1;
+    cycleState.blend = c.blend;
     if (c.blend > 0.003) {
       const look = computeCycleLook(c.phase);
       const b = c.blend;
+      cycleState.daylight = look.daylight;
       u.uFogColor.value.lerp(new THREE.Color(...look.fog), b);
       u.uSkyTop.value.lerp(new THREE.Color(...look.skyTop), b);
       u.uSkyBottom.value.lerp(new THREE.Color(...look.skyBottom), b);
@@ -124,7 +126,10 @@ export function GlobalEnvironment() {
         <mesh geometry={skyGeometry} material={skyMaterial} frustumCulled={false} renderOrder={-10} />
         <GPUParticles
           preset={PARTICLE_PRESETS.stars}
-          getIntensity={() => uniformProxies.sky.starIntensity}
+          // Daylight drowns the stars while the free-roam day cycle runs.
+          getIntensity={() =>
+            uniformProxies.sky.starIntensity * (1 - cycleState.daylight * cycleState.blend * 0.92)
+          }
         />
       </group>
       <ambientLight ref={ambientRef} intensity={0.15} />
