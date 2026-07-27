@@ -20,6 +20,7 @@ import { useProgressStore } from "@/stores/progressStore";
 import { uniformProxies } from "@/timelines/uniformProxies";
 import { clamp01 } from "@/utils/math";
 import { GrainEffect } from "./GrainEffect";
+import { LensRainEffect } from "./LensRainEffect";
 import { SpeedBlurEffect } from "./SpeedBlurEffect";
 import { ColorGradeEffect } from "./ColorGradeEffect";
 import { ActTransitionEffect } from "./ActTransitionEffect";
@@ -42,6 +43,7 @@ export function PostProcessing() {
   const flags = QUALITY_PRESETS[tier].post;
 
   const grain = useMemo(() => new GrainEffect(), []);
+  const lensRain = useMemo(() => new LensRainEffect(), []);
   const speedBlur = useMemo(() => new SpeedBlurEffect(), []);
   const grade = useMemo(() => new ColorGradeEffect(), []);
   const ripple = useMemo(() => new ActTransitionEffect(), []);
@@ -56,6 +58,8 @@ export function PostProcessing() {
     // Grain scales with scene light: near-invisible in the dark acts (where
     // noise reads as banding), full texture in the bright ones.
     grain.setAmount(0.016 + clamp01(uniformProxies.ambient.intensity / 0.45) * 0.026);
+    // Storm rain hits the LENS itself — droplets refract, drips run.
+    lensRain.setAmount(uniformProxies.acts.rainIntensity);
     // Rack focus: the timeline pulls the focal plane per act (close-up on the
     // seed, far vista at dawn) — written straight to the CoC material.
     const dof = dofRef.current;
@@ -93,6 +97,7 @@ export function PostProcessing() {
     effects.push(<ChromaticAberration key="ca" offset={CHROMATIC_OFFSET} />);
   }
   effects.push(<primitive key="ripple" object={ripple} />);
+  effects.push(<primitive key="lensrain" object={lensRain} />);
   effects.push(<primitive key="grade" object={grade} />);
   if (flags.grain) effects.push(<primitive key="grain" object={grain} />);
   if (flags.speedBlur) effects.push(<primitive key="blur" object={speedBlur} />);

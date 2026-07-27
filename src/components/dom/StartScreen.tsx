@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { AnimatePresence, motion, useMotionValue, useTransform } from "motion/react";
 import { useAppStore } from "@/stores/appStore";
 import { initAudioEngine } from "@/audio/engine";
@@ -36,6 +37,31 @@ export function StartScreen() {
     start(true);
     useAppStore.getState().setCinema(true);
   };
+
+  // Screensaver: a minute of stillness on the ready gate and the film starts
+  // showing itself — muted (no gesture, no AudioContext), looping.
+  useEffect(() => {
+    if (started || phase === "boot" || reducedMotion) return;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    // ?saver shortens the idle delay for dev verification.
+    const delay = new URLSearchParams(window.location.search).has("saver") ? 5000 : 60000;
+    const arm = (): void => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        const app = useAppStore.getState();
+        app.start(false);
+        app.setScreensaver(true);
+        app.setCinema(true);
+      }, delay);
+    };
+    const events = ["pointermove", "pointerdown", "keydown", "wheel", "touchstart"] as const;
+    for (const e of events) window.addEventListener(e, arm, { passive: true });
+    arm();
+    return () => {
+      clearTimeout(timer);
+      for (const e of events) window.removeEventListener(e, arm);
+    };
+  }, [started, phase, reducedMotion]);
 
   return (
     <AnimatePresence>

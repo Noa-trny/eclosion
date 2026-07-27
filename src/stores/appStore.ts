@@ -21,6 +21,8 @@ interface AppState {
   secretActive: boolean;
   /** Trailer mode: the film scrolls itself with directed pacing. */
   cinema: boolean;
+  /** Idle-started trailer loop: muted, looping, any gesture dismisses. */
+  screensaver: boolean;
   setPhase: (phase: AppPhase) => void;
   setMode: (mode: AppMode) => void;
   start: (withAudio: boolean) => void;
@@ -30,6 +32,7 @@ interface AppState {
   photoTaken: () => void;
   setSecret: (on: boolean) => void;
   setCinema: (on: boolean) => void;
+  setScreensaver: (on: boolean) => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -45,6 +48,7 @@ export const useAppStore = create<AppState>((set) => ({
   photoNonce: 0,
   secretActive: false,
   cinema: false,
+  screensaver: false,
   setPhase: (phase) => set({ phase }),
   setMode: (mode) => set({ mode }),
   start: (withAudio) => set({ started: true, audioOn: withAudio, phase: "running" }),
@@ -54,4 +58,5 @@ export const useAppStore = create<AppState>((set) => ({
   photoTaken: () => set((s) => ({ photoNonce: s.photoNonce + 1 })),
   setSecret: (on) => set({ secretActive: on }),
   setCinema: (on) => set({ cinema: on }),
+  setScreensaver: (on) => set({ screensaver: on }),
 }));
