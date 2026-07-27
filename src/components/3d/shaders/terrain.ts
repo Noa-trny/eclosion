@@ -50,6 +50,14 @@ void main() {
   vec3 rock = uRockColor * (0.7 + detail * 0.55);
   vec3 albedo = mix(grass, rock, smoothstep(0.18, 0.5, slope));
   albedo = mix(uSandColor * (0.8 + detail * 0.3), albedo, smoothstep(-1.6, 1.4, vWorldPos.y));
+  // Macro patches: near-kilometre drift so the DISTANCE is never one flat
+  // wash — meadows, moss and dry earth bleeding into each other.
+  float macro = fbm2(vWorldPos.xz * 0.016) * 0.5 + 0.5;
+  float macroHue = snoise2(vWorldPos.xz * 0.006 + 31.0) * 0.5 + 0.5;
+  albedo *= 0.82 + macro * 0.36;
+  vec3 warmPatch = albedo * vec3(1.16, 1.02, 0.8);
+  vec3 coolPatch = albedo * vec3(0.86, 1.0, 1.1);
+  albedo = mix(albedo, mix(coolPatch, warmPatch, macroHue), 0.4);
   // Near the crater: basalt charcoal broken by oxidized rust patches.
   // Near the crater the ground turns charcoal basalt — grey-black, not red.
   float nearCrater = exp(-distance(vWorldPos.xz, uCraterPos.xz) * 0.011);

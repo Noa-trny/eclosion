@@ -80,7 +80,7 @@ export function EndCard() {
         >
           {copied ? t.shared : t.share}
         </button>
-        <p className="mt-8 text-[10px] uppercase tracking-[0.25em] text-white/45 drop-shadow-[0_1px_6px_rgba(2,3,8,0.9)]">
+        <p className="mt-8 text-[10px] uppercase tracking-[0.25em] text-white/60 drop-shadow-[0_1px_6px_rgba(2,3,8,0.9)]">
           {t.credits}
         </p>
       </motion.div>

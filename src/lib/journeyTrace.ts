@@ -48,8 +48,15 @@ export function getConstellation(max = 12): JourneyStar[] {
   entries.sort((a, b) => b.t - a.t);
   const top = entries.slice(0, max).sort((a, b) => a.i - b.i);
   const peak = Math.max(...top.map((e) => e.t));
+  // Normalize the journey span so the constellation always FILLS its box,
+  // centered — a crossing that lingered only early would otherwise pile all
+  // its stars into one lopsided corner. Relative spacing (the pacing's
+  // shape) is preserved.
+  const first = top[0]?.i ?? 0;
+  const last = top[top.length - 1]?.i ?? 1;
+  const span = Math.max(1, last - first);
   return top.map(({ t, i }) => ({
-    x: (i + 0.5) / BUCKETS,
+    x: (i - first) / span,
     y: 0.16 + scatter(i) * 0.68,
     w: 0.35 + 0.65 * Math.sqrt(t / peak),
   }));

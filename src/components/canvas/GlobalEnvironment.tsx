@@ -10,6 +10,8 @@ import { GPUParticles } from "@/lib/particles/GPUParticles";
 import { PARTICLE_PRESETS } from "@/config/particles";
 import { useDisposable } from "@/hooks/useDisposable";
 import { groundHeight } from "@/utils/terrain";
+import { useAppStore } from "@/stores/appStore";
+import { computeCycleLook, CYCLE_PERIOD_SEC } from "@/lib/dayCycle";
 
 /** Owns everything persistent: the sky dome + star field (camera-following),
  *  scene fog, the sun/ambient lights, and the once-per-frame refresh of the
@@ -33,6 +35,9 @@ export function GlobalEnvironment() {
   const sunRef = useRef<THREE.DirectionalLight>(null);
   const ambientRef = useRef<THREE.AmbientLight>(null);
   const sunDir = useMemo(() => new THREE.Vector3(), []);
+  // Free-roam day cycle: blend eases in/out so entering and leaving
+  // exploration never pops the light; phase only advances while exploring.
+  const cycle = useRef({ phase: 0.04, blend: 0 });
 
   useFrame((state, delta) => {
     const dt = Math.min(delta, 0.05);
@@ -49,14 +54,35 @@ export function GlobalEnvironment() {
     u.uSkyTop.value.setRGB(p.sky.topColor.r, p.sky.topColor.g, p.sky.topColor.b);
     u.uSkyBottom.value.setRGB(p.sky.bottomColor.r, p.sky.bottomColor.g, p.sky.bottomColor.b);
 
-    const el = p.sky.sunElevation;
-    const az = p.sky.sunAzimuth;
-    sunDir.set(Math.cos(el) * Math.cos(az), Math.sin(el), Math.cos(el) * Math.sin(az));
-    u.uSunDir.value.copy(sunDir);
+    let el = p.sky.sunElevation;
+    let az = p.sky.sunAzimuth;
     u.uSunColor.value.setRGB(p.sun.color.r, p.sun.color.g, p.sun.color.b);
     u.uSunIntensity.value = p.sun.intensity;
     u.uAmbientColor.value.setRGB(p.ambient.color.r, p.ambient.color.g, p.ambient.color.b);
     u.uAmbientIntensity.value = p.ambient.intensity;
+
+    // While exploring, time flows again: a full day in five minutes, poured
+    // OVER the act's frozen palette (applied last so nothing re-overwrites
+    // it) and poured back out seamlessly on return to the story.
+    const c = cycle.current;
+    const exploring = useAppStore.getState().mode === "free";
+    c.blend += ((exploring ? 1 : 0) - c.blend) * (1 - Math.exp(-0.5 * dt));
+    if (exploring) c.phase = (c.phase + dt / CYCLE_PERIOD_SEC) % 1;
+    if (c.blend > 0.003) {
+      const look = computeCycleLook(c.phase);
+      const b = c.blend;
+      u.uFogColor.value.lerp(new THREE.Color(...look.fog), b);
+      u.uSkyTop.value.lerp(new THREE.Color(...look.skyTop), b);
+      u.uSkyBottom.value.lerp(new THREE.Color(...look.skyBottom), b);
+      el += (look.sunElevation - el) * b;
+      az += (look.sunAzimuth - az) * b;
+      u.uSunColor.value.lerp(new THREE.Color(...look.sun), b);
+      u.uAmbientColor.value.lerp(new THREE.Color(...look.ambient), b);
+      u.uSunIntensity.value += (look.sunIntensity - u.uSunIntensity.value) * b;
+      u.uAmbientIntensity.value += (look.ambientIntensity - u.uAmbientIntensity.value) * b;
+    }
+    sunDir.set(Math.cos(el) * Math.cos(az), Math.sin(el), Math.cos(el) * Math.sin(az));
+    u.uSunDir.value.copy(sunDir);
 
     const aurora = skyMaterial.uniforms.uAurora;
     if (aurora) aurora.value = p.sky.auroraIntensity;
@@ -68,11 +94,11 @@ export function GlobalEnvironment() {
       sunRef.current.position.copy(sunDir).multiplyScalar(220).add(state.camera.position);
       sunRef.current.target.position.copy(state.camera.position);
       sunRef.current.target.updateMatrixWorld();
-      sunRef.current.intensity = p.sun.intensity * 2.2;
+      sunRef.current.intensity = u.uSunIntensity.value * 2.2;
       sunRef.current.color.copy(u.uSunColor.value);
     }
     if (ambientRef.current) {
-      ambientRef.current.intensity = p.ambient.intensity * 2.4;
+      ambientRef.current.intensity = u.uAmbientIntensity.value * 2.4;
       ambientRef.current.color.copy(u.uAmbientColor.value);
     }
     domeRef.current?.position.copy(state.camera.position);

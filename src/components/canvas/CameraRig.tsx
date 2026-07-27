@@ -25,6 +25,7 @@ export function CameraRig() {
   const smoothPos = useMemo(() => new THREE.Vector3(), []);
   const smoothLook = useMemo(() => new THREE.Vector3(), []);
   const wasScroll = useRef(false);
+  const breath = useRef(1);
 
   useFrame((state, delta) => {
     if (useAppStore.getState().mode !== "scroll") {
@@ -58,6 +59,17 @@ export function CameraRig() {
     camera.position.copy(smoothPos);
     camera.position.x += shakeX;
     camera.position.y += shakeY;
+
+    // Before entry, the opening shot BREATHES — a slow orbital drift behind
+    // the gate's veil, so the world is alive before the first scroll. Damped
+    // out after entry so the handover to the scroll never pops.
+    const started = useAppStore.getState().started;
+    breath.current += ((started ? 0 : 1) - breath.current) * (1 - Math.exp(-0.8 * dt));
+    if (breath.current > 0.003) {
+      camera.position.x += Math.sin(t * 0.11) * 1.6 * breath.current;
+      camera.position.y += Math.sin(t * 0.07 + 1.3) * 0.7 * breath.current;
+      camera.position.z += Math.cos(t * 0.09) * 1.1 * breath.current;
+    }
 
     look.copy(smoothLook);
     look.x += parallax.x * 1.7 + shakeX * 2;

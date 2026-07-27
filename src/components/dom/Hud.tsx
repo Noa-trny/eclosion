@@ -29,24 +29,30 @@ export function Hud() {
 
   return (
     <>
-      {/* Act navigation dots. */}
+      {/* Act navigation dots — right rail on desktop, top strip on touch
+          (the phone's bottom edge belongs to the HUD pills). Generous hit
+          areas: the visible dot sits inside a padded button. */}
       {inScroll && (
         <nav
           aria-label={t.acts}
-          className="fixed right-4 top-1/2 z-30 hidden -translate-y-1/2 flex-col gap-3 sm:flex md:right-7"
+          className="fixed left-3 top-3 z-30 flex flex-row gap-1 sm:left-auto sm:right-4 sm:top-1/2 sm:-translate-y-1/2 sm:flex-col sm:gap-1.5 md:right-6"
         >
           {ACTS.map((act) => (
             <button
               key={act.id}
               type="button"
               title={ACT_COPY[lang][act.id].title}
-              aria-label={`${ACT_COPY[lang][act.id].title} — ${t.goToAct} ${act.index + 1}`}
+              aria-label={`${ACT_COPY[lang][act.id].title} - ${t.goToAct} ${act.index + 1}`}
               aria-current={act.index === actIndex}
               onClick={() => scrollToProgress(act.range.start + 0.012)}
-              className={`h-2.5 w-2.5 rounded-full border border-white/40 transition-all duration-500 ${
-                act.index === actIndex ? "scale-125 bg-white" : "bg-white/10 hover:bg-white/40"
-              }`}
-            />
+              className="group p-1.5"
+            >
+              <span
+                className={`block h-2.5 w-2.5 rounded-full border border-white/50 transition-all duration-500 ${
+                  act.index === actIndex ? "scale-125 bg-white" : "bg-white/10 group-hover:bg-white/40"
+                }`}
+              />
+            </button>
           ))}
         </nav>
       )}

@@ -4,22 +4,22 @@ import type { Lang } from "@/stores/langStore";
 import { StorySections } from "./StorySections";
 
 export const metadata: Metadata = {
-  title: "Éclosion — le récit (version accessible)",
+  title: "Éclosion - le récit (version accessible)",
   description:
-    "La naissance d'un monde en huit actes — version texte et illustrations, sans WebGL.",
+    "La naissance d'un monde en huit actes : version texte et illustrations, sans WebGL.",
 };
 
 const STRINGS: Record<Lang, { tagline: string; note: string; retry: string; footer: string; other: string }> = {
   fr: {
     tagline: "Une expérience où le défilement est le temps",
-    note: "Votre appareil ne prend pas en charge la version immersive (WebGL 2) — voici le récit complet.",
+    note: "Votre appareil ne prend pas en charge la version immersive (WebGL 2) : voici le récit complet.",
     retry: "Réessayer la version 3D",
     footer: "100% procédural · aucun asset externe",
     other: "Read in English",
   },
   en: {
     tagline: "An experience where scrolling is time",
-    note: "Your device doesn't support the immersive version (WebGL 2) — here is the full story.",
+    note: "Your device doesn't support the immersive version (WebGL 2): here is the full story.",
     retry: "Try the 3D version",
     footer: "100% procedural · no external assets",
     other: "Lire en français",

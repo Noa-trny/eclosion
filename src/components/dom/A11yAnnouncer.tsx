@@ -13,7 +13,7 @@ export function A11yAnnouncer() {
   const copy = act ? ACT_COPY[lang][act.id] : null;
   return (
     <div aria-live="polite" role="status" className="sr-only">
-      {copy ? `${copy.title} — ${copy.subtitle}. ${copy.body}` : ""}
+      {copy ? `${copy.title} - ${copy.subtitle}. ${copy.body}` : ""}
     </div>
   );
 }

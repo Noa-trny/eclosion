@@ -5,6 +5,9 @@ import * as THREE from "three";
 import { groundHeight } from "@/utils/terrain";
 import { useDisposable } from "@/hooks/useDisposable";
 import { mulberry32 } from "@/utils/random";
+import { GPUParticles } from "@/lib/particles/GPUParticles";
+import { PARTICLE_PRESETS } from "@/config/particles";
+import { uniformProxies } from "@/timelines/uniformProxies";
 import { GlowingSeed } from "./GlowingSeed";
 import { Roots } from "./Roots";
 import { LightVeins } from "./LightVeins";
@@ -73,6 +76,12 @@ export function SeedScene() {
       {/* Light crawling out of the earth, and the beat that drives it. */}
       <LightVeins />
       <HeartbeatRing />
+      {/* Warm motes adrift around the cairn — the air itself is waking. */}
+      <GPUParticles
+        preset={PARTICLE_PRESETS.emberMotes}
+        position={[0, 4, 0]}
+        getIntensity={() => uniformProxies.acts.seedGlow * 0.85}
+      />
     </group>
   );
 }
