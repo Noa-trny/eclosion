@@ -20,6 +20,7 @@ import { useProgressStore } from "@/stores/progressStore";
 import { uniformProxies } from "@/timelines/uniformProxies";
 import { clamp01 } from "@/utils/math";
 import { groundHeight } from "@/utils/terrain";
+import { FXAAEffect } from "./FXAAEffect";
 import { GrainEffect } from "./GrainEffect";
 import { LensRainEffect } from "./LensRainEffect";
 import { SpeedBlurEffect } from "./SpeedBlurEffect";
@@ -44,6 +45,7 @@ export function PostProcessing() {
   const flags = QUALITY_PRESETS[tier].post;
 
   const grain = useMemo(() => new GrainEffect(), []);
+  const fxaa = useMemo(() => new FXAAEffect(), []);
   const lensRain = useMemo(() => new LensRainEffect(), []);
   const speedBlur = useMemo(() => new SpeedBlurEffect(), []);
   const grade = useMemo(() => new ColorGradeEffect(), []);
@@ -128,7 +130,10 @@ export function PostProcessing() {
   if (flags.grain) effects.push(<primitive key="grain" object={grain} />);
   if (flags.speedBlur) effects.push(<primitive key="blur" object={speedBlur} />);
   effects.push(<Vignette key="vignette" offset={VIGNETTE_SETTINGS.offset} darkness={VIGNETTE_SETTINGS.darkness} />);
-  if (flags.antialias !== "none") effects.push(<SMAA key="aa" />);
+  // Honour the tier's choice: "fxaa" used to fall through to SMAA, so every
+  // phone paid the expensive path its own preset had ruled out.
+  if (flags.antialias === "smaa") effects.push(<SMAA key="aa" />);
+  else if (flags.antialias === "fxaa") effects.push(<primitive key="aa" object={fxaa} />);
 
   return (
     <EffectComposer
