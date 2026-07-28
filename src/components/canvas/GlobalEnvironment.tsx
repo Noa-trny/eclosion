@@ -88,6 +88,9 @@ export function GlobalEnvironment() {
 
     const aurora = skyMaterial.uniforms.uAurora;
     if (aurora) aurora.value = p.sky.auroraIntensity;
+    // The dive drives grade.underwater — the dome follows it into the water.
+    const underwater = skyMaterial.uniforms.uUnderwater;
+    if (underwater) underwater.value = p.grade.underwater;
 
     fog.color.copy(u.uFogColor.value);
     fog.density = p.fog.density;
