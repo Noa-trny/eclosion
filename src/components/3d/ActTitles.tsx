@@ -40,7 +40,10 @@ const ANCHORS: TitleAnchor[] = [
   { pos: [-6.5, 7, -36], face: [-4, 3.6, -6], width: 9, window: [0.05, 0.16, 0.42, 0.6] },
   { pos: [27.5, 29.5, -56.5], face: [12.4, 28, -71.3], width: 13, window: [0.05, 0.16, 0.45, 0.62] },
   { pos: [121, 5, 5], face: [99, 14.6, -3.5], width: 13.5, window: [0.03, 0.1, 0.17, 0.26] },
-  { pos: [255, 33, -35], face: [237, 16.6, -24], width: 13, window: [0.04, 0.12, 0.22, 0.32] },
+  // Negative fade-in: the reveal rides the SURFACING (camera breaks the
+  // water at p≈0.60, local ≈ −0.14) — the title must land with the splash,
+  // not three beats after it.
+  { pos: [255, 33, -35], face: [237, 16.6, -24], width: 13, window: [-0.15, -0.02, 0.22, 0.32] },
   { pos: [368, 9.5, 36], face: [345, 14, 17], width: 11, window: [0.05, 0.14, 0.32, 0.45] },
   { pos: [432, 21.5, 60], face: [396, 11, 54], width: 16, window: [0.05, 0.16, 0.4, 0.55] },
 ];
@@ -123,7 +126,13 @@ export function ActTitles() {
         mesh.visible = (fadeRef.current[i] ?? 0) > 0.01;
       }
       const { start, end } = entry.act.range;
-      const local = clamp01((progress - start) / (end - start));
+      // NOT clamped at 0: a negative fade-in window lets a title begin
+      // BEFORE its act's boundary — the volcano's must materialize at the
+      // exact moment the camera breaks the surface (p≈0.60, still inside
+      // the ocean act). Acts with positive windows behave identically
+      // (negative local zeroes their fade-in term), and the void's
+      // present-at-rest trick keeps working.
+      const local = (progress - start) / (end - start);
       const [i0, i1, o0, o1] =
         portrait && entry.anchor.portraitWindow ? entry.anchor.portraitWindow : entry.anchor.window;
       const target =
