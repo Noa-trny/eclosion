@@ -6,6 +6,10 @@
 
 *The birth of a world - a 3D web experience where scrolling is time. Fully bilingual (FR/EN).*
 
+### [→ Vivre l'expérience — eclosion.noatournoy.dev](https://eclosion.noatournoy.dev)
+
+*Les captures ci-dessous ne remplacent pas le mouvement : le film se joue à la molette.*
+
 <img src="docs/screens/forest.jpg" alt="Acte III - La Forêt : conifères sous la lune, lucioles, brume rasante" width="100%" />
 
 </div>
