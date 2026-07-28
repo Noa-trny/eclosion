@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import { waterFragmentShader, waterVertexShader } from "../shaders/water";
 import { sharedUniforms } from "./sharedUniforms";
-import { WATER_LEVEL } from "@/config/world";
 
 /** Gerstner surface — uWaveHeight is driven per frame from the proxies. */
 export function createWaterMaterial(): THREE.ShaderMaterial {
@@ -20,7 +19,6 @@ export function createWaterMaterial(): THREE.ShaderMaterial {
       uFogColor: sharedUniforms.uFogColor,
       uFogDensity: sharedUniforms.uFogDensity,
       uWaveHeight: { value: 0.6 },
-      uWaterLevel: { value: WATER_LEVEL },
       uDeepColor: { value: new THREE.Color(0.006, 0.05, 0.08) },
       uShallowColor: { value: new THREE.Color(0.02, 0.18, 0.22) },
     },

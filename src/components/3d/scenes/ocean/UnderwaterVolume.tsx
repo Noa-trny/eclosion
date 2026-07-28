@@ -48,10 +48,7 @@ export function UnderwaterVolume() {
   const materials = useMemo(
     () =>
       SHAFTS.map(() =>
-        // viewFade: the dive path runs straight through the cathedral — the
-        // shafts must dissolve when seen edge-on or point-blank instead of
-        // cutting the frame as pale slabs.
-        createAuroraMaterial({ colorA: 0x1fd9c8, colorB: 0x2b6dff, wave: 0.4, viewFade: 1 }),
+        createAuroraMaterial({ colorA: 0x1fd9c8, colorB: 0x2b6dff, wave: 0.4 }),
       ),
     [],
   );
