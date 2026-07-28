@@ -61,7 +61,11 @@ export interface UniformProxies {
 
 function defaults(): UniformProxies {
   return {
-    fog: { color: { r: 0.012, g: 0.016, b: 0.028 }, density: 0.02 },
+    // Mirrors PALETTES.void — the timeline never tweens TO void, so these
+    // defaults ARE the first act's look. Fog equals skyBottom so the fogged
+    // ground and the sky meet in one color: no horizon line through the
+    // dark before the world exists.
+    fog: { color: { r: 0.01, g: 0.012, b: 0.022 }, density: 0.032 },
     sky: {
       topColor: { r: 0.004, g: 0.006, b: 0.012 },
       bottomColor: { r: 0.01, g: 0.012, b: 0.022 },
@@ -70,8 +74,8 @@ function defaults(): UniformProxies {
       auroraIntensity: 0,
       starIntensity: 1,
     },
-    sun: { intensity: 0.05, color: { r: 0.4, g: 0.5, b: 0.8 } },
-    ambient: { intensity: 0.06, color: { r: 0.25, g: 0.3, b: 0.5 } },
+    sun: { intensity: 0.02, color: { r: 0.4, g: 0.5, b: 0.8 } },
+    ambient: { intensity: 0.03, color: { r: 0.25, g: 0.3, b: 0.5 } },
     grade: { temperature: -0.15, saturation: 0.85, lift: 0, underwater: 0 },
     camera: { fovOffset: 0, shake: 0, focus: 0.02 },
     wind: { x: 0.4, y: 0, z: 0.15 },

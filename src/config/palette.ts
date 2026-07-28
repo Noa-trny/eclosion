@@ -20,14 +20,19 @@ export interface ActPalette {
 
 export const PALETTES: Record<ActId, ActPalette> = {
   void: {
-    fogColor: [0.012, 0.016, 0.028],
-    fogDensity: 0.02,
+    // Fog EXACTLY equals skyBottom: the fogged ground and the sky meet in
+    // the same color, so no horizon line cuts through "l'obscurité absolue"
+    // — there is no world yet to silhouette. Density is high enough to
+    // swallow the near field, and the lights are almost out so the terrain
+    // never reads before the seed's ember does.
+    fogColor: [0.01, 0.012, 0.022],
+    fogDensity: 0.032,
     skyTop: [0.004, 0.006, 0.012],
     skyBottom: [0.01, 0.012, 0.022],
     sunColor: [0.4, 0.5, 0.8],
-    sunIntensity: 0.05,
+    sunIntensity: 0.02,
     ambientColor: [0.25, 0.3, 0.5],
-    ambientIntensity: 0.06,
+    ambientIntensity: 0.03,
     temperature: -0.15,
     saturation: 0.85,
     starIntensity: 1,
