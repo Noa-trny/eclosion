@@ -9,8 +9,10 @@ uniform float uWaveHeight;
 varying vec3 vNormal;
 varying vec3 vWorldPos;
 varying float vCrest;
+varying vec2 vUv;
 
 void main() {
+  vUv = uv;
   vec3 p = position;
   vec3 tangent = vec3(1.0, 0.0, 0.0);
   vec3 binormal = vec3(0.0, 0.0, 1.0);
@@ -45,6 +47,7 @@ uniform float uFogDensity;
 varying vec3 vNormal;
 varying vec3 vWorldPos;
 varying float vCrest;
+varying vec2 vUv;
 
 void main() {
   vec3 n = normalize(vNormal);
@@ -73,6 +76,10 @@ void main() {
   col += uShallowColor * vCrest * 0.35 * uSunIntensity;
   float dist = length(cameraPosition - vWorldPos);
   col = applyFogExp2(col, dist, uFogColor, uFogDensity);
-  gl_FragColor = vec4(col, 0.94);
+  // The sheet must never END in view: its border tears a jagged bright line
+  // where the drowned-sun glow stops being filtered. Dissolve the outer rim.
+  float rim = smoothstep(0.0, 0.08, vUv.x) * smoothstep(1.0, 0.92, vUv.x)
+            * smoothstep(0.0, 0.08, vUv.y) * smoothstep(1.0, 0.92, vUv.y);
+  gl_FragColor = vec4(col, 0.94 * rim);
 }
 `;
