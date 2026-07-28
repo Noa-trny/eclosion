@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 /** Fraunces (OFL, committed in-repo — no runtime network) is the display
@@ -38,7 +39,12 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" className={display.variable}>
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* Injected after the tree so its script never delays the canvas boot;
+         *  it is inert outside Vercel, so local dev stays request-free. */}
+        <Analytics />
+      </body>
     </html>
   );
 }
