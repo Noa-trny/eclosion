@@ -19,6 +19,8 @@ uniform float uSunIntensity;
 uniform float uAurora;
 uniform float uFlash;
 uniform float uTime;
+uniform float uUnderwater;
+uniform vec3 uFogColor;
 varying vec3 vDir;
 
 void main() {
@@ -41,6 +43,11 @@ void main() {
 
   // Lightning washes the whole dome.
   col += vec3(0.75, 0.8, 1.0) * uFlash * 0.6;
+
+  // Under the surface there is no night sky: the dome IS the water. Without
+  // this, every fogged silhouette (the basin rim, the surface's far reach)
+  // cut a hard line against a dark dome no diver should ever see.
+  col = mix(col, uFogColor, uUnderwater);
 
   // Dither against banding in the dark acts.
   col += (hash21(gl_FragCoord.xy) - 0.5) * 0.006;

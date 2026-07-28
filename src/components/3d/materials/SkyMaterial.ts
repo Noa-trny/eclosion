@@ -17,7 +17,9 @@ export function createSkyMaterial(): THREE.ShaderMaterial {
       uSunColor: sharedUniforms.uSunColor,
       uSunIntensity: sharedUniforms.uSunIntensity,
       uFlash: sharedUniforms.uFlash,
+      uFogColor: sharedUniforms.uFogColor,
       uAurora: { value: 0 },
+      uUnderwater: { value: 0 },
     },
   });
 }
