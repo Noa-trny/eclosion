@@ -72,23 +72,30 @@ void main() {
   // voice above. Smooth over ~1 unit so the pierce never pops (the dive's
   // fullscreen ripple covers the crossing anyway).
   float above = smoothstep(uWaterLevel - 0.6, uWaterLevel + 0.6, cameraPosition.y);
-  float mirror = mix(0.12, 0.85, above);
+  float dist = length(cameraPosition - vWorldPos);
+  // The whisper must NOT swallow the emergence. Distance cannot separate
+  // the two looks (stripe and exit ceiling share the same range) -- the
+  // GAZE does: the stripe is the sheet seen at grazing incidence
+  // (viewDir.y ~ 0), the emergence is the sheet you look UP at. Restore the
+  // voice with the upward inclination of the line of sight.
+  float lookUp = smoothstep(0.35, 0.6, -viewDir.y);
+  float voice = max(above, lookUp * 0.9);
+  float mirror = mix(0.12, 0.85, voice);
   // depthCol is unlit — from below its shallow teal reads as emission and was
   // the stripe's brightest term. Sink it toward the deep color underwater.
-  depthCol = mix(uDeepColor, depthCol, mix(0.2, 1.0, above));
+  depthCol = mix(uDeepColor, depthCol, mix(0.2, 1.0, voice));
   vec3 col = mix(depthCol, skyCol, f * mirror);
   // Tight sun spec + broad glitter band.
   float sunDot = max(dot(reflDir, normalize(uSunDir)), 0.0);
   float spec = pow(sunDot, 200.0) * uSunIntensity * 4.0 + pow(sunDot, 40.0) * uSunIntensity * 0.6;
-  col += uSunColor * spec * mix(0.25, 1.0, above);
+  col += uSunColor * spec * mix(0.25, 1.0, voice);
   // Crest foam: main band + high-frequency micro-lace.
   float foam = smoothstep(0.44, 0.82, vCrest + snoise2(vWorldPos.xz * 3.0 + uTime * 0.5) * 0.16);
   foam += smoothstep(0.6, 0.9, snoise2(vWorldPos.xz * 9.0 - uTime * 0.8)) * foam;
-  float foamStrength = mix(0.04, 0.42, above);
+  float foamStrength = mix(0.04, 0.42, voice);
   col = mix(col, vec3(0.85, 0.94, 1.0), clamp(foam, 0.0, 1.0) * foamStrength);
   // Cheap subsurface glow through the crests.
-  col += uShallowColor * vCrest * 0.35 * uSunIntensity * mix(0.25, 1.0, above);
-  float dist = length(cameraPosition - vWorldPos);
+  col += uShallowColor * vCrest * 0.35 * uSunIntensity * mix(0.25, 1.0, voice);
   col = applyFogExp2(col, dist, uFogColor, uFogDensity);
   // The sheet must never END in view: its border tears a jagged bright line
   // where the drowned-sun glow stops being filtered. Dissolve the outer rim.
