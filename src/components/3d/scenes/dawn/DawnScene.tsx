@@ -1,6 +1,5 @@
 "use client";
 
-import { Sun } from "./Sun";
 import { DawnClouds } from "./DawnClouds";
 import { FallingSeed } from "./FallingSeed";
 import { BirdFlock } from "@/components/3d/scenes/bloom/BirdFlock";
@@ -14,7 +13,6 @@ import { uniformProxies } from "@/timelines/uniformProxies";
 export function DawnScene() {
   return (
     <group>
-      <Sun />
       <DawnClouds />
       {/* The post-credits secret — invisible until stillness arms it. */}
       <FallingSeed />

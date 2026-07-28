@@ -2,7 +2,6 @@
 
 import { Trees } from "./Trees";
 import { Fireflies } from "./Fireflies";
-import { Moon } from "./Moon";
 import { MoonShafts } from "./MoonShafts";
 import { Undergrowth } from "./Undergrowth";
 import { Owl } from "@/components/3d/encounters/Owl";
@@ -16,7 +15,6 @@ export function ForestScene() {
       <Trees />
       <Undergrowth />
       <Fireflies />
-      <Moon />
       <MoonShafts />
       <Owl />
     </group>

@@ -2,14 +2,13 @@
 
 import { useMemo, useRef, type ReactElement } from "react";
 import * as THREE from "three";
-import type { DepthOfFieldEffect } from "postprocessing";
-import { useFrame } from "@react-three/fiber";
+import { GodRaysEffect, type DepthOfFieldEffect } from "postprocessing";
+import { useFrame, useThree } from "@react-three/fiber";
 import {
   Bloom,
   ChromaticAberration,
   DepthOfField,
   EffectComposer,
-  GodRays,
   SMAA,
   Vignette,
 } from "@react-three/postprocessing";
@@ -20,6 +19,7 @@ import { useProgressStore } from "@/stores/progressStore";
 import { uniformProxies } from "@/timelines/uniformProxies";
 import { clamp01 } from "@/utils/math";
 import { groundHeight } from "@/utils/terrain";
+import { useDisposable } from "@/hooks/useDisposable";
 import { GrainEffect } from "./GrainEffect";
 import { LensRainEffect } from "./LensRainEffect";
 import { SpeedBlurEffect } from "./SpeedBlurEffect";
@@ -34,13 +34,29 @@ import {
   VIGNETTE_SETTINGS,
 } from "./effectChain";
 
+/** GodRays whose internal light-scene renders are skipped while no celestial
+ *  body glows. The pass then lives for the whole session — compiled once, at
+ *  boot, behind the loading ring — instead of being torn down and recompiled
+ *  mid-scroll as the moon and sun came and went; its render targets stay
+ *  black while gated, and sampling black contributes nothing. */
+class GatedGodRaysEffect extends GodRaysEffect {
+  override update(renderer: THREE.WebGLRenderer, inputBuffer: THREE.WebGLRenderTarget, deltaTime?: number): void {
+    const a = uniformProxies.acts;
+    if (a.moonIntensity <= 0.002 && a.sunriseProgress <= 0.001) return;
+    super.update(renderer, inputBuffer, deltaTime);
+  }
+}
+
 /** Composer assembled from the tier's flags. The `key` forces a clean rebuild
- *  on tier change, context restore, or god-ray source change — never per
- *  frame. Per-frame effect values are plain uniform writes. */
+ *  on tier change or context restore — never per frame, and NOT on god-ray
+ *  source registration: the source is the session-long Celestial mesh, so it
+ *  registers once at boot and the chain never changes mid-scroll. Per-frame
+ *  effect values are plain uniform writes. */
 export function PostProcessing() {
   const tier = useQualityStore((s) => s.tier);
   const restoreNonce = useAppStore((s) => s.restoreNonce);
   const godRaySource = useLightSourceStore((s) => s.godRaySource);
+  const camera = useThree((s) => s.camera);
   const flags = QUALITY_PRESETS[tier].post;
 
   const grain = useMemo(() => new GrainEffect(), []);
@@ -48,6 +64,14 @@ export function PostProcessing() {
   const speedBlur = useMemo(() => new SpeedBlurEffect(), []);
   const grade = useMemo(() => new ColorGradeEffect(), []);
   const ripple = useMemo(() => new ActTransitionEffect(), []);
+  const godRays = useMemo(
+    () =>
+      flags.godRays && godRaySource
+        ? new GatedGodRaysEffect(camera, godRaySource, GOD_RAYS_SETTINGS)
+        : null,
+    [flags.godRays, godRaySource, camera],
+  );
+  useDisposable(godRays);
   const dofRef = useRef<DepthOfFieldEffect>(null);
   const viewDir = useMemo(() => new THREE.Vector3(), []);
   const freeFocus = useRef(0.02);
@@ -116,8 +140,8 @@ export function PostProcessing() {
       />,
     );
   }
-  if (flags.godRays && godRaySource) {
-    effects.push(<GodRays key="godrays" sun={godRaySource} {...GOD_RAYS_SETTINGS} />);
+  if (godRays) {
+    effects.push(<primitive key="godrays" object={godRays} />);
   }
   if (flags.chromatic) {
     effects.push(<ChromaticAberration key="ca" offset={CHROMATIC_OFFSET} />);
@@ -132,7 +156,7 @@ export function PostProcessing() {
 
   return (
     <EffectComposer
-      key={`${tier}-${restoreNonce}-${godRaySource?.uuid ?? "no-sun"}`}
+      key={`${tier}-${restoreNonce}`}
       multisampling={0}
       frameBufferType={THREE.HalfFloatType}
     >
