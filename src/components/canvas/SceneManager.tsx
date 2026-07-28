@@ -1,6 +1,15 @@
 "use client";
 
-import { Suspense, lazy, useEffect, useRef, useState, type ComponentType, type LazyExoticComponent } from "react";
+import {
+  Suspense,
+  lazy,
+  useEffect,
+  useState,
+  type ComponentType,
+  type LazyExoticComponent,
+  type ReactNode,
+} from "react";
+import * as THREE from "three";
 import { useThree } from "@react-three/fiber";
 import { ACTS, isActInWindow } from "@/config/acts";
 import { useProgressStore } from "@/stores/progressStore";
@@ -31,26 +40,111 @@ function computeMounted(prev: readonly boolean[], progress: number): boolean[] {
   return mounted;
 }
 
+/** Mounts an act's subtree invisible and reveals it only once its shaders
+ *  have genuinely LINKED — and been introspected. Mounting ahead of the
+ *  window (MOUNT_PAD) is not enough on its own: nothing draws until the
+ *  camera sweeps over the act, and the first draw of an unready program
+ *  blocks on getProgramParameter — profiled at ~600ms in one frame,
+ *  mid-scroll, at the forest boundary (and worse for the storm). Three
+ *  stalls hide in that frame, each handled here:
+ *
+ *  1. the link wait — compileAsync rides KHR_parallel_shader_compile and
+ *     resolves off the main thread;
+ *  2. the cache-key trap — the composer's RenderPass draws the scene under
+ *     its own renderer state, so a compile under the DEFAULT state builds
+ *     programs the real draw never uses, and the first draw links again
+ *     from scratch (this bit every warm-up path in the app);
+ *  3. the introspection — even a linked program pays ANGLE's deferred
+ *     reflection on its first ACTIVE_UNIFORMS query (~180ms each here), so
+ *     getUniforms() is forced program by program, one per frame, while the
+ *     act is still hidden.
+ *
+ *  Acts already mounted during boot skip the gate: WarmupGate compiles those
+ *  behind the loading ring, and the start screen must never wait on a hidden
+ *  void. A hard fallback reveals regardless — a stalled driver must never
+ *  keep an act out of the world. */
+function WarmMount({ children }: { children: ReactNode }) {
+  const gl = useThree((s) => s.gl);
+  const scene = useThree((s) => s.scene);
+  const camera = useThree((s) => s.camera);
+  const [warm, setWarm] = useState(() => !useAppStore.getState().started);
+
+  useEffect(() => {
+    if (warm) return;
+    let cancelled = false;
+    let raf = 0;
+    const reveal = (): void => {
+      if (!cancelled) setWarm(true);
+    };
+    const fallback = setTimeout(reveal, 4000);
+    // One tick so children that add meshes in their own effects are in the
+    // graph before the compile walk.
+    const start = setTimeout(() => {
+      const prevToneMapping = gl.toneMapping;
+      const prevColorSpace = gl.outputColorSpace;
+      gl.toneMapping = THREE.NoToneMapping;
+      gl.outputColorSpace = THREE.LinearSRGBColorSpace;
+      const compiled = gl.compileAsync(scene, camera).catch(() => undefined);
+      gl.toneMapping = prevToneMapping;
+      gl.outputColorSpace = prevColorSpace;
+      void compiled.then(() => {
+        if (cancelled) return;
+        // Force the uniform reflection now, spread one program per frame.
+        // renderer.properties is internal — every step is guarded, and the
+        // worst a three upgrade can do is put the stall back at first draw.
+        const programs: Array<{ getUniforms: () => unknown }> = [];
+        try {
+          const properties = (
+            gl as unknown as {
+              properties?: { get: (m: THREE.Material) => { currentProgram?: { getUniforms: () => unknown } } };
+            }
+          ).properties;
+          if (properties) {
+            scene.traverse((object) => {
+              const material = (object as THREE.Mesh).material;
+              for (const m of Array.isArray(material) ? material : [material]) {
+                if (!m) continue;
+                const program = properties.get(m)?.currentProgram;
+                if (program && !programs.includes(program)) programs.push(program);
+              }
+            });
+          }
+        } catch {
+          // Internals moved — reveal with programs linked but unreflected.
+        }
+        const step = (): void => {
+          if (cancelled) return;
+          const program = programs.pop();
+          if (!program) {
+            clearTimeout(fallback);
+            reveal();
+            return;
+          }
+          try {
+            program.getUniforms();
+          } catch {
+            programs.length = 0;
+          }
+          raf = requestAnimationFrame(step);
+        };
+        step();
+      });
+    }, 50);
+    return () => {
+      cancelled = true;
+      clearTimeout(fallback);
+      clearTimeout(start);
+      cancelAnimationFrame(raf);
+    };
+  }, [warm, gl, scene, camera]);
+
+  return <group visible={warm}>{children}</group>;
+}
+
 export function SceneManager() {
   const [mounted, setMounted] = useState<boolean[]>(() =>
     computeMounted([], useProgressStore.getState().progress),
   );
-  const gl = useThree((s) => s.gl);
-  const scene = useThree((s) => s.scene);
-  const camera = useThree((s) => s.camera);
-  const compileTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
-
-  // Progressive warm-up: whenever a new act mounts (0.05 progress BEFORE it
-  // becomes visible), compile its shaders off the critical path — entering
-  // an act must never hitch on a compile (worst on mobile: the storm's
-  // volumetric clouds).
-  useEffect(() => {
-    clearTimeout(compileTimer.current);
-    compileTimer.current = setTimeout(() => {
-      void gl.compileAsync(scene, camera).catch(() => undefined);
-    }, 350);
-    return () => clearTimeout(compileTimer.current);
-  }, [mounted, gl, scene, camera]);
 
   useEffect(() => {
     const update = (): void => {
@@ -76,7 +170,11 @@ export function SceneManager() {
         if (!act || !mounted[i]) return null;
         return (
           <Suspense key={act.id} fallback={null}>
-            <Scene />
+            {/* Inside the boundary: the gate only starts once the lazy chunk
+                has resolved and the scene's materials are in the graph. */}
+            <WarmMount>
+              <Scene />
+            </WarmMount>
           </Suspense>
         );
       })}

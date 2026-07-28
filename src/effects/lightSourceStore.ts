@@ -2,8 +2,8 @@ import { create } from "zustand";
 import type * as THREE from "three";
 
 interface LightSourceState {
-  /** The moon (forest) or sun (dawn) mesh currently able to cast god rays.
-   *  Scenes register on mount; PostProcessing conditionally adds the pass. */
+  /** The session-long Celestial mesh (moon over the forest, sun at dawn).
+   *  Registered once at boot; PostProcessing gates the pass by tier. */
   godRaySource: THREE.Mesh | null;
   setGodRaySource: (mesh: THREE.Mesh | null) => void;
 }
