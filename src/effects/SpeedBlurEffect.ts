@@ -10,12 +10,20 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
     return;
   }
   vec2 dir = uv - 0.5;
+  // Ten weighted taps with a fading tail. Five uniform taps over the old
+  // 6%-of-screen reach turned every bright particle into five distinct ghost
+  // copies — the ocean's plankton field became a wall of white scratches the
+  // moment the dive picked up speed. Denser sampling over a shorter reach
+  // with decaying weights reads as a comet trail instead of a dashed line.
   vec4 sum = inputColor;
-  for (int i = 1; i <= 5; i++) {
-    float t = float(i) / 5.0 * uStrength * 0.06;
-    sum += texture2D(inputBuffer, uv - dir * t);
+  float total = 1.0;
+  for (int i = 1; i <= 10; i++) {
+    float f = float(i) / 10.0;
+    float w = 1.0 - f * 0.85;
+    sum += texture2D(inputBuffer, uv - dir * (f * uStrength * 0.045)) * w;
+    total += w;
   }
-  outputColor = sum / 6.0;
+  outputColor = sum / total;
 }
 `;
 
