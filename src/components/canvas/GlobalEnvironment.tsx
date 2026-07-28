@@ -12,6 +12,7 @@ import { useDisposable } from "@/hooks/useDisposable";
 import { groundHeight } from "@/utils/terrain";
 import { useAppStore } from "@/stores/appStore";
 import { computeCycleLook, cycleState, CYCLE_PERIOD_SEC } from "@/lib/dayCycle";
+import { WATER_LEVEL } from "@/config/world";
 
 /** Owns everything persistent: the sky dome + star field (camera-following),
  *  scene fog, the sun/ambient lights, and the once-per-frame refresh of the
@@ -88,9 +89,17 @@ export function GlobalEnvironment() {
 
     const aurora = skyMaterial.uniforms.uAurora;
     if (aurora) aurora.value = p.sky.auroraIntensity;
-    // The dive drives grade.underwater — the dome follows it into the water.
+    // The dive drives grade.underwater — the dome follows it into the water,
+    // scaled by how DEEP the camera actually is: in the last meters of the
+    // ascent the sky bleeds back overhead, the growing light that announces
+    // the exit (locking the dome to the grade alone kept the screen blue
+    // until the ripple, and the emergence felt late).
     const underwater = skyMaterial.uniforms.uUnderwater;
-    if (underwater) underwater.value = p.grade.underwater;
+    if (underwater) {
+      const depth = WATER_LEVEL - state.camera.position.y;
+      const submerged = THREE.MathUtils.smoothstep(depth, 0.5, 7.0);
+      underwater.value = p.grade.underwater * submerged;
+    }
 
     fog.color.copy(u.uFogColor.value);
     fog.density = p.fog.density;
