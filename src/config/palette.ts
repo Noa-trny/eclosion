@@ -83,18 +83,13 @@ export const PALETTES: Record<ActId, ActPalette> = {
   },
   ocean: {
     fogColor: [0.01, 0.06, 0.1],
-    // Denser water + dimmer floor: at 0.026/0.45/0.22 the basin's slope kept
-    // its lit sand color through the fog and paired with the water sheet's
-    // grazing brightness into one pale band across the dive. The light of
-    // this act belongs to its emitters — shafts, plankton, the drowned sun —
-    // not to the floor.
-    fogDensity: 0.034,
+    fogDensity: 0.026,
     skyTop: [0.015, 0.05, 0.1],
     skyBottom: [0.04, 0.12, 0.18],
     sunColor: [0.5, 0.8, 1],
-    sunIntensity: 0.3,
+    sunIntensity: 0.45,
     ambientColor: [0.2, 0.5, 0.7],
-    ambientIntensity: 0.13,
+    ambientIntensity: 0.22,
     temperature: -0.3,
     saturation: 1.1,
     starIntensity: 0.2,
