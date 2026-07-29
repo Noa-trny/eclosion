@@ -4,7 +4,7 @@ export const QUALITY_PRESETS: Record<Tier, QualityPreset> = {
   low: {
     dprMax: 1,
     particleScale: 0.12,
-    treeCount: 90,
+    treeCount: 130,
     boidScale: 0.4,
     post: {
       bloom: true,
@@ -22,7 +22,7 @@ export const QUALITY_PRESETS: Record<Tier, QualityPreset> = {
     // screen at half res reads pixelated; the monitor demotes weak devices.
     dprMax: 2,
     particleScale: 0.4,
-    treeCount: 220,
+    treeCount: 330,
     boidScale: 0.7,
     post: {
       bloom: true,
@@ -38,7 +38,7 @@ export const QUALITY_PRESETS: Record<Tier, QualityPreset> = {
   high: {
     dprMax: 2,
     particleScale: 1,
-    treeCount: 420,
+    treeCount: 630,
     boidScale: 1,
     post: {
       bloom: true,
