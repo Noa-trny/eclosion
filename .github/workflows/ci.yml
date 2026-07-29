@@ -46,3 +46,8 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      # The smoke harness drives the film end to end on the runner's Chrome
+      # (software WebGL): boot, enter, every act, the fallback — zero errors.
+      - name: E2E smoke
+        run: pnpm exec playwright test
