@@ -20,6 +20,8 @@ const display = localFont({
 });
 
 export const metadata: Metadata = {
+  // Absolute URLs for the share card (scrapers refuse relative og:image).
+  metadataBase: new URL("https://eclosion.noatournoy.dev"),
   title: "Éclosion - la naissance d'un monde",
   description:
     "Expérience 3D cinématique pilotée par le défilement : du néant à l'aube, huit actes de lumière, de matière et de son, entièrement procédurale.",
@@ -29,6 +31,11 @@ export const metadata: Metadata = {
       "Une expérience immersive WebGL où le scroll est le temps. Forêt, orage, océan, volcan, aube.",
     locale: "fr_FR",
     type: "website",
+  },
+  // The forest card (src/app/opengraph-image.jpg) is picked up by the file
+  // convention; the large-image card type makes it fill the embed.
+  twitter: {
+    card: "summary_large_image",
   },
 };
 
