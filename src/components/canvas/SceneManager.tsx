@@ -84,21 +84,49 @@ function WarmMount({ children }: { children: ReactNode }) {
       const prevColorSpace = gl.outputColorSpace;
       gl.toneMapping = THREE.NoToneMapping;
       gl.outputColorSpace = THREE.LinearSRGBColorSpace;
-      const compiled = gl.compileAsync(scene, camera).catch(() => undefined);
+      // gl.compile (not compileAsync): three's own readiness poll crashes
+      // with an UNCATCHABLE TypeError when a material is disposed while its
+      // link is in flight — exactly what a fast traversal does to an act
+      // that mounts and unmounts within the hysteresis window (caught by
+      // the e2e smoke on CI). Same submission, but WE poll, and a disposed
+      // material simply counts as settled.
+      let pending = new Set<THREE.Material>();
+      try {
+        pending = gl.compile(scene, camera) as Set<THREE.Material>;
+      } catch {
+        // Compilation failing outright must never hide the act.
+      }
       gl.toneMapping = prevToneMapping;
       gl.outputColorSpace = prevColorSpace;
-      void compiled.then(() => {
+      const properties = (
+        gl as unknown as {
+          properties?: {
+            get: (m: THREE.Material) => { currentProgram?: { isReady?: () => boolean; getUniforms: () => unknown } };
+          };
+        }
+      ).properties;
+      const poll = setInterval(() => {
+        if (cancelled) {
+          clearInterval(poll);
+          return;
+        }
+        try {
+          for (const material of pending) {
+            const program = properties?.get(material)?.currentProgram;
+            // Disposed mid-flight (act unmounted) or already linked: settled.
+            if (!program || !program.isReady || program.isReady()) pending.delete(material);
+          }
+        } catch {
+          pending.clear();
+        }
+        if (pending.size > 0) return;
+        clearInterval(poll);
         if (cancelled) return;
         // Force the uniform reflection now, spread one program per frame.
         // renderer.properties is internal — every step is guarded, and the
         // worst a three upgrade can do is put the stall back at first draw.
         const programs: Array<{ getUniforms: () => unknown }> = [];
         try {
-          const properties = (
-            gl as unknown as {
-              properties?: { get: (m: THREE.Material) => { currentProgram?: { getUniforms: () => unknown } } };
-            }
-          ).properties;
           if (properties) {
             scene.traverse((object) => {
               const material = (object as THREE.Mesh).material;
@@ -128,7 +156,7 @@ function WarmMount({ children }: { children: ReactNode }) {
           raf = requestAnimationFrame(step);
         };
         step();
-      });
+      }, 16);
     }, 50);
     return () => {
       cancelled = true;
