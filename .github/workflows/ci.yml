@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, dev]
   pull_request:
   workflow_dispatch:
 
@@ -35,6 +35,9 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      - name: Unit tests
+        run: pnpm test
+
       # Cache Next's build artifacts so incremental builds stay fast; the key
       # busts whenever a source file or the lockfile changes.
       - name: Cache Next build
@@ -46,3 +49,8 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      # The smoke harness drives the film end to end on the runner's Chrome
+      # (software WebGL): boot, enter, every act, the fallback — zero errors.
+      - name: E2E smoke
+        run: pnpm exec playwright test
