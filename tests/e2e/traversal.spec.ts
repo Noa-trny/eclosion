@@ -9,6 +9,12 @@ function collectErrors(page: Page): string[] {
     // Network failures reach the console as an anonymous "Failed to load
     // resource" — the response listener below reports those WITH their URL.
     if (message.text().startsWith("Failed to load resource")) return;
+    // Same platform gap as the response listener below, seen from the other
+    // end: locally /_vercel/insights/script.js 404s to an HTML page, and
+    // `nosniff` makes Chrome refuse to run it rather than sniff it silently.
+    // On Vercel that route answers with application/javascript, so this can
+    // only ever fire on a local production server.
+    if (message.text().includes("/_vercel/")) return;
     errors.push(message.text());
   });
   page.on("pageerror", (error) => {
